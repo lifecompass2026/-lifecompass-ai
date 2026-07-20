@@ -1,21 +1,179 @@
 <!DOCTYPE html>
-
 <html lang="en">
-
 <head>
-
-<meta charset="UTF-8">
-
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-<title>LifeCompass AI</title>
-
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#07111f">
+  <meta name="description" content="LifeCompass AI — simple AI help for money, home, travel, work and everyday life.">
+  <meta property="og:title" content="LifeCompass AI">
+  <meta property="og:description" content="Your everyday AI life manager.">
+  <meta property="og:type" content="website">
+  <title>LifeCompass AI</title>
+  <link rel="icon" href="icon.svg" type="image/svg+xml">
+  <link rel="manifest" href="manifest.webmanifest">
+  <style>
+    :root{
+      --bg:#07111f;--panel:rgba(255,255,255,.075);--panel2:rgba(255,255,255,.11);
+      --text:#f8fafc;--muted:#b6c1d2;--line:rgba(255,255,255,.12);
+      --purple:#8b5cf6;--cyan:#22d3ee;--green:#34d399;--radius:24px;
+    }
+    *{box-sizing:border-box}
+    html{scroll-behavior:smooth}
+    body{
+      margin:0;color:var(--text);
+      font-family:Inter,-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Arial,sans-serif;
+      background:
+        radial-gradient(circle at 10% 0%,rgba(139,92,246,.32),transparent 34%),
+        radial-gradient(circle at 90% 12%,rgba(34,211,238,.20),transparent 30%),
+        linear-gradient(180deg,#07111f 0%,#0a1424 54%,#09111d 100%);
+      min-height:100vh;
+    }
+    a{color:inherit;text-decoration:none}
+    button,input{font:inherit}
+    .wrap{width:min(1120px,calc(100% - 32px));margin:auto}
+    header{position:sticky;top:0;z-index:20;background:rgba(7,17,31,.74);backdrop-filter:blur(18px);border-bottom:1px solid var(--line)}
+    .nav{height:70px;display:flex;align-items:center;justify-content:space-between}
+    .brand{display:flex;align-items:center;gap:11px;font-weight:850;letter-spacing:-.02em}
+    .logo{width:40px;height:40px;border-radius:13px;display:grid;place-items:center;background:linear-gradient(135deg,var(--purple),var(--cyan));box-shadow:0 12px 32px rgba(139,92,246,.32);font-size:21px}
+    .navlinks{display:flex;gap:22px;align-items:center;color:var(--muted);font-size:14px}
+    .btn{display:inline-flex;justify-content:center;align-items:center;border:0;border-radius:999px;font-weight:800;cursor:pointer}
+    .btn-primary{padding:15px 22px;color:#fff;background:linear-gradient(135deg,var(--purple),#6555e8);box-shadow:0 15px 40px rgba(139,92,246,.30)}
+    .btn-light{padding:11px 17px;color:#0f172a;background:#fff}
+    .btn-ghost{padding:14px 21px;color:#fff;background:rgba(255,255,255,.07);border:1px solid var(--line)}
+    .hero{padding:78px 0 58px;display:grid;grid-template-columns:1.05fr .95fr;gap:48px;align-items:center}
+    .eyebrow{display:inline-flex;align-items:center;gap:8px;padding:8px 12px;border:1px solid var(--line);border-radius:999px;background:rgba(255,255,255,.05);font-size:13px;font-weight:700}
+    .dot{width:8px;height:8px;border-radius:50%;background:var(--green);box-shadow:0 0 18px var(--green)}
+    h1{font-size:clamp(45px,7vw,78px);line-height:.99;letter-spacing:-.055em;margin:22px 0}
+    .gradient{background:linear-gradient(90deg,#fff 10%,#c4b5fd 54%,#67e8f9);-webkit-background-clip:text;background-clip:text;color:transparent}
+    .lead{font-size:clamp(18px,2vw,22px);line-height:1.55;color:var(--muted);max-width:650px}
+    .actions{display:flex;gap:12px;flex-wrap:wrap;margin-top:29px}
+    .trust{display:flex;gap:20px;flex-wrap:wrap;margin-top:29px;color:#cbd5e1;font-size:13px}
+    .trust span:before{content:"✓";color:var(--green);font-weight:900;margin-right:7px}
+    .phone{padding:17px;border:1px solid rgba(255,255,255,.15);border-radius:36px;background:linear-gradient(180deg,rgba(255,255,255,.11),rgba(255,255,255,.055));box-shadow:0 26px 80px rgba(0,0,0,.36)}
+    .screen{background:#0b1525;border:1px solid var(--line);border-radius:26px;padding:20px;min-height:466px}
+    .screen-top{display:flex;justify-content:space-between;align-items:center;margin-bottom:22px}
+    .identity{display:flex;gap:11px;align-items:center}.avatar{width:43px;height:43px;border-radius:50%;display:grid;place-items:center;font-weight:900;background:linear-gradient(135deg,#f0abfc,#818cf8)}
+    .hello strong{display:block}.hello span{color:var(--muted);font-size:13px}
+    .weather{padding:8px 10px;border-radius:12px;background:rgba(255,255,255,.06);font-size:13px}
+    .brief{padding:20px;border-radius:20px;background:linear-gradient(135deg,rgba(139,92,246,.23),rgba(34,211,238,.11));border:1px solid rgba(167,139,250,.26);margin-bottom:14px}
+    .brief h3{margin:0 0 9px}.brief p{margin:0;color:#d7def0;line-height:1.55;font-size:14px}
+    .mini-grid{display:grid;grid-template-columns:1fr 1fr;gap:11px}
+    .mini{padding:15px;border-radius:17px;background:rgba(255,255,255,.055);border:1px solid var(--line)}
+    .mini b{display:block;font-size:14px;margin-bottom:7px}.mini small{color:var(--muted);line-height:1.4}
+    .ask{display:flex;gap:10px;align-items:center;margin-top:14px;padding:11px;background:#fff;border-radius:16px}
+    .ask input{flex:1;min-width:0;border:0;outline:0;background:transparent;color:#0f172a}.ask button{border:0;width:42px;height:42px;border-radius:13px;background:#111827;color:#fff;font-weight:900}
+    section{padding:70px 0}
+    .section-head{text-align:center;max-width:730px;margin:0 auto 35px}.section-head h2,.demo-copy h2,.cta h2{font-size:clamp(34px,5vw,52px);letter-spacing:-.045em;margin:0 0 14px}.section-head p,.cta p{color:var(--muted);font-size:18px;line-height:1.55}
+    .cards{display:grid;grid-template-columns:repeat(5,1fr);gap:14px}
+    .card{padding:22px;min-height:190px;border-radius:22px;background:var(--panel);border:1px solid var(--line)}
+    .icon{font-size:28px;margin-bottom:22px}.card h3{font-size:18px;margin:0 0 10px}.card p{margin:0;color:var(--muted);font-size:14px;line-height:1.5}
+    .demo{display:grid;grid-template-columns:.9fr 1.1fr;gap:18px;padding:20px;border-radius:30px;background:rgba(255,255,255,.052);border:1px solid var(--line)}
+    .demo-copy{padding:26px}.demo-copy p{color:var(--muted);line-height:1.65}
+    .suggestions{display:flex;flex-wrap:wrap;gap:8px;margin-top:22px}.chip{padding:10px 12px;border-radius:999px;border:1px solid var(--line);background:rgba(255,255,255,.06);color:#e5e7eb;cursor:pointer}
+    .chat{display:flex;flex-direction:column;min-height:410px;padding:18px;border-radius:23px;background:#07101d;border:1px solid var(--line)}
+    .messages{display:flex;flex-direction:column;gap:12px;flex:1;max-height:315px;overflow:auto}.bubble{max-width:88%;padding:13px 15px;border-radius:17px;line-height:1.45;font-size:14px}.assistant{align-self:flex-start;background:rgba(255,255,255,.08);border:1px solid var(--line)}.user{align-self:flex-end;background:linear-gradient(135deg,var(--purple),#6555e8)}
+    .input-row{display:flex;gap:9px;margin-top:14px}.input-row input{flex:1;min-width:0;padding:13px;border-radius:14px;border:1px solid var(--line);background:rgba(255,255,255,.07);color:#fff;outline:0}.input-row button{padding:0 17px;border:0;border-radius:14px;background:#fff;color:#0f172a;font-weight:800}
+    .cta{text-align:center;padding:54px 24px;border-radius:32px;border:1px solid var(--line);background:linear-gradient(135deg,rgba(139,92,246,.18),rgba(34,211,238,.09))}
+    footer{padding:32px 0 44px;color:#94a3b8;border-top:1px solid var(--line);font-size:13px}.footer{display:flex;justify-content:space-between;gap:16px;flex-wrap:wrap}
+    @media(max-width:900px){.navlinks a:not(.btn){display:none}.hero,.demo{grid-template-columns:1fr}.hero{padding-top:52px}.phone{max-width:590px;margin:auto}.cards{grid-template-columns:repeat(2,1fr)}}
+    @media(max-width:560px){.wrap{width:min(100% - 22px,1120px)}.nav{height:64px}.brand span{font-size:15px}.btn-light{padding:9px 13px}.hero{padding:42px 0 35px;gap:30px}h1{font-size:47px}.lead{font-size:17px}.actions{display:grid;grid-template-columns:1fr 1fr}.btn-primary,.btn-ghost{padding:14px 10px;text-align:center}.trust{display:grid;gap:8px}.phone{padding:10px;border-radius:28px}.screen{padding:15px;min-height:435px}.cards{grid-template-columns:1fr}section{padding:52px 0}.demo{padding:10px}.demo-copy{padding:18px 10px}.mini-grid{gap:8px}}
+  </style>
 </head>
-
 <body>
+<header>
+  <div class="wrap nav">
+    <a class="brand" href="#"><div class="logo">✦</div><span>LifeCompass AI</span></a>
+    <nav class="navlinks">
+      <a href="#features">Features</a><a href="#demo">Try it</a><a href="#about">About</a>
+      <a class="btn btn-light" href="#demo">Start free</a>
+    </nav>
+  </div>
+</header>
 
-<h1>Welcome to LifeCompass AI</h1>
+<main>
+  <div class="wrap hero">
+    <div>
+      <div class="eyebrow"><span class="dot"></span>Your everyday AI life manager</div>
+      <h1>Put your whole life <span class="gradient">in one place.</span></h1>
+      <p class="lead">LifeCompass AI helps you organise money, home, travel, work and daily life—then turns everything into a simple plan you can actually follow.</p>
+      <div class="actions">
+        <a class="btn btn-primary" href="#demo">Try LifeCompass AI</a>
+        <a class="btn btn-ghost" href="#features">See what it does</a>
+      </div>
+      <div class="trust"><span>Designed for mobile</span><span>Simple everyday help</span><span>Free early access</span></div>
+    </div>
 
-<p>Your AI guide for everyday life.</p>
+    <div class="phone">
+      <div class="screen">
+        <div class="screen-top">
+          <div class="identity"><div class="avatar">P</div><div class="hello"><strong>Good morning, Paul</strong><span>Here’s your daily compass</span></div></div>
+          <div class="weather">☁️ 18°</div>
+        </div>
+        <div class="brief"><h3>Your day, simplified</h3><p>You have two priority jobs, one bill due tomorrow and rain expected this afternoon. I’ve arranged the best order for your day.</p></div>
+        <div class="mini-grid">
+          <div class="mini"><b>💷 Money</b><small>Weekly budget is on track.</small></div>
+          <div class="mini"><b>🏠 Home</b><small>Boiler service due next month.</small></div>
+          <div class="mini"><b>🧰 Work</b><small>Send two estimates today.</small></div>
+          <div class="mini"><b>✈️ Travel</b><small>Holiday checklist ready.</small></div>
+        </div>
+        <div class="ask"><input aria-label="Ask LifeCompass" placeholder="Ask LifeCompass anything…"><button onclick="document.getElementById('demo').scrollIntoView()">↑</button></div>
+      </div>
+    </div>
+  </div>
 
-<p>Coming Soon.</p>
+  <section id="features">
+    <div class="wrap">
+      <div class="section-head"><h2>One assistant. Every part of life.</h2><p>No complicated dashboards. Just clear, useful help whenever you need it.</p></div>
+      <div class="cards">
+        <article class="card"><div class="icon">💷</div><h3>Money</h3><p>Create budgets, track goals, compare options and understand everyday costs.</p></article>
+        <article class="card"><div class="icon">🏠</div><h3>Home</h3><p>Manage jobs, maintenance, household reminders and improvement plans.</p></article>
+        <article class="card"><div class="icon">🧰</div><h3>Work</h3><p>Plan your day, draft estimates, organise projects and keep on top of customers.</p></article>
+        <article class="card"><div class="icon">✈️</div><h3>Travel</h3><p>Build itineraries, packing lists, budgets and simple travel checklists.</p></article>
+        <article class="card"><div class="icon">🎯</div><h3>Daily life</h3><p>Turn appointments, goals and tasks into one realistic daily plan.</p></article>
+      </div>
+    </div>
+  </section>
+
+  <section id="demo">
+    <div class="wrap demo">
+      <div class="demo-copy">
+        <div class="eyebrow"><span class="dot"></span>Interactive preview</div>
+        <h2 style="margin-top:18px">Ask in normal everyday language.</h2>
+        <p>This preview demonstrates the experience. Secure accounts, saved plans and a live AI connection can be added in the next development stage.</p>
+        <div class="suggestions">
+          <button class="chip">Plan my day</button><button class="chip">Help with my budget</button>
+          <button class="chip">Create a holiday checklist</button><button class="chip">Write a customer estimate</button>
+        </div>
+      </div>
+      <div class="chat">
+        <div class="messages" id="messages"><div class="bubble assistant">Hi, I’m LifeCompass. Tell me what you need help organising today.</div></div>
+        <form class="input-row" id="chatForm"><input id="chatInput" autocomplete="off" placeholder="Type a message…"><button type="submit">Send</button></form>
+      </div>
+    </div>
+  </section>
+
+  <section id="about">
+    <div class="wrap cta">
+      <h2>Life feels easier with a compass.</h2>
+      <p>This first version is designed for real everyday people—not technology experts.</p>
+      <div class="actions" style="justify-content:center"><a class="btn btn-primary" href="#demo">Try the preview</a></div>
+    </div>
+  </section>
+</main>
+
+<footer><div class="wrap footer"><span>© 2026 LifeCompass AI</span><span>Money • Home • Travel • Work • Daily life</span></div></footer>
+
+<script>
+const messages=document.getElementById('messages'),input=document.getElementById('chatInput'),form=document.getElementById('chatForm');
+function addBubble(text,role){const el=document.createElement('div');el.className='bubble '+role;el.textContent=text;messages.appendChild(el);messages.scrollTop=messages.scrollHeight}
+function respond(text){const t=text.toLowerCase();let reply="That’s exactly the kind of thing LifeCompass will help with. The secure live AI version can be connected next.";
+if(t.includes('day'))reply="Start with your two most important tasks, place appointments around them, then keep one spare hour for anything unexpected.";
+else if(t.includes('budget')||t.includes('money'))reply="List your weekly income, fixed bills and essential spending first. LifeCompass will then show what is safely available to spend or save.";
+else if(t.includes('holiday')||t.includes('travel'))reply="I’d organise this into documents, money, packing, transport and a final 24-hour checklist.";
+else if(t.includes('estimate')||t.includes('customer'))reply="Give me the job, location, labour, materials and exclusions. LifeCompass will turn it into a clear customer-ready estimate.";
+setTimeout(()=>addBubble(reply,'assistant'),400)}
+form.addEventListener('submit',e=>{e.preventDefault();const text=input.value.trim();if(!text)return;addBubble(text,'user');input.value='';respond(text)});
+document.querySelectorAll('.chip').forEach(chip=>chip.addEventListener('click',()=>{input.value=chip.textContent;form.requestSubmit()}));
+</script>
+</body>
+</html>
