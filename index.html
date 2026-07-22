@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+hi<!DOCTYPE html>
 
 <html lang="en">
 
@@ -1396,6 +1396,10 @@
       logoutButton.classList.remove("hidden");
 
       chatInput.disabled =
+  !account?.is_subscribed && remaining === 0;
+
+sendButton.disabled =
+  !account?.is_subscribed && remaining === 0;
 
         remaining === 0;
 
