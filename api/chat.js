@@ -80,7 +80,10 @@ export default async function handler(req, res) {
     }
 
     return res.status(200).json({
-      reply: data.output_text || "Sorry, I could not create a response.",
+    reply:
+  data.output_text ||
+  data.output?.[0]?.content?.[0]?.text ||
+  "Sorry, I could not create a response.",
       remaining
     });
 
