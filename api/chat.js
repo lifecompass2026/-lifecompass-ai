@@ -81,8 +81,10 @@ export default async function handler(req, res) {
 
     return res.status(200).json({
     reply:
-  data.output_text ||
-  data.output?.[0]?.content?.[0]?.text ||
+  data.output
+    ?.flatMap(item => item.content || [])
+    ?.find(part => part.type === "output_text")
+    ?.text ||
   "Sorry, I could not create a response.",
       remaining
     });
