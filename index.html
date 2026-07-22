@@ -1295,7 +1295,7 @@
 
           .from("user_accounts")
 
-          .select("full_name,messages_used")
+          .select("full_name,messages_used,is_subscribed")
 
           .eq("user_id", session.user.id)
 
@@ -1323,8 +1323,8 @@
 
                   ?.full_name || "",
 
-              messages_used: 0
-
+              messages_used: 0,
+    is_subscribed: false
             })
 
             .select()
@@ -1399,13 +1399,13 @@
 
         remaining === 0;
 
-      sendButton.disabled =
+      sendButton.disabled = !account?.is_subscribed && remaining === 0;
 
         remaining === 0;
 
       chatInput.placeholder =
 
-        remaining === 0
+      !account?.is_subscribed && remaining === 0
 
           ? "Free messages used"
 
@@ -1689,11 +1689,12 @@
 
           chatInput.disabled =
 
-            data.remaining <= 0;
+          !account?.is_subscribed && data.remaining <= 0
 
           sendButton.disabled =
 
-            data.remaining <= 0;
+        sendButton.disabled =
+  !account?.is_subscribed && data.remaining <= 0;
 
           chatInput.placeholder =
 
