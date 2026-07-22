@@ -145,5 +145,17 @@ els.chatForm.onsubmit=async e=>{
   sb.auth.onAuthStateChange(async(_,session)=>{currentUser=session?.user||null;if(currentUser)await loadProfile();else profile=null;render()});
 })();
 </script>
+<footer style="text-align:center;padding:20px;font-size:14px;color:#888;border-top:1px solid #333;margin-top:40px;">
+  <p>© 2026 LifeCompass AI</p>
+  <p>
+    <a href="/privacy.html">Privacy Policy</a> |
+    <a href="/terms.html">Terms &amp; Conditions</a> |
+    <a href="/cookies.html">Cookie Policy</a> |
+    <a href="/refunds.html">Refund Policy</a> |
+    <a href="/disclaimer.html">Disclaimer</a> |
+    <a href="mailto:support@mylifecompassai.com">Contact</a>
+  </p>
+  <p>Operated by Paul Coates trading as LifeCompass AI.</p>
+</footer>
 </body>
 </html>
