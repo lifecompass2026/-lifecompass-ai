@@ -54,7 +54,7 @@ const sb = configured ? supabase.createClient(SUPABASE_URL,SUPABASE_ANON_KEY) : 
 function notice(msg,error=false){els.notice.textContent=msg;els.notice.classList.toggle("error",error)}
 function bubble(text,who="assistant",error=false){const d=document.createElement("div");d.className=`bubble ${who==="user"?"user-message":"assistant-message"}${error?" error-message":""}`;d.textContent=text;els.messages.appendChild(d);els.messages.scrollTop=els.messages.scrollHeight;return d}
 function setMode(next){mode=next;const join=next==="join";els.joinTab.classList.toggle("active",join);els.loginTab.classList.toggle("active",!join);els.nameField.classList.toggle("hidden",!join);els.title.textContent=join?"Join free":"Log in";els.submit.textContent=join?"Create free account":"Log in";notice("")}
-function openModal(next){setMode(next);els.modal.classList.add("open")}
+
 function closeModal(){els.modal.classList.remove("open")}
 els.join.onclick=()=>openModal("join");els.heroJoin.onclick=()=>openModal("join");els.login.onclick=()=>openModal("login");els.close.onclick=closeModal;els.joinTab.onclick=()=>setMode("join");els.loginTab.onclick=()=>setMode("login");els.modal.onclick=e=>{if(e.target===els.modal)closeModal()};
 document.querySelectorAll(".chip").forEach(c=>c.onclick=()=>{els.input.value=c.textContent;els.input.focus()});
