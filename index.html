@@ -34,7 +34,7 @@
 <section id="assistant"><div class="wrap assistant-layout"><div class="intro"><div class="eyebrow"><span class="dot"></span>Live AI assistant</div><h2>Ask in normal everyday language.</h2><p>Create your free account, confirm your email and log in. You will receive 10 free AI messages.</p><div class="suggestions"><button class="chip">Plan my day</button><button class="chip">Help with my budget</button><button class="chip">Create a holiday checklist</button><button class="chip">Write a customer estimate</button></div></div>
 <div class="chat"><div class="account-box" id="accountBox"><strong>Not logged in</strong><span>Join free or log in to start.</span></div><div class="counter" id="counter">10 free messages after joining</div><div class="messages" id="messages"><div class="bubble assistant-message">Hi, I’m LifeCompass AI. Join free or log in, then tell me what you need help with.</div></div><form class="chat-form" id="chatForm"><input id="chatInput" maxlength="2000" autocomplete="off" placeholder="Log in to start…" disabled><button id="sendButton" type="submit" disabled>Send</button></form></div></div></section></main>
 <footer>© 2026 LifeCompass AI · Money · Home · Travel · Work · Daily life</footer>
-<div class="modal" id="authModal"><div class="modal-card"><div class="modal-heading"><h2 id="authTitle">Join free</h2><button class="close" id="closeModal">×</button></div><div class="tabs"><button class="tab active" id="joinTab">Join free</button><button class="tab" id="loginTab">Log in</button></div><form id="authForm"><div class="field" id="nameField"><label>Your name</label><input id="fullName" autocomplete="name"></div><div class="field"><label>Email address</label><input id="email" type="email" required></div><div class="field"><label>Password</label><input id="password" type="password" minlength="6" required></div><button class="button primary auth-submit" id="authSubmit">Create free account</button><div class="notice" id="authNotice"></div></form></div></div>
+<div class="modal" id="authModal"><div class="modal-card"><div class="modal-heading"><h2 id="authTitle">Join free</h2><button class="close" id="closeModal">×</button></div><div class="tabs"><button class="tab active" id="joinTab">Join free</button><button class="tab" id="loginTab">Log in</button></div><form id="authForm"><div class="field" id="nameField"><label>Your name</label><input id="fullName" autocomplete="name"></div><div class="field"><label>Email address</label><input id="email" type="email" required></div><div class="field"><label>Password</label><input id="password" type="password" minlength="6" required></div><button class="button primary auth-submit" id="authSubmit">Create free account</button><button type="button" class="tab" id="forgotPassword">Forgot password?</button><div class="notice" id="authNotice"></div></form></div></div>
 <script>
 /*
  IMPORTANT:
@@ -87,6 +87,26 @@ function render(){
 }
 els.logout.onclick=async()=>{if(sb)await sb.auth.signOut();currentUser=null;profile=null;render()};
 
+$("forgotPassword").onclick=async()=>{
+  const email=els.email.value.trim();
+
+  if(!email){
+    notice("Enter your email address first.",true);
+    return;
+  }
+
+  try{
+    const {error}=await sb.auth.resetPasswordForEmail(email,{
+      redirectTo:"https://mylifecompassai.com"
+    });
+
+    if(error)throw error;
+
+    notice("Password reset email sent. Check your inbox.");
+  }catch(err){
+    notice(err.message||"Unable to send reset email.",true);
+  }
+};
 els.form.onsubmit=async e=>{
   e.preventDefault();
   if(!configured){notice("Supabase details still need adding near the bottom of this file.",true);return}
