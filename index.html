@@ -67,7 +67,7 @@ function normalizeProfile(row){
 }
 async function loadProfile(){
   if(!currentUser||!sb){profile=null;return}
-  const candidates=["profiles","users"];
+  const candidates=["user_accounts"];
   for(const table of candidates){
     const {data,error}=await sb.from(table).select("*").eq("id",currentUser.id).maybeSingle();
     if(!error&&data){profile=normalizeProfile(data);return}
