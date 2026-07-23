@@ -1940,7 +1940,7 @@ document.querySelectorAll(".life-skill-btn").forEach((button) => {
     const question = button.dataset.question;
     const messageBox = document.querySelector(".chat-form input");
 
-    if (!messageBox || !question) return;
+    const messageBox = document.querySelector("#messageInput");
 
     messageBox.value = question;
     messageBox.dispatchEvent(new Event("input", { bubbles: true }));
