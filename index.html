@@ -1987,12 +1987,18 @@ document.querySelectorAll(".life-skill-btn").forEach((button) => {
   });
 });
 function askLifeSkill(question) {
-  const messageInput = document.getElementById('messageInput');
+  const messageBox = document.querySelector('textarea');
 
-  if (!messageInput) {
-    alert('The AI assistant could not be opened.');
+  if (!messageBox) {
+    alert('Chat box not found.');
     return;
   }
+
+  messageBox.value = question;
+  messageBox.dispatchEvent(new Event('input', { bubbles: true }));
+  messageBox.scrollIntoView({ behavior: 'smooth', block: 'center' });
+  messageBox.focus();
+}
 
   messageInput.value = question;
 
