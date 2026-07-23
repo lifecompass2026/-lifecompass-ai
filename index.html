@@ -1935,6 +1935,24 @@ els.chatForm.onsubmit =
   );
 
 })();
+document.querySelectorAll(".life-skill-btn").forEach((button) => {
+  button.addEventListener("click", () => {
+    const question = button.dataset.question;
+    const messageBox = document.querySelector("textarea");
+
+    if (!messageBox || !question) return;
+
+    messageBox.value = question;
+    messageBox.dispatchEvent(new Event("input", { bubbles: true }));
+    messageBox.scrollIntoView({ behavior: "smooth", block: "center" });
+    messageBox.focus();
+
+    const form = messageBox.closest("form");
+    if (form) {
+      setTimeout(() => form.requestSubmit(), 500);
+    }
+  });
+});
 </script>
 
 <footer>
