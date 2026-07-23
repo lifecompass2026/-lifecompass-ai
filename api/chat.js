@@ -46,7 +46,7 @@ if (!userResponse.ok) {
 const user = await userResponse.json();
 
 const profileResponse = await fetch(
-  `${SUPABASE_URL}/rest/v1/profiles?id=eq.${user.id}&select=*&limit=1`,
+  `${SUPABASE_URL}/rest/v1/user_accounts?user_id=eq.${user.id}
   {
     headers: {
       apikey: SUPABASE_KEY,
