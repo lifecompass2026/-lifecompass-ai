@@ -1866,7 +1866,7 @@ els.chatForm.onsubmit =
         "boolean"
       ) {
     profile.subscribed =
-  profile.subscribed || data.subscribed;
+  data.subscribed;
       }
 
       await loadProfile();
