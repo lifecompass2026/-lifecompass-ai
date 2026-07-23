@@ -932,7 +932,9 @@ footer a {
         </p>
 
         <div class="topic-list">
-          <div class="topic">Understanding council tax</div>
+        <div class="topic" onclick="askLifeSkill('Explain council tax in simple terms, including council tax bands, who must pay, discounts, exemptions and how to pay it.')">
+  Understanding council tax
+</div>
           <div class="topic">Paying household bills</div>
           <div class="topic">Reading a tenancy agreement</div>
           <div class="topic">Creating a monthly budget</div>
@@ -1953,6 +1955,21 @@ document.querySelectorAll(".life-skill-btn").forEach((button) => {
     }
   });
 });
+function askLifeSkill(question) {
+  const messageInput = document.getElementById('messageInput');
+
+  if (!messageInput) {
+    alert('The AI assistant could not be opened.');
+    return;
+  }
+
+  messageInput.value = question;
+
+  const form = messageInput.closest('form');
+  if (form) {
+    form.dispatchEvent(new Event('submit', { cancelable: true }));
+  }
+}
 </script>
 
 <footer>
