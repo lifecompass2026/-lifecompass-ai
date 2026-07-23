@@ -1,161 +1,1931 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-  <meta name="theme-color" content="#07111f">
-  <meta name="description" content="LifeCompass AI — everyday AI help for money, home, travel, work and daily life.">
-  <title>LifeCompass AI</title>
-  <link rel="icon" href="icon.svg" type="image/svg+xml">
-  <link rel="manifest" href="manifest.webmanifest">
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <style>
-    :root{--bg:#07111f;--panel:rgba(255,255,255,.07);--line:rgba(255,255,255,.14);--text:#f8fafc;--muted:#b6c1d2;--purple:#8b5cf6;--cyan:#22d3ee;--green:#34d399;--red:#fb7185}
-    *{box-sizing:border-box}html{scroll-behavior:smooth}body{margin:0;min-height:100vh;color:var(--text);font-family:Arial,Helvetica,sans-serif;background:radial-gradient(circle at 10% 0%,rgba(139,92,246,.32),transparent 34%),radial-gradient(circle at 90% 12%,rgba(34,211,238,.2),transparent 30%),linear-gradient(180deg,#07111f,#0a1424 55%,#09111d)}
-    button,input{font:inherit}button{cursor:pointer}.hidden{display:none!important}.wrap{width:min(1100px,calc(100% - 24px));margin:auto}
-    header{position:sticky;top:0;z-index:20;background:rgba(7,17,31,.88);backdrop-filter:blur(18px);border-bottom:1px solid var(--line)}
-    .nav{min-height:68px;display:flex;align-items:center;justify-content:space-between;gap:10px}.brand{display:flex;align-items:center;gap:10px;font-weight:900}.logo{width:42px;height:42px;border-radius:14px;display:grid;place-items:center;font-size:22px;background:linear-gradient(135deg,var(--purple),var(--cyan))}
-    .nav-buttons,.hero-buttons{display:flex;gap:8px;flex-wrap:wrap}.button{display:inline-flex;align-items:center;justify-content:center;border:0;border-radius:999px;padding:12px 17px;font-weight:800;text-decoration:none}.primary{color:white;background:linear-gradient(135deg,var(--purple),#6555e8)}.white{color:#111827;background:white}.ghost{color:white;border:1px solid var(--line);background:rgba(255,255,255,.05)}
-    .hero{text-align:center;padding:72px 0 56px}.eyebrow{display:inline-flex;align-items:center;gap:8px;color:#d8e2f0;font-size:13px;font-weight:800;text-transform:uppercase;letter-spacing:.12em}.dot{width:9px;height:9px;border-radius:50%;background:var(--green);box-shadow:0 0 18px var(--green)}
-    h1{margin:18px auto 16px;max-width:900px;font-size:clamp(46px,8vw,82px);line-height:.98;letter-spacing:-.055em}.gradient{display:block;color:transparent;background:linear-gradient(90deg,#c4b5fd,#67e8f9);background-clip:text;-webkit-background-clip:text}.lead{max-width:680px;margin:0 auto 26px;color:var(--muted);font-size:18px;line-height:1.6}.hero-buttons{justify-content:center}
-    #assistant{padding:20px 0 70px}.assistant-layout{display:grid;grid-template-columns:.85fr 1.15fr;gap:22px;padding:22px;border:1px solid var(--line);border-radius:30px;background:rgba(255,255,255,.04);box-shadow:0 25px 70px rgba(0,0,0,.28)}.intro{padding:24px}.intro h2{font-size:38px;margin:18px 0 12px;line-height:1.05}.intro p{color:var(--muted);line-height:1.6}.suggestions{display:flex;flex-wrap:wrap;gap:9px;margin-top:22px}.chip{border:1px solid var(--line);color:white;background:rgba(255,255,255,.05);border-radius:999px;padding:10px 12px}
-    .chat{min-height:540px;display:flex;flex-direction:column;border:1px solid var(--line);border-radius:24px;overflow:hidden;background:#07101d}.account-box{padding:15px 17px;display:flex;justify-content:space-between;gap:12px;border-bottom:1px solid var(--line);background:rgba(255,255,255,.045)}.account-box span{color:var(--muted);font-size:13px}.counter{padding:10px 17px;color:#dbeafe;font-size:13px;border-bottom:1px solid var(--line)}.messages{flex:1;overflow-y:auto;padding:18px;display:flex;flex-direction:column;gap:12px}.bubble{max-width:86%;padding:13px 15px;border-radius:17px;line-height:1.5;white-space:pre-wrap}.assistant-message{align-self:flex-start;background:rgba(255,255,255,.08);border:1px solid var(--line)}.user-message{align-self:flex-end;background:linear-gradient(135deg,var(--purple),#6555e8)}.error-message{color:#fecdd3;border-color:rgba(251,113,133,.4)}
-    .chat-form{display:grid;grid-template-columns:1fr auto;gap:10px;padding:14px;border-top:1px solid var(--line)}.chat-form input{min-width:0;padding:14px;color:white;border:1px solid var(--line);border-radius:15px;outline:none;background:rgba(255,255,255,.06)}.chat-form button{padding:0 20px;border:0;border-radius:15px;color:#07111f;font-weight:900;background:linear-gradient(135deg,#67e8f9,#34d399)}.chat-form button:disabled,.chat-form input:disabled{opacity:.5;cursor:not-allowed}
-    footer{text-align:center;padding:28px 15px;color:var(--muted);border-top:1px solid var(--line);font-size:13px}.modal{position:fixed;inset:0;z-index:50;display:none;place-items:center;padding:18px;background:rgba(0,0,0,.72);backdrop-filter:blur(8px)}.modal.open{display:grid}.modal-card{width:min(450px,100%);padding:24px;border-radius:24px;border:1px solid var(--line);background:#0b1525}.modal-heading{display:flex;align-items:center;justify-content:space-between}.modal-heading h2{margin:0}.close{border:0;color:white;background:transparent;font-size:32px}.tabs{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:20px 0}.tab{padding:11px;color:white;font-weight:800;border-radius:12px;border:1px solid var(--line);background:rgba(255,255,255,.05)}.tab.active{background:linear-gradient(135deg,var(--purple),#6555e8)}.field{display:grid;gap:7px;margin:13px 0}.field label{color:var(--muted);font-size:13px}.field input{width:100%;padding:14px;color:white;outline:none;border-radius:13px;border:1px solid var(--line);background:rgba(255,255,255,.07)}.auth-submit{width:100%;margin-top:10px}.notice{min-height:22px;margin-top:12px;color:#a7f3d0;font-size:14px;line-height:1.45}.notice.error{color:#fda4af}
-    @media(max-width:850px){.assistant-layout{grid-template-columns:1fr}.intro{padding:18px 8px}}@media(max-width:560px){.brand span{font-size:15px}.nav-buttons .button{padding:10px 12px}.hero{padding-top:44px}.assistant-layout{padding:10px}}
-  </style>
-</head>
-<body>
-<header><div class="wrap nav"><div class="brand"><div class="logo">✦</div><span>LifeCompass AI</span></div><div class="nav-buttons">
-<button class="button ghost" id="loginButton">Log in</button><button class="button white" id="joinButton">Join free</button>
-<a id="subscribeButton" class="button primary" href="https://buy.stripe.com/eVq00ieNo2kKaPp0I2f7i00" target="_blank" rel="noopener">Subscribe £7.99</a>
-<button class="button ghost hidden" id="logoutButton">Log out</button></div></div></header>
-<main><div class="wrap hero"><div class="eyebrow"><span class="dot"></span>Your everyday AI life manager</div><h1>Put your whole life <span class="gradient">in one place.</span></h1><p class="lead">Join free and receive 10 AI messages to help with money, home, travel, work and everyday life.</p><div class="hero-buttons"><button class="button primary" id="heroJoinButton">Join free</button><a class="button ghost" href="#assistant">See the assistant</a></div></div>
-<section id="assistant"><div class="wrap assistant-layout"><div class="intro"><div class="eyebrow"><span class="dot"></span>Live AI assistant</div><h2>Ask in normal everyday language.</h2><p>Create your free account, confirm your email and log in. You will receive 10 free AI messages.</p><div class="suggestions"><button class="chip">Plan my day</button><button class="chip">Help with my budget</button><button class="chip">Create a holiday checklist</button><button class="chip">Write a customer estimate</button></div></div>
-<div class="chat"><div class="account-box" id="accountBox"><strong>Not logged in</strong><span>Join free or log in to start.</span></div><div class="counter" id="counter">10 free messages after joining</div><div class="messages" id="messages"><div class="bubble assistant-message">Hi, I’m LifeCompass AI. Join free or log in, then tell me what you need help with.</div></div><form class="chat-form" id="chatForm"><input id="chatInput" maxlength="2000" autocomplete="off" placeholder="Log in to start…" disabled><button id="sendButton" type="submit" disabled>Send</button></form></div></div></section></main>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#07111f">
+<meta
+  name="description"
+  content="LifeCompass AI — practical everyday help for money, home, work, documents, reminders and life skills."
+>
+<title>LifeCompass AI</title>
 
-<div class="modal" id="authModal"><div class="modal-card"><div class="modal-heading"><h2 id="authTitle">Join free</h2><button class="close" id="closeModal">×</button></div><div class="tabs"><button class="tab active" id="joinTab">Join free</button><button class="tab" id="loginTab">Log in</button></div><form id="authForm"><div class="field" id="nameField"><label>Your name</label><input id="fullName" autocomplete="name"></div><div class="field"><label>Email address</label><input id="email" type="email" required></div><div class="field"><label>Password</label><input id="password" type="password" minlength="6" required></div><button class="button primary auth-submit" id="authSubmit">Create free account</button><button type="button" class="tab" id="forgotPassword">Forgot password?</button><div class="notice" id="authNotice"></div></form></div></div>
+<link rel="icon" href="icon.svg" type="image/svg+xml">
+<link rel="manifest" href="manifest.webmanifest">
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+<style>
+:root {
+  --bg: #07111f;
+  --bg2: #0a1424;
+  --panel: rgba(255,255,255,.07);
+  --panel2: rgba(255,255,255,.1);
+  --line: rgba(255,255,255,.14);
+  --text: #f8fafc;
+  --muted: #b6c1d2;
+  --purple: #8b5cf6;
+  --purple2: #6555e8;
+  --cyan: #22d3ee;
+  --green: #34d399;
+  --red: #fb7185;
+  --shadow: 0 25px 70px rgba(0,0,0,.28);
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  color: var(--text);
+  font-family: Arial, Helvetica, sans-serif;
+
+  background:
+    radial-gradient(
+      circle at 10% 0%,
+      rgba(139,92,246,.32),
+      transparent 34%
+    ),
+    radial-gradient(
+      circle at 90% 12%,
+      rgba(34,211,238,.2),
+      transparent 30%
+    ),
+    linear-gradient(
+      180deg,
+      var(--bg),
+      var(--bg2) 55%,
+      #09111d
+    );
+}
+
+button,
+input {
+  font: inherit;
+}
+
+button {
+  cursor: pointer;
+}
+
+a {
+  color: inherit;
+}
+
+.hidden {
+  display: none !important;
+}
+
+.wrap {
+  width: min(1160px, calc(100% - 24px));
+  margin: auto;
+}
+
+.section {
+  padding: 72px 0;
+}
+
+.eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  color: #d8e2f0;
+  font-size: 13px;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: .12em;
+}
+
+.dot {
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  background: var(--green);
+  box-shadow: 0 0 18px var(--green);
+}
+
+header {
+  position: sticky;
+  top: 0;
+  z-index: 30;
+  background: rgba(7,17,31,.88);
+  backdrop-filter: blur(18px);
+  border-bottom: 1px solid var(--line);
+}
+
+.nav {
+  min-height: 70px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-weight: 900;
+  text-decoration: none;
+}
+
+.logo {
+  width: 42px;
+  height: 42px;
+  display: grid;
+  place-items: center;
+  border-radius: 14px;
+  font-size: 22px;
+  background: linear-gradient(
+    135deg,
+    var(--purple),
+    var(--cyan)
+  );
+}
+
+.nav-links {
+  display: flex;
+  gap: 18px;
+}
+
+.nav-links a {
+  color: #dbeafe;
+  font-size: 14px;
+  text-decoration: none;
+}
+
+.nav-buttons,
+.hero-buttons {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 12px 17px;
+  border: 0;
+  border-radius: 999px;
+  font-weight: 800;
+  text-decoration: none;
+}
+
+.primary {
+  color: white;
+  background: linear-gradient(
+    135deg,
+    var(--purple),
+    var(--purple2)
+  );
+}
+
+.white {
+  color: #111827;
+  background: white;
+}
+
+.ghost {
+  color: white;
+  border: 1px solid var(--line);
+  background: rgba(255,255,255,.05);
+}
+
+.hero {
+  padding: 82px 0 54px;
+  text-align: center;
+}
+
+.hero h1 {
+  max-width: 950px;
+  margin: 18px auto 16px;
+  font-size: clamp(48px, 8vw, 86px);
+  line-height: .96;
+  letter-spacing: -.06em;
+}
+
+.gradient {
+  display: block;
+  color: transparent;
+  background: linear-gradient(
+    90deg,
+    #c4b5fd,
+    #67e8f9
+  );
+  background-clip: text;
+  -webkit-background-clip: text;
+}
+
+.lead {
+  max-width: 760px;
+  margin: 0 auto 26px;
+  color: var(--muted);
+  font-size: 19px;
+  line-height: 1.65;
+}
+
+.hero-buttons {
+  justify-content: center;
+}
+
+.trust-row {
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+  flex-wrap: wrap;
+  margin-top: 24px;
+}
+
+.trust-row span {
+  padding: 8px 12px;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  color: #dbeafe;
+  font-size: 13px;
+  background: rgba(255,255,255,.04);
+}
+
+.section-heading {
+  max-width: 760px;
+  margin: 0 auto 34px;
+  text-align: center;
+}
+
+.section-heading h2 {
+  margin: 14px 0;
+  font-size: clamp(34px, 6vw, 56px);
+  line-height: 1.05;
+}
+
+.section-heading p {
+  margin: 0;
+  color: var(--muted);
+  font-size: 17px;
+  line-height: 1.65;
+}
+
+.feature-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 16px;
+}
+
+.feature-card {
+  min-height: 225px;
+  padding: 24px;
+  border: 1px solid var(--line);
+  border-radius: 24px;
+
+  background: linear-gradient(
+    180deg,
+    rgba(255,255,255,.075),
+    rgba(255,255,255,.035)
+  );
+
+  box-shadow: var(--shadow);
+}
+
+.feature-icon {
+  width: 52px;
+  height: 52px;
+  display: grid;
+  place-items: center;
+  border-radius: 16px;
+  font-size: 26px;
+
+  background: linear-gradient(
+    135deg,
+    rgba(139,92,246,.9),
+    rgba(34,211,238,.8)
+  );
+}
+
+.feature-card h3 {
+  margin: 18px 0 10px;
+  font-size: 22px;
+}
+
+.feature-card p {
+  margin: 0;
+  color: var(--muted);
+  line-height: 1.6;
+}
+
+.badge {
+  display: inline-block;
+  margin-top: 18px;
+  padding: 7px 10px;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  color: #a5f3fc;
+  font-size: 12px;
+  background: rgba(34,211,238,.06);
+}
+
+.skills-grid {
+  display: grid;
+  grid-template-columns: 1.08fr .92fr;
+  gap: 20px;
+}
+
+.panel {
+  padding: 28px;
+  border: 1px solid var(--line);
+  border-radius: 28px;
+  background: rgba(255,255,255,.05);
+}
+
+.panel h3 {
+  margin: 12px 0;
+  font-size: 30px;
+}
+
+.panel p {
+  color: var(--muted);
+  line-height: 1.65;
+}
+
+.topic-list {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+  margin-top: 20px;
+}
+
+.topic {
+  padding: 14px;
+  border: 1px solid var(--line);
+  border-radius: 16px;
+  font-weight: 700;
+  background: rgba(255,255,255,.06);
+}
+
+.upload-box {
+  margin-top: 18px;
+  padding: 24px;
+  text-align: center;
+  border: 1px dashed rgba(103,232,249,.55);
+  border-radius: 20px;
+  background: rgba(34,211,238,.05);
+}
+
+.upload-box input {
+  display: none;
+}
+
+.upload-status {
+  min-height: 22px;
+  margin-top: 12px;
+  color: #a7f3d0;
+  font-size: 14px;
+}
+
+#assistant {
+  padding: 24px 0 80px;
+}
+
+.assistant-layout {
+  display: grid;
+  grid-template-columns: .85fr 1.15fr;
+  gap: 22px;
+  padding: 22px;
+  border: 1px solid var(--line);
+  border-radius: 30px;
+  background: rgba(255,255,255,.04);
+  box-shadow: var(--shadow);
+}
+
+.intro {
+  padding: 24px;
+}
+
+.intro h2 {
+  margin: 18px 0 12px;
+  font-size: 42px;
+  line-height: 1.05;
+}
+
+.intro p {
+  color: var(--muted);
+  line-height: 1.6;
+}
+
+.suggestions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 9px;
+  margin-top: 22px;
+}
+
+.chip {
+  padding: 10px 12px;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  color: white;
+  background: rgba(255,255,255,.05);
+}
+
+.chat {
+  min-height: 560px;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  border: 1px solid var(--line);
+  border-radius: 24px;
+  background: #07101d;
+}
+
+.account-box {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 15px 17px;
+  border-bottom: 1px solid var(--line);
+  background: rgba(255,255,255,.045);
+}
+
+.account-box span {
+  color: var(--muted);
+  font-size: 13px;
+}
+
+.counter {
+  padding: 10px 17px;
+  border-bottom: 1px solid var(--line);
+  color: #dbeafe;
+  font-size: 13px;
+}
+
+.messages {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  overflow-y: auto;
+  padding: 18px;
+}
+
+.bubble {
+  max-width: 86%;
+  padding: 13px 15px;
+  border-radius: 17px;
+  line-height: 1.5;
+  white-space: pre-wrap;
+}
+
+.assistant-message {
+  align-self: flex-start;
+  border: 1px solid var(--line);
+  background: rgba(255,255,255,.08);
+}
+
+.user-message {
+  align-self: flex-end;
+  background: linear-gradient(
+    135deg,
+    var(--purple),
+    var(--purple2)
+  );
+}
+
+.error-message {
+  color: #fecdd3;
+  border-color: rgba(251,113,133,.4);
+}
+
+.chat-form {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 10px;
+  padding: 14px;
+  border-top: 1px solid var(--line);
+}
+
+.chat-form input {
+  min-width: 0;
+  padding: 14px;
+  border: 1px solid var(--line);
+  border-radius: 15px;
+  outline: none;
+  color: white;
+  background: rgba(255,255,255,.06);
+}
+
+.chat-form button {
+  padding: 0 20px;
+  border: 0;
+  border-radius: 15px;
+  color: #07111f;
+  font-weight: 900;
+  background: linear-gradient(
+    135deg,
+    #67e8f9,
+    #34d399
+  );
+}
+
+.chat-form button:disabled,
+.chat-form input:disabled {
+  opacity: .5;
+  cursor: not-allowed;
+}
+
+.cta {
+  margin: 0 auto 80px;
+  padding: 38px;
+  border: 1px solid var(--line);
+  border-radius: 28px;
+  text-align: center;
+
+  background: linear-gradient(
+    135deg,
+    rgba(139,92,246,.25),
+    rgba(34,211,238,.12)
+  );
+}
+
+.cta h2 {
+  margin: 0 0 12px;
+  font-size: clamp(32px, 5vw, 52px);
+}
+
+.cta p {
+  color: var(--muted);
+  font-size: 17px;
+  line-height: 1.6;
+}
+
+.modal {
+  position: fixed;
+  inset: 0;
+  z-index: 50;
+  display: none;
+  place-items: center;
+  padding: 18px;
+  background: rgba(0,0,0,.72);
+  backdrop-filter: blur(8px);
+}
+
+.modal.open {
+  display: grid;
+}
+
+.modal-card {
+  width: min(460px, 100%);
+  padding: 24px;
+  border: 1px solid var(--line);
+  border-radius: 24px;
+  background: #0b1525;
+}
+
+.modal-heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.modal-heading h2 {
+  margin: 0;
+}
+
+.close {
+  border: 0;
+  color: white;
+  font-size: 32px;
+  background: transparent;
+}
+
+.tabs {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+  margin: 20px 0;
+}
+
+.tab {
+  padding: 11px;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  color: white;
+  font-weight: 800;
+  background: rgba(255,255,255,.05);
+}
+
+.tab.active {
+  background: linear-gradient(
+    135deg,
+    var(--purple),
+    var(--purple2)
+  );
+}
+
+.field {
+  display: grid;
+  gap: 7px;
+  margin: 13px 0;
+}
+
+.field label {
+  color: var(--muted);
+  font-size: 13px;
+}
+
+.field input {
+  width: 100%;
+  padding: 14px;
+  border: 1px solid var(--line);
+  border-radius: 13px;
+  outline: none;
+  color: white;
+  background: rgba(255,255,255,.07);
+}
+
+.auth-submit {
+  width: 100%;
+  margin-top: 10px;
+}
+
+.notice {
+  min-height: 22px;
+  margin-top: 12px;
+  color: #a7f3d0;
+  font-size: 14px;
+  line-height: 1.45;
+}
+
+.notice.error {
+  color: #fda4af;
+}
+
+footer {
+  padding: 30px 15px;
+  border-top: 1px solid var(--line);
+  color: var(--muted);
+  text-align: center;
+  font-size: 13px;
+}
+
+footer a {
+  color: #cbd5e1;
+  text-decoration: none;
+}
+
+@media (max-width: 980px) {
+  .feature-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .skills-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .nav-links {
+    display: none;
+  }
+}
+
+@media (max-width: 850px) {
+  .assistant-layout {
+    grid-template-columns: 1fr;
+  }
+
+  .intro {
+    padding: 18px 8px;
+  }
+}
+
+@media (max-width: 620px) {
+  .feature-grid,
+  .topic-list {
+    grid-template-columns: 1fr;
+  }
+
+  .brand span {
+    font-size: 15px;
+  }
+
+  .nav-buttons .button {
+    padding: 10px 12px;
+  }
+
+  .hero {
+    padding-top: 50px;
+  }
+
+  .assistant-layout {
+    padding: 10px;
+  }
+
+  .account-box {
+    flex-direction: column;
+  }
+
+  .cta {
+    padding: 28px 20px;
+  }
+}
+</style>
+</head>
+
+<body>
+
+<header>
+  <div class="wrap nav">
+
+    <a class="brand" href="#top">
+      <div class="logo">✦</div>
+      <span>LifeCompass AI</span>
+    </a>
+
+    <nav class="nav-links">
+      <a href="#features">Features</a>
+      <a href="#life-skills">Life Skills</a>
+      <a href="#assistant">AI Assistant</a>
+    </nav>
+
+    <div class="nav-buttons">
+
+      <button class="button ghost" id="loginButton">
+        Log in
+      </button>
+
+      <button class="button white" id="joinButton">
+        Join free
+      </button>
+
+      <a
+        id="subscribeButton"
+        class="button primary"
+        href="https://buy.stripe.com/eVq00ieNo2kKaPp0I2f7i00"
+        target="_blank"
+        rel="noopener"
+      >
+        Subscribe £7.99
+      </a>
+
+      <button class="button ghost hidden" id="logoutButton">
+        Log out
+      </button>
+
+    </div>
+  </div>
+</header>
+
+<main id="top">
+
+  <section class="hero">
+    <div class="wrap">
+
+      <div class="eyebrow">
+        <span class="dot"></span>
+        Your everyday AI life manager
+      </div>
+
+      <h1>
+        Put your whole life
+        <span class="gradient">in one place.</span>
+      </h1>
+
+      <p class="lead">
+        Practical AI help for money, home, work, travel,
+        documents, reminders and the everyday things
+        nobody ever taught you.
+      </p>
+
+      <div class="hero-buttons">
+
+        <button class="button primary" id="heroJoinButton">
+          Join free
+        </button>
+
+        <a class="button ghost" href="#assistant">
+          Try the assistant
+        </a>
+
+      </div>
+
+      <div class="trust-row">
+        <span>10 free AI messages</span>
+        <span>Plain-English help</span>
+        <span>Built for everyday life</span>
+      </div>
+
+    </div>
+  </section>
+
+  <section class="section" id="features">
+    <div class="wrap">
+
+      <div class="section-heading">
+
+        <div class="eyebrow">
+          <span class="dot"></span>
+          Everything in one place
+        </div>
+
+        <h2>
+          A calmer way to manage everyday life.
+        </h2>
+
+        <p>
+          LifeCompass combines practical guidance, AI answers,
+          document help, reminders and community support.
+        </p>
+
+      </div>
+
+      <div class="feature-grid">
+
+        <article class="feature-card">
+          <div class="feature-icon">🧭</div>
+          <h3>Everyday AI Assistant</h3>
+          <p>
+            Ask about money, work, home, travel, letters,
+            estimates and everyday problems in normal language.
+          </p>
+          <span class="badge">Available now</span>
+        </article>
+
+        <article class="feature-card">
+          <div class="feature-icon">📚</div>
+          <h3>Nobody Taught Me This</h3>
+          <p>
+            Simple guides for council tax, bills, renting,
+            insurance, budgeting, DIY and practical life skills.
+          </p>
+          <span class="badge">Growing library</span>
+        </article>
+
+        <article class="feature-card">
+          <div class="feature-icon">📄</div>
+          <h3>Document Advice</h3>
+          <p>
+            Choose a bill, letter, contract, quote or form and
+            prepare it for a plain-English explanation.
+          </p>
+          <span class="badge">Upload preview</span>
+        </article>
+
+        <article class="feature-card">
+          <div class="feature-icon">🗂️</div>
+          <h3>Life Folder</h3>
+          <p>
+            Keep important information together and plan reminders
+            for renewals, expiry dates and life admin.
+          </p>
+          <span class="badge">Coming soon</span>
+        </article>
+
+        <article class="feature-card">
+          <div class="feature-icon">🤝</div>
+          <h3>Community Help</h3>
+          <p>
+            Ask real people for practical advice while receiving
+            a clear AI answer alongside the community.
+          </p>
+          <span class="badge">Coming soon</span>
+        </article>
+
+        <article class="feature-card">
+          <div class="feature-icon">🔁</div>
+          <h3>Skill Swap</h3>
+          <p>
+            Share what you know, learn from others and exchange
+            useful everyday skills.
+          </p>
+          <span class="badge">Coming soon</span>
+        </article>
+
+      </div>
+    </div>
+  </section>
+
+  <section class="section" id="life-skills">
+    <div class="wrap skills-grid">
+
+      <div class="panel">
+
+        <div class="eyebrow">
+          <span class="dot"></span>
+          Nobody Taught Me This
+        </div>
+
+        <h3>
+          Real-life guidance without the jargon.
+        </h3>
+
+        <p>
+          Start with everyday tasks that often feel more
+          confusing than they should.
+        </p>
+
+        <div class="topic-list">
+          <div class="topic">Understanding council tax</div>
+          <div class="topic">Paying household bills</div>
+          <div class="topic">Reading a tenancy agreement</div>
+          <div class="topic">Creating a monthly budget</div>
+          <div class="topic">Basic home maintenance</div>
+          <div class="topic">Understanding insurance</div>
+          <div class="topic">Writing a complaint</div>
+          <div class="topic">Planning reminders</div>
+        </div>
+
+      </div>
+
+      <div class="panel" id="document-help">
+
+        <div class="eyebrow">
+          <span class="dot"></span>
+          Document Advice
+        </div>
+
+        <h3>
+          Upload it. Understand it.
+        </h3>
+
+        <p>
+          Select a document and LifeCompass will prepare it
+          for plain-English advice. Secure AI document analysis
+          will be connected as the next backend feature.
+        </p>
+
+        <div class="upload-box">
+
+          <input
+            id="documentInput"
+            type="file"
+            accept=".pdf,.doc,.docx,.txt,.jpg,.jpeg,.png"
+          >
+
+          <label class="button primary" for="documentInput">
+            Choose document
+          </label>
+
+          <div class="upload-status" id="uploadStatus">
+            PDF, Word, image or text file
+          </div>
+
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <section id="assistant">
+    <div class="wrap assistant-layout">
+
+      <div class="intro">
+
+        <div class="eyebrow">
+          <span class="dot"></span>
+          Live AI assistant
+        </div>
+
+        <h2>
+          Ask in normal everyday language.
+        </h2>
+
+        <p>
+          Create your free account, confirm your email and log in.
+          You will receive 10 free AI messages.
+        </p>
+
+        <div class="suggestions">
+
+          <button class="chip">
+            Plan my day
+          </button>
+
+          <button class="chip">
+            Help with my budget
+          </button>
+
+          <button class="chip">
+            Create a holiday checklist
+          </button>
+
+          <button class="chip">
+            Write a customer estimate
+          </button>
+
+          <button class="chip">
+            Explain this letter to me
+          </button>
+
+        </div>
+      </div>
+
+      <div class="chat">
+
+        <div class="account-box" id="accountBox">
+          <strong>Not logged in</strong>
+          <span>Join free or log in to start.</span>
+        </div>
+
+        <div class="counter" id="counter">
+          10 free messages after joining
+        </div>
+
+        <div class="messages" id="messages">
+
+          <div class="bubble assistant-message">
+            Hi, I’m LifeCompass AI. Join free or log in,
+            then tell me what you need help with.
+          </div>
+
+        </div>
+
+        <form class="chat-form" id="chatForm">
+
+          <input
+            id="chatInput"
+            maxlength="2000"
+            autocomplete="off"
+            placeholder="Log in to start…"
+            disabled
+          >
+
+          <button id="sendButton" type="submit" disabled>
+            Send
+          </button>
+
+        </form>
+
+      </div>
+    </div>
+  </section>
+
+  <section class="wrap cta">
+
+    <h2>
+      Your life does not need another complicated app.
+    </h2>
+
+    <p>
+      Start free, ask a real question and let LifeCompass
+      help you work out the next step.
+    </p>
+
+    <div class="hero-buttons">
+
+      <button class="button white" id="bottomJoinButton">
+        Join free
+      </button>
+
+      <a
+        class="button primary"
+        href="https://buy.stripe.com/eVq00ieNo2kKaPp0I2f7i00"
+        target="_blank"
+        rel="noopener"
+      >
+        Get unlimited access
+      </a>
+
+    </div>
+
+  </section>
+
+</main>
+
+<div class="modal" id="authModal">
+
+  <div class="modal-card">
+
+    <div class="modal-heading">
+
+      <h2 id="authTitle">
+        Join free
+      </h2>
+
+      <button
+        class="close"
+        id="closeModal"
+        type="button"
+      >
+        ×
+      </button>
+
+    </div>
+
+    <div class="tabs">
+
+      <button
+        class="tab active"
+        id="joinTab"
+        type="button"
+      >
+        Join free
+      </button>
+
+      <button
+        class="tab"
+        id="loginTab"
+        type="button"
+      >
+        Log in
+      </button>
+
+    </div>
+
+    <form id="authForm">
+
+      <div class="field" id="nameField">
+
+        <label for="fullName">
+          Your name
+        </label>
+
+        <input
+          id="fullName"
+          autocomplete="name"
+        >
+
+      </div>
+
+      <div class="field">
+
+        <label for="email">
+          Email address
+        </label>
+
+        <input
+          id="email"
+          type="email"
+          required
+        >
+
+      </div>
+
+      <div class="field">
+
+        <label for="password">
+          Password
+        </label>
+
+        <input
+          id="password"
+          type="password"
+          minlength="6"
+          required
+        >
+
+      </div>
+
+      <button
+        class="button primary auth-submit"
+        id="authSubmit"
+        type="submit"
+      >
+        Create free account
+      </button>
+
+      <button
+        type="button"
+        class="tab"
+        id="forgotPassword"
+      >
+        Forgot password?
+      </button>
+
+      <div class="notice" id="authNotice"></div>
+
+    </form>
+
+  </div>
+</div>
+
 <script>
-/*
- IMPORTANT:
- Replace the two values below with the SAME Supabase Project URL and anon public key
- that were in your previous working index.html.
-*/
-const SUPABASE_URL = "https://cutqvgjtjpnypnmtgttd.supabase.co";
-const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImN1dHF2Z2p0anBueXBubXRndHRkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODQ1ODcyNjUsImV4cCI6MjEwMDE2MzI2NX0.EuFtIR5o4Yh4QZd3kMSxpNAMTLMwzJIyRu0gmNl1znk";
+const SUPABASE_URL =
+  "https://cutqvgjtjpnypnmtgttd.supabase.co";
+
+const SUPABASE_ANON_KEY =
+  "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImN1dHF2Z2p0anBueXBubXRndHRkIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODQ1ODcyNjUsImV4cCI6MjEwMDE2MzI2NX0.EuFtIR5o4Yh4QZd3kMSxpNAMTLMwzJIyRu0gmNl1znk";
+
 const FREE_LIMIT = 10;
 
-const $ = id => document.getElementById(id);
-const els = {login:$("loginButton"),join:$("joinButton"),heroJoin:$("heroJoinButton"),subscribe:$("subscribeButton"),logout:$("logoutButton"),modal:$("authModal"),close:$("closeModal"),joinTab:$("joinTab"),loginTab:$("loginTab"),title:$("authTitle"),nameField:$("nameField"),form:$("authForm"),name:$("fullName"),email:$("email"),password:$("password"),submit:$("authSubmit"),notice:$("authNotice"),account:$("accountBox"),counter:$("counter"),messages:$("messages"),chatForm:$("chatForm"),input:$("chatInput"),send:$("sendButton")};
-let mode="join", currentUser=null, profile=null;
-const configured = !SUPABASE_URL.startsWith("PASTE_") && !SUPABASE_ANON_KEY.startsWith("PASTE_");
-const sb = configured ? supabase.createClient(SUPABASE_URL,SUPABASE_ANON_KEY) : null;
+const $ = id =>
+  document.getElementById(id);
 
-function notice(msg,error=false){els.notice.textContent=msg;els.notice.classList.toggle("error",error)}
-function bubble(text,who="assistant",error=false){const d=document.createElement("div");d.className=`bubble ${who==="user"?"user-message":"assistant-message"}${error?" error-message":""}`;d.textContent=text;els.messages.appendChild(d);els.messages.scrollTop=els.messages.scrollHeight;return d}
-function setMode(next){mode=next;const join=next==="join";els.joinTab.classList.toggle("active",join);els.loginTab.classList.toggle("active",!join);els.nameField.classList.toggle("hidden",!join);els.title.textContent=join?"Join free":"Log in";els.submit.textContent=join?"Create free account":"Log in";notice("")}
+const els = {
+  login: $("loginButton"),
+  join: $("joinButton"),
+  heroJoin: $("heroJoinButton"),
+  bottomJoin: $("bottomJoinButton"),
+  subscribe: $("subscribeButton"),
+  logout: $("logoutButton"),
+  modal: $("authModal"),
+  close: $("closeModal"),
+  joinTab: $("joinTab"),
+  loginTab: $("loginTab"),
+  title: $("authTitle"),
+  nameField: $("nameField"),
+  form: $("authForm"),
+  name: $("fullName"),
+  email: $("email"),
+  password: $("password"),
+  submit: $("authSubmit"),
+  notice: $("authNotice"),
+  account: $("accountBox"),
+  counter: $("counter"),
+  messages: $("messages"),
+  chatForm: $("chatForm"),
+  input: $("chatInput"),
+  send: $("sendButton"),
+  documentInput: $("documentInput"),
+  uploadStatus: $("uploadStatus")
+};
 
-function closeModal(){els.modal.classList.remove("open")}
-els.join.onclick=()=>openModal("join");els.heroJoin.onclick=()=>openModal("join");els.login.onclick=()=>openModal("login");els.close.onclick=closeModal;els.joinTab.onclick=()=>setMode("join");els.loginTab.onclick=()=>setMode("login");els.modal.onclick=e=>{if(e.target===els.modal)closeModal()};
-document.querySelectorAll(".chip").forEach(c=>c.onclick=()=>{els.input.value=c.textContent;els.input.focus()});
+let mode = "join";
+let currentUser = null;
+let profile = null;
 
-function normalizeProfile(row){
+const configured =
+  !SUPABASE_URL.startsWith("PASTE_") &&
+  !SUPABASE_ANON_KEY.startsWith("PASTE_");
+
+const sb = configured
+  ? supabase.createClient(
+      SUPABASE_URL,
+      SUPABASE_ANON_KEY
+    )
+  : null;
+
+function notice(msg, error = false) {
+  els.notice.textContent = msg;
+
+  els.notice.classList.toggle(
+    "error",
+    error
+  );
+}
+
+function bubble(
+  text,
+  who = "assistant",
+  error = false
+) {
+  const message = document.createElement("div");
+
+  message.className =
+    `bubble ${
+      who === "user"
+        ? "user-message"
+        : "assistant-message"
+    }${
+      error
+        ? " error-message"
+        : ""
+    }`;
+
+  message.textContent = text;
+
+  els.messages.appendChild(message);
+
+  els.messages.scrollTop =
+    els.messages.scrollHeight;
+
+  return message;
+}
+
+function setMode(next) {
+  mode = next;
+
+  const joining =
+    next === "join";
+
+  els.joinTab.classList.toggle(
+    "active",
+    joining
+  );
+
+  els.loginTab.classList.toggle(
+    "active",
+    !joining
+  );
+
+  els.nameField.classList.toggle(
+    "hidden",
+    !joining
+  );
+
+  els.title.textContent =
+    joining
+      ? "Join free"
+      : "Log in";
+
+  els.submit.textContent =
+    joining
+      ? "Create free account"
+      : "Log in";
+
+  notice("");
+}
+
+function openModal(next = "join") {
+  setMode(next);
+
+  els.modal.classList.add("open");
+
+  setTimeout(
+    () => els.email.focus(),
+    100
+  );
+}
+
+function closeModal() {
+  els.modal.classList.remove("open");
+}
+
+els.join.onclick =
+  () => openModal("join");
+
+els.heroJoin.onclick =
+  () => openModal("join");
+
+els.bottomJoin.onclick =
+  () => openModal("join");
+
+els.login.onclick =
+  () => openModal("login");
+
+els.close.onclick =
+  closeModal;
+
+els.joinTab.onclick =
+  () => setMode("join");
+
+els.loginTab.onclick =
+  () => setMode("login");
+
+els.modal.onclick = event => {
+  if (event.target === els.modal) {
+    closeModal();
+  }
+};
+
+document
+  .querySelectorAll(".chip")
+  .forEach(chip => {
+
+    chip.onclick = () => {
+
+      document
+        .querySelector("#assistant")
+        .scrollIntoView({
+          behavior: "smooth"
+        });
+
+      els.input.value =
+        chip.textContent;
+
+      els.input.focus();
+    };
+
+  });
+
+els.documentInput.addEventListener(
+  "change",
+  () => {
+
+    const file =
+      els.documentInput.files?.[0];
+
+    if (!file) {
+      els.uploadStatus.textContent =
+        "PDF, Word, image or text file";
+
+      return;
+    }
+
+    const size =
+      (
+        file.size /
+        1024 /
+        1024
+      ).toFixed(1);
+
+    els.uploadStatus.textContent =
+      `Selected: ${file.name} (${size} MB) — ` +
+      `secure AI analysis will be connected next.`;
+
+  }
+);
+
+function normalizeProfile(row) {
   return {
-    subscribed:Boolean(row?.subscribed ?? row?.is_subscribed ?? row?.subscription_active),
-    used:Number(row?.messages_used ?? row?.message_count ?? row?.free_messages_used ?? 0)
+    subscribed: Boolean(
+      row?.subscribed ??
+      row?.is_subscribed ??
+      row?.subscription_active
+    ),
+
+    used: Number(
+      row?.messages_used ??
+      row?.message_count ??
+      row?.free_messages_used ??
+      0
+    )
   };
 }
-async function loadProfile(){
-  if(!currentUser||!sb){profile=null;return}
-  const {data,error}=await sb.rpc("get_my_account");
-  if(!error&&data&&data.length){
-    profile=normalizeProfile(data[0]);
-    return;
-  }
-  profile={subscribed:false,used:0};
-}
-function render(){
-  const logged=Boolean(currentUser);
-  els.login.classList.toggle("hidden",logged);els.join.classList.toggle("hidden",logged);els.heroJoin.classList.toggle("hidden",logged);els.logout.classList.toggle("hidden",!logged);
-  const subscribed=Boolean(profile?.subscribed);
-  els.subscribe.classList.toggle("hidden",subscribed);
-  if(!logged){els.account.innerHTML="<strong>Not logged in</strong><span>Join free or log in to start.</span>";els.counter.textContent="10 free messages after joining";els.input.disabled=true;els.send.disabled=true;els.input.placeholder="Log in to start…";return}
-  const remaining=Math.max(0,FREE_LIMIT-(profile?.used||0));
-  els.account.innerHTML=`<strong>${currentUser.email}</strong><span>${subscribed?"Subscribed — unlimited messages":"Free account"}</span>`;
-  els.counter.textContent=subscribed?"Unlimited messages included":`${remaining} of ${FREE_LIMIT} free messages remaining`;
-  const allowed=subscribed||remaining>0;els.input.disabled=!allowed;els.send.disabled=!allowed;els.input.placeholder=allowed?"Ask LifeCompass AI…":"Free messages used — subscribe to continue";
-}
-els.logout.onclick=async()=>{if(sb)await sb.auth.signOut();currentUser=null;profile=null;render()};
 
-$("forgotPassword").onclick=async()=>{
-  const email=els.email.value.trim();
-
-  if(!email){
-    notice("Enter your email address first.",true);
+async function loadProfile() {
+  if (!currentUser || !sb) {
+    profile = null;
     return;
   }
 
-  try{
-    const {error}=await sb.auth.resetPasswordForEmail(email,{
-      redirectTo:"https://mylifecompassai.com"
-    });
+  const {
+    data,
+    error
+  } = await sb.rpc(
+    "get_my_account"
+  );
 
-    if(error)throw error;
+  if (
+    !error &&
+    data &&
+    data.length
+  ) {
+    profile =
+      normalizeProfile(data[0]);
 
-    notice("Password reset email sent. Check your inbox.");
-  }catch(err){
-    notice(err.message||"Unable to send reset email.",true);
+    return;
   }
-};
-els.form.onsubmit=async e=>{
-  e.preventDefault();
-  if(!configured){notice("Supabase details still need adding near the bottom of this file.",true);return}
-  els.submit.disabled=true;notice(mode==="join"?"Creating your account…":"Logging in…");
-  try{
-    if(mode==="join"){
-      const {error}=await sb.auth.signUp({email:els.email.value.trim(),password:els.password.value,options:{data:{full_name:els.name.value.trim()}}});
-      if(error)throw error;notice("Account created. Check your email, confirm it, then log in.");setMode("login");
-    }else{
-      const {data,error}=await sb.auth.signInWithPassword({email:els.email.value.trim(),password:els.password.value});
-      if(error)throw error;currentUser=data.user;await loadProfile();render();closeModal();
+
+  profile = {
+    subscribed: false,
+    used: 0
+  };
+}
+
+function render() {
+  const logged =
+    Boolean(currentUser);
+
+  els.login.classList.toggle(
+    "hidden",
+    logged
+  );
+
+  els.join.classList.toggle(
+    "hidden",
+    logged
+  );
+
+  els.heroJoin.classList.toggle(
+    "hidden",
+    logged
+  );
+
+  els.bottomJoin.classList.toggle(
+    "hidden",
+    logged
+  );
+
+  els.logout.classList.toggle(
+    "hidden",
+    !logged
+  );
+
+  const subscribed =
+    Boolean(profile?.subscribed);
+
+  els.subscribe.classList.toggle(
+    "hidden",
+    subscribed
+  );
+
+  if (!logged) {
+    els.account.innerHTML =
+      "<strong>Not logged in</strong>" +
+      "<span>Join free or log in to start.</span>";
+
+    els.counter.textContent =
+      "10 free messages after joining";
+
+    els.input.disabled = true;
+    els.send.disabled = true;
+
+    els.input.placeholder =
+      "Log in to start…";
+
+    return;
+  }
+
+  const remaining =
+    Math.max(
+      0,
+      FREE_LIMIT -
+      (profile?.used || 0)
+    );
+
+  els.account.innerHTML =
+    `<strong>${currentUser.email}</strong>` +
+    `<span>${
+      subscribed
+        ? "Subscribed — unlimited messages"
+        : "Free account"
+    }</span>`;
+
+  els.counter.textContent =
+    subscribed
+      ? "Unlimited messages included"
+      : `${remaining} of ${FREE_LIMIT} free messages remaining`;
+
+  const allowed =
+    subscribed ||
+    remaining > 0;
+
+  els.input.disabled =
+    !allowed;
+
+  els.send.disabled =
+    !allowed;
+
+  els.input.placeholder =
+    allowed
+      ? "Ask LifeCompass AI…"
+      : "Free messages used — subscribe to continue";
+}
+
+els.logout.onclick =
+  async () => {
+
+    if (sb) {
+      await sb.auth.signOut();
     }
-  }catch(err){notice(err.message||"Something went wrong.",true)}finally{els.submit.disabled=false}
-};
 
-els.chatForm.onsubmit=async e=>{
-  e.preventDefault();
-  const message=els.input.value.trim();if(!message||!currentUser)return;
-  if(!profile?.subscribed && (profile?.used||0)>=FREE_LIMIT){render();return}
-  bubble(message,"user");els.input.value="";els.input.disabled=true;els.send.disabled=true;const waiting=bubble("Thinking…");
-  try{
-    const {data:{session}}=await sb.auth.getSession();
-    const res=await fetch("/api/chat",{method:"POST",headers:{"Content-Type":"application/json","Authorization":`Bearer ${session?.access_token||""}`},body:JSON.stringify({message})});
-    const raw=await res.text();let data={};try{data=raw?JSON.parse(raw):{}}catch{}
-    if(!res.ok)throw new Error(data.error||data.message||`Chat failed (${res.status})`);
-    waiting.textContent=data.reply||data.response||data.answer||"I received your message but no answer was returned.";
-    if(typeof data.messages_used==="number")profile.used=data.messages_used;else if(!profile.subscribed)profile.used=(profile.used||0)+1;
-    if(typeof data.subscribed==="boolean")profile.subscribed=data.subscribed;
-    await loadProfile();render();
-  }catch(err){waiting.textContent=err.message||"Unable to send your message. Please try again.";waiting.classList.add("error-message");render()}
-};
+    currentUser = null;
+    profile = null;
 
-(async()=>{
-  if(!configured){bubble("Setup required: add your existing Supabase URL and anon key near the bottom of index.html.", "assistant", true);return}
-  const {data:{session}}=await sb.auth.getSession();currentUser=session?.user||null;if(currentUser)await loadProfile();render();
-  sb.auth.onAuthStateChange(async(_,session)=>{currentUser=session?.user||null;if(currentUser)await loadProfile();else profile=null;render()});
+    render();
+  };
+
+$("forgotPassword").onclick =
+  async () => {
+
+    const email =
+      els.email.value.trim();
+
+    if (!email) {
+      notice(
+        "Enter your email address first.",
+        true
+      );
+
+      return;
+    }
+
+    try {
+      const {
+        error
+      } =
+        await sb.auth
+          .resetPasswordForEmail(
+            email,
+            {
+              redirectTo:
+                "https://mylifecompassai.com"
+            }
+          );
+
+      if (error) {
+        throw error;
+      }
+
+      notice(
+        "Password reset email sent. Check your inbox."
+      );
+
+    } catch (err) {
+      notice(
+        err.message ||
+        "Unable to send reset email.",
+        true
+      );
+    }
+  };
+
+els.form.onsubmit =
+  async event => {
+
+    event.preventDefault();
+
+    if (!configured) {
+      notice(
+        "Supabase details are not configured.",
+        true
+      );
+
+      return;
+    }
+
+    els.submit.disabled = true;
+
+    notice(
+      mode === "join"
+        ? "Creating your account…"
+        : "Logging in…"
+    );
+
+    try {
+      if (mode === "join") {
+
+        const {
+          error
+        } =
+          await sb.auth.signUp({
+            email:
+              els.email.value.trim(),
+
+            password:
+              els.password.value,
+
+            options: {
+              data: {
+                full_name:
+                  els.name.value.trim()
+              }
+            }
+          });
+
+        if (error) {
+          throw error;
+        }
+
+        notice(
+          "Account created. Check your email, confirm it, then log in."
+        );
+
+        setMode("login");
+
+      } else {
+
+        const {
+          data,
+          error
+        } =
+          await sb.auth
+            .signInWithPassword({
+              email:
+                els.email.value.trim(),
+
+              password:
+                els.password.value
+            });
+
+        if (error) {
+          throw error;
+        }
+
+        currentUser =
+          data.user;
+
+        await loadProfile();
+
+        render();
+        closeModal();
+      }
+
+    } catch (err) {
+      notice(
+        err.message ||
+        "Something went wrong.",
+        true
+      );
+
+    } finally {
+      els.submit.disabled = false;
+    }
+  };
+
+els.chatForm.onsubmit =
+  async event => {
+
+    event.preventDefault();
+
+    const message =
+      els.input.value.trim();
+
+    if (
+      !message ||
+      !currentUser
+    ) {
+      return;
+    }
+
+    if (
+      !profile?.subscribed &&
+      (profile?.used || 0) >= FREE_LIMIT
+    ) {
+      render();
+      return;
+    }
+
+    bubble(
+      message,
+      "user"
+    );
+
+    els.input.value = "";
+    els.input.disabled = true;
+    els.send.disabled = true;
+
+    const waiting =
+      bubble("Thinking…");
+
+    try {
+      const {
+        data: {
+          session
+        }
+      } =
+        await sb.auth.getSession();
+
+      const response =
+        await fetch(
+          "/api/chat",
+          {
+            method: "POST",
+
+            headers: {
+              "Content-Type":
+                "application/json",
+
+              "Authorization":
+                `Bearer ${
+                  session?.access_token ||
+                  ""
+                }`
+            },
+
+            body:
+              JSON.stringify({
+                message
+              })
+          }
+        );
+
+      const raw =
+        await response.text();
+
+      let data = {};
+
+      try {
+        data =
+          raw
+            ? JSON.parse(raw)
+            : {};
+      } catch {}
+
+      if (!response.ok) {
+        throw new Error(
+          data.error ||
+          data.message ||
+          `Chat failed (${response.status})`
+        );
+      }
+
+      waiting.textContent =
+        data.reply ||
+        data.response ||
+        data.answer ||
+        "I received your message but no answer was returned.";
+
+      if (
+        typeof data.messages_used ===
+        "number"
+      ) {
+        profile.used =
+          data.messages_used;
+
+      } else if (
+        !profile.subscribed
+      ) {
+        profile.used =
+          (profile.used || 0) + 1;
+      }
+
+      if (
+        typeof data.subscribed ===
+        "boolean"
+      ) {
+        profile.subscribed =
+          data.subscribed;
+      }
+
+      await loadProfile();
+
+      render();
+
+    } catch (err) {
+      waiting.textContent =
+        err.message ||
+        "Unable to send your message. Please try again.";
+
+      waiting.classList.add(
+        "error-message"
+      );
+
+      render();
+    }
+  };
+
+(async () => {
+
+  if (!configured) {
+    bubble(
+      "Setup required: Supabase is not configured.",
+      "assistant",
+      true
+    );
+
+    return;
+  }
+
+  const {
+    data: {
+      session
+    }
+  } =
+    await sb.auth.getSession();
+
+  currentUser =
+    session?.user || null;
+
+  if (currentUser) {
+    await loadProfile();
+  }
+
+  render();
+
+  sb.auth.onAuthStateChange(
+    async (
+      _event,
+      session
+    ) => {
+
+      currentUser =
+        session?.user || null;
+
+      if (currentUser) {
+        await loadProfile();
+
+      } else {
+        profile = null;
+      }
+
+      render();
+    }
+  );
+
 })();
 </script>
-<footer style="text-align:center;padding:20px;font-size:14px;color:#888;border-top:1px solid #333;margin-top:40px;">
-  <p>© 2026 LifeCompass AI</p>
+
+<footer>
+
   <p>
-    <a href="/privacy.html">Privacy Policy</a> |
-    <a href="/terms.html">Terms &amp; Conditions</a> |
-    <a href="/cookies.html">Cookie Policy</a> |
-    <a href="/refunds.html">Refund Policy</a> |
-    <a href="/disclaimer.html">Disclaimer</a> |
-    <a href="/contact.html">Contact</a>
+    © 2026 LifeCompass AI
   </p>
-  <p>Operated by Paul Coates trading as LifeCompass AI.</p>
+
+  <p>
+    <a href="/privacy.html">
+      Privacy Policy
+    </a>
+    |
+    <a href="/terms.html">
+      Terms &amp; Conditions
+    </a>
+    |
+    <a href="/cookies.html">
+      Cookie Policy
+    </a>
+    |
+    <a href="/refunds.html">
+      Refund Policy
+    </a>
+    |
+    <a href="/disclaimer.html">
+      Disclaimer
+    </a>
+    |
+    <a href="/contact.html">
+      Contact
+    </a>
+  </p>
+
+  <p>
+    Operated by Paul Coates trading as LifeCompass AI.
+  </p>
+
 </footer>
+
 </body>
 </html>
