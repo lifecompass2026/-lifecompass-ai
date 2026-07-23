@@ -1473,7 +1473,11 @@ async function loadProfile() {
 function render() {
   const logged =
     Boolean(currentUser);
-
+const upgradeCta = document.getElementById("upgradeCta");
+if (upgradeCta) {
+  upgradeCta.style.display =
+    logged && profile.subscribed ? "none" : "";
+}
   els.login.classList.toggle(
     "hidden",
     logged
