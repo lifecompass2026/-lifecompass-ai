@@ -1968,51 +1968,164 @@ els.chatForm.onsubmit =
   );
 
 })();
-document.querySelectorAll(".life-skill-btn").forEach((button) => {
-  button.addEventListener("click", () => {
-    const question = button.dataset.question;
-    
+// ONE CLEAN BUTTON FIX BLOCK
 
-    const messageBox = document.querySelector("#messageInput");
+function findChatInput() {
+  return (
+    document.querySelector('#chatForm input') ||
+    document.querySelector('.chat-form input') ||
+    document.querySelector('#assistant input:not([type="hidden"])') ||
+    document.querySelector('#assistant textarea')
+  );
+}
 
-    messageBox.value = question;
-    messageBox.dispatchEvent(new Event("input", { bubbles: true }));
-    messageBox.scrollIntoView({ behavior: "smooth", block: "center" });
-    messageBox.focus();
+function openAssistantWithQuestion(question, sendAutomatically = true) {
+  const assistant = document.getElementById('assistant');
+  const messageBox = findChatInput();
 
-    const form = messageBox.closest("form");
+  if (!messageBox) {
+    alert('Chat box not found.');
+    return;
+  }
+
+  if (assistant) {
+    assistant.scrollIntoView({
+      behavior: 'smooth',
+      block: 'start'
+    });
+  }
+
+  messageBox.value = question;
+  messageBox.dispatchEvent(new Event('input', { bubbles: true }));
+  messageBox.dispatchEvent(new Event('change', { bubbles: true }));
+  messageBox.focus();
+
+  if (sendAutomatically) {
+    const form =
+      messageBox.closest('form') ||
+      document.querySelector('#chatForm') ||
+      document.querySelector('.chat-form');
+
     if (form) {
-      setTimeout(() => form.requestSubmit(), 500);
+      setTimeout(() => {
+        if (typeof form.requestSubmit === 'function') {
+          form.requestSubmit();
+        } else {
+          form.dispatchEvent(
+            new Event('submit', {
+              bubbles: true,
+              cancelable: true
+            })
+          );
+        }
+      }, 400);
     }
-  });
-});
+  }
+}
+
 function askLifeSkill(question) {
-  const messageBox = document.querySelector('textarea');
-
-  if (!messageBox) {
-    alert('Chat box not found.');
-    return;
-  }
-
-  messageBox.value = question;
-  messageBox.dispatchEvent(new Event('input', { bubbles: true }));
-  messageBox.scrollIntoView({ behavior: 'smooth', block: 'center' });
-  messageBox.focus();
+  openAssistantWithQuestion(question, true);
 }
 
-  function askLifeSkill(question) {
-  const messageBox = document.querySelector('textarea');
+const lifeSkillQuestions = {
+  'Understanding council tax':
+    'Explain council tax in simple terms, including council tax bands, who pays it, discounts, exemptions and how to pay.',
 
-  if (!messageBox) {
-    alert('Chat box not found.');
-    return;
-  }
+  'Paying household bills':
+    'Explain how to organise and pay household bills, including energy, water, broadband and direct debits.',
 
-  messageBox.value = question;
-  messageBox.dispatchEvent(new Event('input', { bubbles: true }));
-  messageBox.scrollIntoView({ behavior: 'smooth', block: 'center' });
-  messageBox.focus();
-}
+  'Reading a tenancy agreement':
+    'Explain how to read a tenancy agreement, including rent, deposits, notice periods, repairs and important warning signs.',
+
+  'Creating a monthly budget':
+    'Help me create a simple monthly household budget, including income, essential bills, spending and savings.',
+
+  'Basic home maintenance':
+    'Explain basic home maintenance, what I can safely do myself and when I should call a qualified professional.',
+
+  'Understanding tax':
+    'Explain income tax and National Insurance in simple UK terms.',
+
+  'Understanding credit scores':
+    'Explain how credit scores work and how to improve one safely.',
+
+  'Mortgages and buying a home':
+    'Explain mortgages, deposits, interest rates, repayments and the UK home-buying process in simple terms.',
+
+  'Understanding insurance':
+    'Explain common types of insurance and how to decide what cover I need.',
+
+  'Benefits and financial support':
+    'Explain UK benefits and financial support and how someone can check eligibility.',
+
+  'Writing a complaint':
+    'Help me write a clear formal complaint and explain what information and evidence to include.',
+
+  'Planning reminders':
+    'Help me plan reminders for important bills, renewals, appointments and expiry dates.'
+};
+
+document.querySelectorAll('.topic').forEach((topic) => {
+  const title = topic.textContent.trim();
+  const question = lifeSkillQuestions[title];
+
+  if (!question) return;
+
+  topic.style.cursor = 'pointer';
+
+  topic.onclick = function () {
+    openAssistantWithQuestion(question, true);
+  };
+});
+
+const suggestedQuestions = {
+  'Plan my day':
+    'Help me plan my day clearly and prioritise the most important tasks.',
+
+  'Help with my budget':
+    'Help me create a realistic monthly budget.',
+
+  'Create a holiday checklist':
+    'Create a complete holiday checklist for me.',
+
+  'Write a customer estimate':
+    'Help me write a professional customer estimate.',
+
+  'Explain this letter to me':
+    'Explain a letter to me in clear, simple language.',
+
+  'Council tax':
+    'Explain council tax in simple terms, including bands, discounts and exemptions.',
+
+  'Bills':
+    'Help me understand and organise my household bills.',
+
+  'Renting':
+    'Explain my rights and responsibilities when renting a home in the UK.',
+
+  'Home DIY':
+    'Give me safe, practical guidance for a home DIY job.',
+
+  'Work and payslips':
+    'Explain payslips, deductions, tax and National Insurance in simple terms.',
+
+  'Money and budgeting':
+    'Help me organise my money and create a realistic budget.'
+};
+
+document.querySelectorAll('button, .chip, .life-skill-btn').forEach((button) => {
+  const title = button.textContent.trim();
+  const question =
+    button.dataset.question ||
+    suggestedQuestions[title];
+
+  if (!question) return;
+
+  button.onclick = function (event) {
+    event.preventDefault();
+    openAssistantWithQuestion(question, true);
+  };
+});
 </script>
 
 <footer>
