@@ -27,34 +27,79 @@ export default async function handler(req, res) {
       });
     }
 
-    const allowanceResponse = await fetch(
-      `${SUPABASE_URL}/rest/v1/rpc/use_free_message`,
-      {
-        method: "POST",
-        headers: {
-          apikey: SUPABASE_KEY,
-          Authorization: `Bearer ${token}`,
-          "Content-Type": "application/json"
-        },
-        body: "{}"
-      }
-    );
+    const userResponse = await fetch(
+  `${SUPABASE_URL}/auth/v1/user`,
+  {
+    headers: {
+      apikey: SUPABASE_KEY,
+      Authorization: `Bearer ${token}`
+    }
+  }
+);
 
-    if (!allowanceResponse.ok) {
-      const details = await allowanceResponse.text();
+if (!userResponse.ok) {
+  return res.status(401).json({
+    error: "Your login has expired. Please log in again."
+  });
+}
 
-      if (details.includes("FREE_LIMIT_REACHED")) {
-        return res.status(402).json({
-          error: "You have used your 10 free messages."
-        });
-      }
+const user = await userResponse.json();
 
-      return res.status(401).json({
-        error: "Your login has expired. Please log in again."
+const profileResponse = await fetch(
+  `${SUPABASE_URL}/rest/v1/profiles?id=eq.${user.id}&select=*&limit=1`,
+  {
+    headers: {
+      apikey: SUPABASE_KEY,
+      Authorization: `Bearer ${token}`
+    }
+  }
+);
+
+let subscribed = false;
+
+if (profileResponse.ok) {
+  const profiles = await profileResponse.json();
+  const account = profiles[0] || {};
+
+  subscribed = Boolean(
+    account.subscribed ||
+    account.is_subscribed ||
+    account.subscription_active
+  );
+}
+
+let remaining = null;
+
+if (!subscribed) {
+  const allowanceResponse = await fetch(
+    `${SUPABASE_URL}/rest/v1/rpc/use_free_message`,
+    {
+      method: "POST",
+      headers: {
+        apikey: SUPABASE_KEY,
+        Authorization: `Bearer ${token}`,
+        "Content-Type": "application/json"
+      },
+      body: "{}"
+    }
+  );
+
+  if (!allowanceResponse.ok) {
+    const details = await allowanceResponse.text();
+
+    if (details.includes("FREE_LIMIT_REACHED")) {
+      return res.status(402).json({
+        error: "You have used your 10 free messages."
       });
     }
 
-    const remaining = await allowanceResponse.json();
+    return res.status(401).json({
+      error: "Your login has expired. Please log in again."
+    });
+  }
+
+  remaining = await allowanceResponse.json();
+}
 
     const aiResponse = await fetch("https://api.openai.com/v1/responses", {
       method: "POST",
