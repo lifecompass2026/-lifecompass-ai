@@ -2000,12 +2000,18 @@ function askLifeSkill(question) {
   messageBox.focus();
 }
 
-  messageInput.value = question;
+  function askLifeSkill(question) {
+  const messageBox = document.querySelector('textarea');
 
-  const form = messageInput.closest('form');
-  if (form) {
-    form.dispatchEvent(new Event('submit', { cancelable: true }));
+  if (!messageBox) {
+    alert('Chat box not found.');
+    return;
   }
+
+  messageBox.value = question;
+  messageBox.dispatchEvent(new Event('input', { bubbles: true }));
+  messageBox.scrollIntoView({ behavior: 'smooth', block: 'center' });
+  messageBox.focus();
 }
 </script>
 
