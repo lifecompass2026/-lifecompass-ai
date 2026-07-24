@@ -525,49 +525,195 @@ $("askAboutDocument").onclick=()=>{
 };
 
 
-function communityQuestions(){
-  return JSON.parse(localStorage.getItem("lc_community_questions") || "[]");
+function communityDisplayName(){
+  return (
+    currentSession?.user?.user_metadata?.name ||
+    currentSession?.user?.email?.split("@")[0] ||
+    "Member"
+  ).slice(0,80);
 }
-function saveCommunityQuestions(items){
-  localStorage.setItem("lc_community_questions", JSON.stringify(items));
-  renderCommunity();
+
+function formatCommunityDate(value){
+  return new Date(value).toLocaleDateString("en-GB",{
+    day:"numeric",
+    month:"short",
+    year:"numeric"
+  });
 }
-function renderCommunity(){
-  const items=communityQuestions();
-  $("communityFeed").innerHTML = items.length ? items.slice().reverse().map((q,reverseIndex)=>{
-    const index=items.length-1-reverseIndex;
-    const answers=(q.answers||[]).map(a=>`<div class="answer-row"><strong>${escapeHtml(a.name||"Member")}</strong><p>${escapeHtml(a.text)}</p></div>`).join("");
-    return `<article class="question-card"><h4>${escapeHtml(q.question)}</h4><div class="status">Asked ${escapeHtml(q.date)} by ${escapeHtml(q.name||"Community member")}</div>${answers}<form class="answer-form" data-question-index="${index}"><input aria-label="Your answer" placeholder="Share a helpful answer" required><button class="mini" type="submit">Answer</button></form></article>`;
-  }).join("") : `<div class="muted" style="padding:18px 0">No questions yet. Be the first to ask.</div>`;
+
+async function loadCommunity(){
+  const feed=$("communityFeed");
+  feed.innerHTML='<div class="muted" style="padding:18px 0">Loading questions...</div>';
+
+  const {data:questions,error:questionError}=await client
+    .from("community_questions")
+    .select("id,user_id,author_name,question,category,is_solved,created_at")
+    .order("created_at",{ascending:false})
+    .limit(50);
+
+  if(questionError){
+    console.error(questionError);
+    feed.innerHTML='<div class="muted" style="padding:18px 0">Community is temporarily unavailable.</div>';
+    return;
+  }
+
+  if(!questions?.length){
+    feed.innerHTML='<div class="muted" style="padding:18px 0">No questions yet. Be the first to ask.</div>';
+    return;
+  }
+
+  const questionIds=questions.map(q=>q.id);
+
+  const {data:answers,error:answerError}=await client
+    .from("community_answers")
+    .select("id,question_id,user_id,author_name,answer,is_accepted,created_at")
+    .in("question_id",questionIds)
+    .order("created_at",{ascending:true});
+
+  if(answerError) console.error(answerError);
+
+  const answersByQuestion={};
+
+  for(const answer of answers||[]){
+    if(!answersByQuestion[answer.question_id]){
+      answersByQuestion[answer.question_id]=[];
+    }
+    answersByQuestion[answer.question_id].push(answer);
+  }
+
+  feed.innerHTML=questions.map(q=>{
+    const answerHtml=(answersByQuestion[q.id]||[]).map(a=>`
+      <div class="answer-row">
+        <strong>${escapeHtml(a.author_name||"Member")}${a.is_accepted?" ✓":""}</strong>
+        <p>${escapeHtml(a.answer)}</p>
+      </div>
+    `).join("");
+
+    return `
+      <article class="question-card">
+        <div style="display:flex;justify-content:space-between;gap:10px;align-items:flex-start">
+          <h4>${escapeHtml(q.question)}</h4>
+          ${q.is_solved?'<span class="badge">Solved</span>':""}
+        </div>
+
+        <div class="status">
+          ${escapeHtml(q.category||"Everyday Life")} ·
+          Asked ${escapeHtml(formatCommunityDate(q.created_at))} by
+          ${escapeHtml(q.author_name||"Community member")}
+        </div>
+
+        ${answerHtml}
+
+        <form class="answer-form" data-question-id="${q.id}">
+          <input
+            aria-label="Your answer"
+            maxlength="3000"
+            placeholder="Share a helpful answer"
+            required
+          >
+          <button class="mini" type="submit">Answer</button>
+        </form>
+      </article>
+    `;
+  }).join("");
 }
-$("postCommunityQuestion").onclick=()=>{
+
+$("postCommunityQuestion").onclick=async()=>{
   const question=$("communityQuestion").value.trim();
-  if(!currentSession){openAuth("login");return;}
-  if(!question){$("communityStatus").textContent="Type your question first.";return;}
-  const items=communityQuestions();
-  items.push({question,name:currentSession.user.user_metadata?.name||currentSession.user.email?.split("@")[0]||"Member",date:new Date().toLocaleDateString("en-GB"),answers:[]});
-  saveCommunityQuestions(items);
+
+  if(!currentSession){
+    openAuth("login");
+    return;
+  }
+
+  if(question.length<5){
+    $("communityStatus").textContent="Please type a fuller question.";
+    return;
+  }
+
+  $("postCommunityQuestion").disabled=true;
+  $("communityStatus").textContent="Posting...";
+
+  const {error}=await client
+    .from("community_questions")
+    .insert({
+      user_id:currentSession.user.id,
+      author_name:communityDisplayName(),
+      question,
+      category:"Everyday Life"
+    });
+
+  $("postCommunityQuestion").disabled=false;
+
+  if(error){
+    console.error(error);
+    $("communityStatus").textContent=error.message||"Could not post the question.";
+    return;
+  }
+
   $("communityQuestion").value="";
-  $("communityStatus").textContent="Question posted on this device.";
+  $("communityStatus").textContent="Question posted for the community.";
+  await loadCommunity();
 };
+
 $("askAiCommunity").onclick=()=>{
   const question=$("communityQuestion").value.trim();
-  if(!question){$("communityStatus").textContent="Type your question first.";return;}
+
+  if(!question){
+    $("communityStatus").textContent="Type your question first.";
+    return;
+  }
+
   sendPrompt(question);
 };
-$("communityFeed").addEventListener("submit",e=>{
-  const form=e.target.closest(".answer-form");if(!form)return;e.preventDefault();
-  if(!currentSession){openAuth("login");return;}
-  const input=form.querySelector("input"),text=input.value.trim();if(!text)return;
-  const items=communityQuestions(),index=Number(form.dataset.questionIndex);
-  items[index].answers=items[index].answers||[];
-  items[index].answers.push({text,name:currentSession.user.user_metadata?.name||currentSession.user.email?.split("@")[0]||"Member"});
-  saveCommunityQuestions(items);
+
+$("communityFeed").addEventListener("submit",async e=>{
+  const form=e.target.closest(".answer-form");
+
+  if(!form) return;
+
+  e.preventDefault();
+
+  if(!currentSession){
+    openAuth("login");
+    return;
+  }
+
+  const input=form.querySelector("input");
+  const answer=input.value.trim();
+
+  if(answer.length<2) return;
+
+  const button=form.querySelector("button");
+  button.disabled=true;
+  button.textContent="Posting...";
+
+  const {error}=await client
+    .from("community_answers")
+    .insert({
+      question_id:form.dataset.questionId,
+      user_id:currentSession.user.id,
+      author_name:communityDisplayName(),
+      answer
+    });
+
+  button.disabled=false;
+  button.textContent="Answer";
+
+  if(error){
+    console.error(error);
+    $("communityStatus").textContent=error.message||"Could not post the answer.";
+    return;
+  }
+
+  input.value="";
+  $("communityStatus").textContent="Answer posted.";
+  await loadCommunity();
 });
 
 client.auth.getSession().then(({data})=>updateAccount(data.session));
 client.auth.onAuthStateChange((_event,session)=>updateAccount(session));
-renderTabs();renderTopics();renderFavourites();renderStoredList("lc_reminders","reminderList");renderStoredList("lc_folder","folderList");renderCommunity();
+renderTabs();renderTopics();renderFavourites();renderStoredList("lc_reminders","reminderList");renderStoredList("lc_folder","folderList");loadCommunity();
 </script>
 </body>
 </html>
