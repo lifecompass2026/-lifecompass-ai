@@ -515,15 +515,131 @@ $("addFolderItem").onclick=()=>{
   const title=$("folderTitle").value.trim(),date=$("folderDate").value;if(!title)return;
   const list=loadList("lc_folder");list.push({title,date});saveList("lc_folder",list);$("folderTitle").value="";$("folderDate").value="";renderStoredList("lc_folder","folderList");
 };
-$("documentInput").onchange=e=>{
+let selectedDocumentText="";
+
+async function loadScript(src){
+  return new Promise((resolve,reject)=>{
+    const existing=[...document.scripts].find(s=>s.src===src);
+    if(existing){
+      resolve();
+      return;
+    }
+
+    const script=document.createElement("script");
+    script.src=src;
+    script.onload=resolve;
+    script.onerror=()=>reject(new Error("Could not load document reader."));
+    document.head.appendChild(script);
+  });
+}
+
+async function extractPdfText(file){
+  await loadScript(
+    "https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"
+  );
+
+  pdfjsLib.GlobalWorkerOptions.workerSrc=
+    "https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js";
+
+  const data=await file.arrayBuffer();
+  const pdf=await pdfjsLib.getDocument({data}).promise;
+  let text="";
+
+  for(let pageNumber=1;pageNumber<=pdf.numPages;pageNumber++){
+    const page=await pdf.getPage(pageNumber);
+    const content=await page.getTextContent();
+    text+=content.items.map(item=>item.str).join(" ")+"\n";
+  }
+
+  return text;
+}
+
+async function extractWordText(file){
+  await loadScript(
+    "https://cdn.jsdelivr.net/npm/mammoth@1.8.0/mammoth.browser.min.js"
+  );
+
+  const data=await file.arrayBuffer();
+  const result=await mammoth.extractRawText({arrayBuffer:data});
+  return result.value;
+}
+
+$("documentInput").onchange=async e=>{
   selectedDocument=e.target.files?.[0]||null;
-  $("documentStatus").textContent=selectedDocument?`${selectedDocument.name} selected (${Math.ceil(selectedDocument.size/1024)} KB). File contents have not been uploaded.`:"No document selected.";
-};
-$("askAboutDocument").onclick=()=>{
-  if(!selectedDocument){$("documentInput").click();return;}
-  sendPrompt(`I have a document named "${selectedDocument.name}". Tell me what details I should copy or describe so you can explain it safely in plain English. Do not assume you can see the file contents.`);
+  selectedDocumentText="";
+
+  if(!selectedDocument){
+    $("documentStatus").textContent="No document selected.";
+    return;
+  }
+
+  if(selectedDocument.size>10000000){
+    $("documentStatus").textContent="Please choose a file smaller than 10 MB.";
+    selectedDocument=null;
+    return;
+  }
+
+  $("documentStatus").textContent="Reading "+selectedDocument.name+"...";
+
+  try{
+    const name=selectedDocument.name.toLowerCase();
+
+    if(name.endsWith(".pdf")){
+      selectedDocumentText=await extractPdfText(selectedDocument);
+    }else if(name.endsWith(".docx")){
+      selectedDocumentText=await extractWordText(selectedDocument);
+    }else{
+      selectedDocumentText=await selectedDocument.text();
+    }
+
+    selectedDocumentText=selectedDocumentText.trim().slice(0,18000);
+
+    if(!selectedDocumentText){
+      throw new Error("No readable text was found in this document.");
+    }
+
+    $("documentStatus").textContent=
+      selectedDocument.name+" is ready for AI explanation.";
+  }catch(error){
+    console.error(error);
+    selectedDocumentText="";
+    $("documentStatus").textContent=
+      "This document could not be read. Try a PDF, DOCX, TXT, CSV or JSON file.";
+  }
 };
 
+$("askAboutDocument").onclick=()=>{
+  if(!currentSession){
+    openAuth("login");
+    return;
+  }
+
+  if(!selectedDocument){
+    $("documentStatus").textContent="Choose a document first.";
+    return;
+  }
+
+  if(!selectedDocumentText){
+    $("documentStatus").textContent="Wait for the document to finish loading.";
+    return;
+  }
+
+  sendPrompt(
+    `Please explain this document in clear, simple English.
+
+Document name: ${selectedDocument.name}
+
+Please include:
+1. A short summary.
+2. Important dates, amounts, obligations or risks.
+3. Anything unusual or concerning.
+4. Practical next steps.
+5. Questions I may need to ask.
+
+Document text:
+${selectedDocumentText}`
+  );
+};
 
 function communityDisplayName(){
   return (
