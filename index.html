@@ -1647,12 +1647,22 @@
       >
     </div>
 
-    <button
-      class="btn"
-      id="sendMagicLink"
-    >
-      Send secure login link
-    </button>
+  <label for="authPassword">Password</label>
+
+<input
+  id="authPassword"
+  type="password"
+  placeholder="Enter your password"
+  autocomplete="current-password"
+/>
+
+<button class="btn" id="loginButton">
+  Log in
+</button>
+
+<p style="margin-top:10px;text-align:center;">
+  <a href="#" id="forgotPassword">Forgot password?</a>
+</p>
 
     <div
       class="status"
@@ -4539,72 +4549,165 @@ ${shortenedText}`
     }
   );
 
-  element(
-    "sendMagicLink"
-  ).addEventListener(
-    "click",
-    async () => {
-      const email =
-        element(
-          "authEmail"
-        ).value.trim();
+element(
+  "loginButton"
+).addEventListener(
+  "click",
+  async () => {
+    const email = element(
+      "authEmail"
+    ).value.trim();
 
-      if (!email) {
-        element(
-          "authStatus"
-        ).textContent =
-          "Please enter your email address.";
+    const password = element(
+      "authPassword"
+    ).value;
 
-        return;
-      }
-
-      const button =
-        element(
-          "sendMagicLink"
-        );
-
-      setButtonBusy(
-        button,
-        true,
-        "Sending...",
-        "Send secure login link"
-      );
-
-      const {
-        error
-      } =
-        await supabaseClient
-          .auth
-          .signInWithOtp({
-            email,
-            options: {
-              emailRedirectTo:
-                window.location.origin
-            }
-          });
-
-      setButtonBusy(
-        button,
-        false,
-        "Sending...",
-        "Send secure login link"
-      );
-
-      if (error) {
-        element(
-          "authStatus"
-        ).textContent =
-          `Could not send login link: ${error.message}`;
-
-        return;
-      }
-
+    if (!email || !password) {
       element(
         "authStatus"
       ).textContent =
-        "Check your email and tap the secure login link.";
+        "Please enter your email address and password.";
+
+      return;
     }
-  );
+
+    if (password.length < 6) {
+      element(
+        "authStatus"
+      ).textContent =
+        "Your password must contain at least 6 characters.";
+
+      return;
+    }
+
+    const button = element(
+      "loginButton"
+    );
+
+    const joining =
+      element(
+        "authModalTitle"
+      ).textContent.includes(
+        "Join"
+      );
+
+    setButtonBusy(
+      button,
+      true,
+      joining
+        ? "Creating account..."
+        : "Logging in...",
+      joining
+        ? "Create free account"
+        : "Log in"
+    );
+
+    let result;
+
+    if (joining) {
+      result =
+        await supabaseClient
+          .auth
+          .signUp({
+            email,
+            password
+          });
+    } else {
+      result =
+        await supabaseClient
+          .auth
+          .signInWithPassword({
+            email,
+            password
+          });
+    }
+
+    setButtonBusy(
+      button,
+      false,
+      "",
+      joining
+        ? "Create free account"
+        : "Log in"
+    );
+
+    if (result.error) {
+      element(
+        "authStatus"
+      ).textContent =
+        result.error.message;
+
+      return;
+    }
+
+    if (
+      joining &&
+      !result.data.session
+    ) {
+      element(
+        "authStatus"
+      ).textContent =
+        "Account created. Check your email to confirm your account, then log in.";
+
+      return;
+    }
+
+    element(
+      "authStatus"
+    ).textContent =
+      joining
+        ? "Your account has been created."
+        : "You are now logged in.";
+
+    closeModal(
+      "authModal"
+    );
+
+    await loadEverything();
+  }
+);
+
+element(
+  "forgotPassword"
+).addEventListener(
+  "click",
+  async event => {
+    event.preventDefault();
+
+    const email = element(
+      "authEmail"
+    ).value.trim();
+
+    if (!email) {
+      element(
+        "authStatus"
+      ).textContent =
+        "Enter your email address first.";
+
+      return;
+    }
+
+    const {
+      error
+    } =
+      await supabaseClient
+        .auth
+        .resetPasswordForEmail(
+          email,
+          {
+            redirectTo:
+              window.location.origin
+          }
+        );
+
+    element(
+      "authStatus"
+    ).textContent =
+      error
+        ? `Could not send reset email: ${error.message}`
+        : "Password reset email sent. Check your inbox.";
+  }
+);
 
   element(
     "logoutBtn"
