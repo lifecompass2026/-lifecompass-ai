@@ -4830,6 +4830,14 @@ element(
 
   initialise();
 </script>
-
+<script>
+if ("serviceWorker" in navigator) {
+  window.addEventListener("load", () => {
+    navigator.serviceWorker.register("/service-worker.js")
+      .then(() => console.log("LifeCompass AI app ready"))
+      .catch(err => console.error(err));
+  });
+}
+</script>
 </body>
 </html>
