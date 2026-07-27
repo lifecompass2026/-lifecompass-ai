@@ -4752,24 +4752,7 @@ ${shortenedText}`
       )
   );
 
-  element(
-    "heroJoin"
-  ).addEventListener(
-    "click",
-    () => {
-      if (state.user) {
-        element(
-          "assistant"
-        ).scrollIntoView({
-          behavior: "smooth"
-        });
-      } else {
-        openAuth(
-          "Join LifeCompass AI"
-        );
-      }
-    }
-  );
+
 
   element(
     "profileOpen"
