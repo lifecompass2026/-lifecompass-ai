@@ -785,93 +785,186 @@
 <main>
 
 <section class="hero">
-  <div class="wrap hero-grid">
+  <div class="wrap">
 
-    <div>
+    <div style="
+      max-width:900px;
+      margin:0 auto;
+      text-align:center;
+    ">
 
       <div class="eyebrow">
-        Your everyday life manager
+        Practical help for everyday life
       </div>
 
-      <h1>
-        The things nobody taught you, made simple.
+      <h1 style="
+        max-width:850px;
+        margin-left:auto;
+        margin-right:auto;
+      ">
+        Life can be confusing.<br>
+        LifeCompass makes it simple.
       </h1>
 
-      <p class="lead">
-        Practical life help, clear AI answers, community support and
-        a growing Skill Swap where people exchange knowledge and help.
+      <p class="lead" style="
+        max-width:720px;
+        margin:0 auto;
+        font-size:1.15rem;
+      ">
+        Get clear, step-by-step help with documents, money,
+        home repairs, cars, work and everyday problems.
+        You can also ask the community and swap useful skills
+        with people nearby.
       </p>
 
-      <div
-        style="
-          display:flex;
-          gap:10px;
-          flex-wrap:wrap;
-          margin-top:22px;
-        "
-      >
+      <div style="
+        display:flex;
+        justify-content:center;
+        gap:12px;
+        flex-wrap:wrap;
+        margin-top:26px;
+      ">
+
         <button
           class="btn"
           id="heroJoin"
+          style="
+            padding:15px 25px;
+            font-size:1.05rem;
+          "
         >
-          Start with 10 free messages
+          Try LifeCompass free
         </button>
 
         <a
-          class="btn purple"
-          href="#skill-swap"
+          class="btn secondary"
+          href="#assistant"
+          style="
+            padding:15px 25px;
+            font-size:1.05rem;
+          "
         >
-          Explore Skill Swap
+          See how it works
         </a>
+
+      </div>
+
+      <p class="status" style="margin-top:13px;">
+        No payment needed • Includes 10 free AI messages
+      </p>
+
+    </div>
+
+    <div class="hero-card" style="
+      max-width:920px;
+      margin:38px auto 0;
+      padding:25px;
+    ">
+
+      <div style="
+        text-align:center;
+        margin-bottom:22px;
+      ">
+        <span class="badge">Everything in one place</span>
+
+        <h2 style="
+          font-size:1.8rem;
+          margin-top:12px;
+        ">
+          What can LifeCompass help you with?
+        </h2>
+      </div>
+
+      <div style="
+        display:grid;
+        grid-template-columns:repeat(auto-fit,minmax(190px,1fr));
+        gap:14px;
+      ">
+
+        <div style="
+          padding:18px;
+          border:1px solid var(--line);
+          border-radius:16px;
+          background:#fbfdff;
+        ">
+          <div style="font-size:1.8rem;">🤖</div>
+          <h3 style="margin-top:10px;">Ask the AI</h3>
+          <p class="muted">
+            Get straightforward answers without complicated language.
+          </p>
+        </div>
+
+        <div style="
+          padding:18px;
+          border:1px solid var(--line);
+          border-radius:16px;
+          background:#fbfdff;
+        ">
+          <div style="font-size:1.8rem;">📄</div>
+          <h3 style="margin-top:10px;">Explain documents</h3>
+          <p class="muted">
+            Upload a letter, bill or document and understand what it means.
+          </p>
+        </div>
+
+        <div style="
+          padding:18px;
+          border:1px solid var(--line);
+          border-radius:16px;
+          background:#fbfdff;
+        ">
+          <div style="font-size:1.8rem;">🧭</div>
+          <h3 style="margin-top:10px;">Learn life skills</h3>
+          <p class="muted">
+            Understand bills, housing, cars, DIY and everyday responsibilities.
+          </p>
+        </div>
+
+        <div style="
+          padding:18px;
+          border:1px solid var(--line);
+          border-radius:16px;
+          background:#fbfdff;
+        ">
+          <div style="font-size:1.8rem;">🤝</div>
+          <h3 style="margin-top:10px;">Swap skills</h3>
+          <p class="muted">
+            Offer what you know and find people who can help with something else.
+          </p>
+        </div>
+
+      </div>
+
+      <div style="
+        margin-top:22px;
+        padding:18px;
+        border-radius:16px;
+        background:var(--light);
+        text-align:center;
+      ">
+
+        <strong style="font-size:1.05rem;">
+          One account. Practical support whenever you need it.
+        </strong>
+
+        <p class="muted" style="margin:8px 0 15px;">
+          Join free and ask your first question today.
+        </p>
+
+        <button
+          class="btn"
+          id="secondHeroJoin"
+          onclick="document.getElementById('joinOpen').click()"
+        >
+          Create my free account
+        </button>
+
       </div>
 
     </div>
 
-    <div class="hero-card">
-
-      <span class="badge">
-        LifeCompass AI
-      </span>
-
-      <h3
-        style="
-          font-size:1.65rem;
-          margin-top:13px;
-        "
-      >
-        One calmer place for everyday life.
-      </h3>
-
-      <div class="hero-points">
-
-        <div class="hero-point">
-          <span class="hero-point-icon">🤖</span>
-          AI guidance in everyday language
-        </div>
-
-        <div class="hero-point">
-          <span class="hero-point-icon">📄</span>
-          Understand confusing documents
-        </div>
-
-        <div class="hero-point">
-          <span class="hero-point-icon">🤝</span>
-          Swap skills and message other members
-        </div>
-
-        <div class="hero-point">
-          <span class="hero-point-icon">⭐</span>
-          Build trust with ratings and reviews
-        </div>
-
-      </div>
-
-    </div>
   </div>
 </section>
-<section class="section" id="skills">
-  <div class="wrap">
-
     <div class="eyebrow">
       Nobody Taught Me This
     </div>
