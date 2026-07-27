@@ -89,6 +89,10 @@
     .hidden {
       display: none !important;
     }
+    #authModal:target {
+  display: grid !important;
+}
+    
 
     .muted,
     .status {
@@ -747,14 +751,14 @@
         Profile
       </button>
 
-    <button
+  <a
   class="btn secondary"
   id="loginOpen"
-  type="button"
-  onclick="document.getElementById('authModal').classList.remove('hidden')"
+  href="#authModal"
 >
   Log in
-</button>
+</a>
+
 
       <button
         class="btn"
