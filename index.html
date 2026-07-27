@@ -1,720 +1,335 @@
-<!DOCTYPE html>
+l<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-
-  <meta
-    name="viewport"
-    content="width=device-width, initial-scale=1, viewport-fit=cover"
-  >
-
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <meta name="theme-color" content="#102a43">
-
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="LifeCompass AI">
   <title>LifeCompass AI</title>
+
   <link rel="manifest" href="/manifest.webmanifest">
-
-<meta name="mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<meta name="apple-mobile-web-app-title" content="LifeCompass AI">
-
-<link rel="apple-touch-icon" href="/icons/icon-192.png">
-<link rel="icon" type="image/png" sizes="192x192" href="/icons/icon-192.png">
-<link rel="icon" type="image/png" sizes="512x512" href="/icons/icon-512.png">
-  
+  <link rel="apple-touch-icon" href="/icons/icon-192.png">
+  <link rel="icon" type="image/png" sizes="192x192" href="/icons/icon-192.png">
+  <link rel="icon" type="image/png" sizes="512x512" href="/icons/icon-512.png">
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
   <style>
     :root {
-      --ink: #102a43;
-      --muted: #61758a;
-      --paper: #f5f8fb;
-      --card: #ffffff;
-      --line: #dbe5ee;
-      --brand: #1f7a67;
-      --brand-dark: #155f50;
-      --brand-light: #e8f5f1;
-      --purple: #7c3aed;
-      --purple-light: #f1eafe;
-      --blue: #2563eb;
-      --orange: #ea580c;
-      --red: #b42318;
-      --gold: #f59e0b;
-      --shadow: 0 12px 35px rgba(16, 42, 67, 0.09);
-      --radius: 22px;
+      --ink:#102a43;
+      --muted:#61758a;
+      --paper:#f5f8fb;
+      --card:#fff;
+      --line:#dbe5ee;
+      --brand:#1f7a67;
+      --brand-dark:#155f50;
+      --brand-light:#e8f5f1;
+      --purple:#7c3aed;
+      --purple-light:#f1eafe;
+      --blue:#2563eb;
+      --red:#b42318;
+      --gold:#f59e0b;
+      --shadow:0 12px 35px rgba(16,42,67,.09);
+      --radius:22px;
     }
 
-    * {
-      box-sizing: border-box;
-    }
-
-    html {
-      scroll-behavior: smooth;
-    }
-
+    * { box-sizing:border-box; }
+    html { scroll-behavior:smooth; }
     body {
-      margin: 0;
-      background: var(--paper);
-      color: var(--ink);
-      font-family:
-        Inter,
-        system-ui,
-        -apple-system,
-        BlinkMacSystemFont,
-        "Segoe UI",
-        sans-serif;
+      margin:0;
+      background:var(--paper);
+      color:var(--ink);
+      font-family:Inter,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
     }
 
-    button,
-    input,
-    textarea,
-    select {
-      font: inherit;
+    button,input,textarea,select { font:inherit; }
+    button { cursor:pointer; }
+    .hidden { display:none !important; }
+    .wrap { width:min(1120px,calc(100% - 28px)); margin:auto; }
+    .muted,.status { color:var(--muted); }
+    .status { font-size:.9rem; line-height:1.45; }
+    .section { padding:40px 0; }
+    .card {
+      background:var(--card);
+      border:1px solid var(--line);
+      border-radius:var(--radius);
+      box-shadow:var(--shadow);
     }
-
-    button {
-      cursor: pointer;
-    }
-
-    img {
-      max-width: 100%;
-    }
-
-    .wrap {
-      width: min(1120px, calc(100% - 28px));
-      margin: auto;
-    }
-
-    .hidden {
-      display: none !important;
-    }
-    #authModal:target {
-  display: grid !important;
-}
-    
-
-    .muted,
-    .status {
-      color: var(--muted);
-    }
-
-    .status {
-      font-size: 0.88rem;
-      line-height: 1.45;
+    .panel { padding:22px; }
+    .grid-2 { display:grid; grid-template-columns:1fr 1fr; gap:18px; }
+    .grid-4 { display:grid; grid-template-columns:repeat(4,1fr); gap:16px; }
+    .list { display:grid; gap:12px; margin-top:15px; }
+    .empty {
+      padding:20px;
+      text-align:center;
+      border:1px dashed var(--line);
+      border-radius:15px;
+      color:var(--muted);
     }
 
     header {
-      position: sticky;
-      top: 0;
-      z-index: 40;
-      background: rgba(245, 248, 251, 0.96);
-      border-bottom: 1px solid var(--line);
-      backdrop-filter: blur(14px);
+      position:sticky;
+      top:0;
+      z-index:40;
+      background:rgba(245,248,251,.96);
+      backdrop-filter:blur(14px);
+      border-bottom:1px solid var(--line);
     }
-
     .nav {
-      min-height: 72px;
-      display: flex;
-      align-items: center;
-      gap: 14px;
+      min-height:72px;
+      display:flex;
+      align-items:center;
+      gap:14px;
     }
-
     .brand {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      font-size: 1.2rem;
-      font-weight: 900;
+      display:flex;
+      align-items:center;
+      gap:10px;
+      font-weight:900;
+      font-size:1.18rem;
     }
-
     .brand-mark {
-      width: 42px;
-      height: 42px;
-      border-radius: 14px;
-      display: grid;
-      place-items: center;
-      background: var(--brand);
-      color: white;
-      font-weight: 900;
+      width:42px;
+      height:42px;
+      display:grid;
+      place-items:center;
+      border-radius:14px;
+      background:var(--brand);
+      color:#fff;
+      font-weight:900;
     }
-
-    nav {
-      display: flex;
-      gap: 15px;
-      margin-left: auto;
-    }
-
+    nav { display:flex; gap:15px; margin-left:auto; }
     nav a {
-      color: var(--muted);
-      text-decoration: none;
-      font-weight: 750;
-      font-size: 0.93rem;
+      color:var(--muted);
+      text-decoration:none;
+      font-size:.92rem;
+      font-weight:800;
     }
-
-    nav a:hover {
-      color: var(--brand);
-    }
-
-    .actions {
-      display: flex;
-      gap: 8px;
-      margin-left: 8px;
-      align-items: center;
-    }
+    nav a:hover { color:var(--brand); }
+    .actions { display:flex; align-items:center; gap:8px; margin-left:8px; }
 
     .btn {
-      border: 0;
-      border-radius: 13px;
-      padding: 11px 15px;
-      background: var(--brand);
-      color: white;
-      font-weight: 850;
-      text-decoration: none;
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      gap: 7px;
+      border:0;
+      border-radius:13px;
+      padding:11px 15px;
+      background:var(--brand);
+      color:#fff;
+      font-weight:850;
+      text-decoration:none;
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+      gap:7px;
     }
-
-    .btn:hover {
-      filter: brightness(0.97);
-    }
-
-    .btn.secondary {
-      background: white;
-      color: var(--ink);
-      border: 1px solid var(--line);
-    }
-
-    .btn.purple {
-      background: var(--purple);
-    }
-
-    .btn.blue {
-      background: var(--blue);
-    }
-
-    .btn.danger {
-      background: var(--red);
-    }
-
-    .btn.ghost {
-      background: transparent;
-      color: var(--ink);
-    }
-
-    .btn.small {
-      padding: 8px 11px;
-      font-size: 0.84rem;
-      border-radius: 10px;
-    }
-
-    .btn:disabled {
-      opacity: 0.55;
-      cursor: not-allowed;
-    }
-
-    .notification-button {
-      position: relative;
-      width: 42px;
-      height: 42px;
-      border: 1px solid var(--line);
-      border-radius: 13px;
-      background: white;
-      color: var(--ink);
-      font-size: 1.2rem;
-    }
-
-    .notification-count {
-      position: absolute;
-      top: -6px;
-      right: -6px;
-      min-width: 21px;
-      height: 21px;
-      border-radius: 999px;
-      padding: 0 5px;
-      display: grid;
-      place-items: center;
-      background: var(--red);
-      color: white;
-      font-size: 0.7rem;
-      font-weight: 900;
-      border: 2px solid white;
-    }
+    .btn.secondary { background:#fff; color:var(--ink); border:1px solid var(--line); }
+    .btn.purple { background:var(--purple); }
+    .btn.blue { background:var(--blue); }
+    .btn.ghost { background:transparent; color:var(--ink); }
+    .btn.small { padding:8px 11px; border-radius:10px; font-size:.84rem; }
+    .btn:disabled { opacity:.55; cursor:not-allowed; }
 
     .hero {
-      padding: 60px 0 35px;
+      padding:54px 0 38px;
+      position:relative;
+      overflow:hidden;
     }
-
-    .hero-grid {
-      display: grid;
-      grid-template-columns: 1.12fr 0.88fr;
-      gap: 28px;
-      align-items: center;
+    .hero::after {
+      content:"";
+      position:absolute;
+      width:340px;
+      height:340px;
+      border-radius:50%;
+      background:rgba(31,122,103,.09);
+      right:-170px;
+      top:-150px;
+      pointer-events:none;
     }
-
+    .hero-inner { position:relative; z-index:1; text-align:center; max-width:920px; margin:auto; }
     .eyebrow {
-      color: var(--brand);
-      font-size: 0.78rem;
-      font-weight: 900;
-      text-transform: uppercase;
-      letter-spacing: 0.11em;
+      display:inline-flex;
+      align-items:center;
+      gap:8px;
+      padding:8px 13px;
+      border:1px solid rgba(31,122,103,.25);
+      border-radius:999px;
+      background:rgba(255,255,255,.8);
+      color:var(--brand);
+      font-size:.8rem;
+      text-transform:uppercase;
+      letter-spacing:.08em;
+      font-weight:900;
     }
-
     h1 {
-      margin: 12px 0 18px;
-      font-size: clamp(2.7rem, 7vw, 5.1rem);
-      line-height: 0.97;
-      letter-spacing: -0.065em;
+      max-width:900px;
+      margin:20px auto 18px;
+      font-size:clamp(2.65rem,9vw,5.4rem);
+      line-height:.96;
+      letter-spacing:-.06em;
     }
-
-    h2 {
-      margin: 0 0 10px;
-      font-size: clamp(1.8rem, 4vw, 2.7rem);
-      letter-spacing: -0.045em;
-    }
-
-    h3,
-    h4 {
-      margin: 0 0 8px;
-    }
-
+    h2 { margin:0 0 10px; font-size:clamp(1.8rem,4vw,2.7rem); letter-spacing:-.04em; }
+    h3 { margin:0 0 8px; }
     .lead {
-      max-width: 730px;
-      color: var(--muted);
-      font-size: 1.08rem;
-      line-height: 1.7;
+      max-width:740px;
+      margin:0 auto;
+      color:var(--muted);
+      font-size:clamp(1.04rem,3vw,1.22rem);
+      line-height:1.65;
+    }
+    .hero-buttons {
+      display:flex;
+      justify-content:center;
+      gap:12px;
+      flex-wrap:wrap;
+      margin-top:26px;
+    }
+    .hero-buttons .btn { min-width:210px; padding:16px 24px; font-size:1.05rem; }
+    .trust-row {
+      display:flex;
+      justify-content:center;
+      gap:14px;
+      flex-wrap:wrap;
+      margin-top:16px;
+      color:var(--muted);
+      font-size:.9rem;
+      font-weight:750;
     }
 
-    .section {
-      padding: 38px 0;
-    }
-
-    .card,
-    .hero-card {
-      background: var(--card);
-      border: 1px solid var(--line);
-      border-radius: var(--radius);
-      box-shadow: var(--shadow);
-    }
-
-    .hero-card,
-    .panel {
-      padding: 22px;
-    }
-
-    .hero-points {
-      display: grid;
-      gap: 11px;
-      margin-top: 18px;
-    }
-
-    .hero-point {
-      display: flex;
-      gap: 10px;
-      align-items: center;
-      font-weight: 750;
-    }
-
-    .hero-point-icon {
-      width: 35px;
-      height: 35px;
-      border-radius: 11px;
-      display: grid;
-      place-items: center;
-      background: var(--brand-light);
-    }
-
-    .feature-grid {
-      display: grid;
-      grid-template-columns: repeat(4, 1fr);
-      gap: 16px;
-    }
-
-    .feature {
-      min-height: 185px;
-      padding: 20px;
-    }
-
+    .feature { padding:20px; min-height:190px; }
     .icon {
-      width: 50px;
-      height: 50px;
-      border-radius: 15px;
-      display: grid;
-      place-items: center;
-      background: var(--brand-light);
-      font-size: 1.55rem;
-      margin-bottom: 14px;
+      width:50px;
+      height:50px;
+      border-radius:15px;
+      display:grid;
+      place-items:center;
+      background:var(--brand-light);
+      font-size:1.5rem;
+      margin-bottom:14px;
     }
 
-    .workspace-grid,
-    .community-grid,
-    .swap-grid,
-    .profile-grid,
-    .messages-grid {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 17px;
+    .field { display:grid; gap:7px; margin:12px 0; }
+    .field label { font-weight:800; font-size:.91rem; }
+    .field input,.field textarea,.field select {
+      width:100%;
+      border:1px solid var(--line);
+      border-radius:13px;
+      padding:12px;
+      background:#fff;
+      color:var(--ink);
+      outline:none;
     }
-
-    .field {
-      display: grid;
-      gap: 7px;
-      margin: 12px 0;
+    .field input:focus,.field textarea:focus,.field select:focus {
+      border-color:var(--brand);
+      box-shadow:0 0 0 3px rgba(31,122,103,.11);
     }
+    .field textarea { min-height:105px; resize:vertical; }
 
-    .field label {
-      font-weight: 800;
-      font-size: 0.91rem;
+    .item {
+      padding:15px;
+      border:1px solid var(--line);
+      border-radius:16px;
+      background:#fff;
     }
-
-    .field input,
-    .field textarea,
-    .field select {
-      width: 100%;
-      border: 1px solid var(--line);
-      border-radius: 13px;
-      padding: 12px;
-      background: white;
-      color: var(--ink);
-      outline: none;
+    .item-top {
+      display:flex;
+      justify-content:space-between;
+      align-items:flex-start;
+      gap:12px;
     }
-
-    .field input:focus,
-    .field textarea:focus,
-    .field select:focus {
-      border-color: var(--brand);
-      box-shadow: 0 0 0 3px rgba(31, 122, 103, 0.11);
-    }
-
-    .field textarea {
-      min-height: 105px;
-      resize: vertical;
-    }
-
-    .inline-fields {
-      display: grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 10px;
-    }
-
-    .list {
-      display: grid;
-      gap: 11px;
-      margin-top: 14px;
-    }
-
-    .swap-card,
-    .question-card,
-    .notification-card,
-    .conversation-card,
-    .review-card {
-      padding: 15px;
-      border: 1px solid var(--line);
-      border-radius: 16px;
-      background: white;
-    }
-
-    .swap-card {
-      border-left: 5px solid var(--purple);
-    }
-
-    .swap-top,
-    .card-top,
-    .profile-header,
-    .conversation-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: flex-start;
-      gap: 12px;
-    }
-
     .tag {
-      display: inline-flex;
-      padding: 6px 10px;
-      border-radius: 999px;
-      background: var(--purple-light);
-      color: #6d28d9;
-      font-size: 0.76rem;
-      font-weight: 900;
-      margin: 3px 4px 3px 0;
+      display:inline-flex;
+      padding:6px 10px;
+      border-radius:999px;
+      background:var(--purple-light);
+      color:#6d28d9;
+      font-size:.76rem;
+      font-weight:900;
+      margin:3px 4px 3px 0;
     }
 
-    .tag.green {
-      background: var(--brand-light);
-      color: var(--brand-dark);
-    }
-
-    .badge {
-      display: inline-flex;
-      padding: 6px 10px;
-      border-radius: 999px;
-      background: var(--brand-light);
-      color: var(--brand);
-      font-size: 0.76rem;
-      font-weight: 900;
-    }
-
-    .rating {
-      color: var(--gold);
-      font-weight: 900;
-    }
-
-    .profile-avatar {
-      width: 76px;
-      height: 76px;
-      border-radius: 50%;
-      object-fit: cover;
-      background: var(--brand-light);
-      border: 3px solid white;
-      box-shadow: 0 5px 18px rgba(16, 42, 67, 0.13);
-    }
-
-    .avatar-placeholder {
-      width: 76px;
-      height: 76px;
-      border-radius: 50%;
-      display: grid;
-      place-items: center;
-      background: var(--brand);
-      color: white;
-      font-size: 1.45rem;
-      font-weight: 900;
-    }
-
-    .profile-skills {
-      display: flex;
-      gap: 6px;
-      flex-wrap: wrap;
-      margin-top: 10px;
-    }
-
-    .chat-shell {
-      overflow: hidden;
-    }
-
+    .chat-shell { overflow:hidden; }
     .chat-top {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      padding: 18px 20px;
-      border-bottom: 1px solid var(--line);
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      padding:18px 20px;
+      border-bottom:1px solid var(--line);
     }
-
     .messages {
-      height: 340px;
-      overflow: auto;
-      padding: 18px;
-      background: #fbfdff;
+      height:360px;
+      overflow:auto;
+      padding:18px;
+      background:#fbfdff;
     }
-
     .message {
-      max-width: 86%;
-      padding: 11px 13px;
-      border-radius: 15px;
-      margin: 8px 0;
-      white-space: pre-wrap;
-      line-height: 1.45;
+      max-width:86%;
+      padding:11px 13px;
+      border-radius:15px;
+      margin:8px 0;
+      white-space:pre-wrap;
+      line-height:1.48;
     }
-
-    .message.ai {
-      background: white;
-      border: 1px solid var(--line);
-    }
-
-    .message.user {
-      margin-left: auto;
-      background: var(--brand);
-      color: white;
-    }
-
-    .private-message {
-      max-width: 82%;
-      padding: 10px 12px;
-      border-radius: 14px;
-      margin: 7px 0;
-      line-height: 1.4;
-    }
-
-    .private-message.mine {
-      margin-left: auto;
-      background: var(--purple);
-      color: white;
-    }
-
-    .private-message.theirs {
-      background: white;
-      border: 1px solid var(--line);
-    }
-
-    .message-time {
-      display: block;
-      margin-top: 5px;
-      font-size: 0.7rem;
-      opacity: 0.73;
-    }
-
-    .chat-compose {
-      display: flex;
-      gap: 8px;
-      padding: 14px;
-      border-top: 1px solid var(--line);
-    }
-
-    .chat-compose textarea,
-    .private-compose textarea {
-      flex: 1;
-      min-height: 48px;
-      max-height: 130px;
-      border: 1px solid var(--line);
-      border-radius: 13px;
-      padding: 11px;
-      resize: vertical;
-    }
-
-    .private-compose {
-      display: flex;
-      gap: 8px;
-      margin-top: 12px;
-    }
-
-    .conversation-card {
-      cursor: pointer;
-    }
-
-    .conversation-card:hover {
-      border-color: var(--purple);
-    }
-
-    .conversation-card.active {
-      border-color: var(--purple);
-      box-shadow: 0 0 0 3px rgba(124, 58, 237, 0.09);
-    }
-
-    .unread-dot {
-      width: 11px;
-      height: 11px;
-      border-radius: 50%;
-      background: var(--red);
-      display: inline-block;
+    .message.ai { background:#fff; border:1px solid var(--line); }
+    .message.user { margin-left:auto; background:var(--brand); color:#fff; }
+    .chat-compose { display:flex; gap:8px; padding:14px; border-top:1px solid var(--line); }
+    .chat-compose textarea {
+      flex:1;
+      min-height:50px;
+      max-height:130px;
+      padding:11px;
+      border:1px solid var(--line);
+      border-radius:13px;
+      resize:vertical;
     }
 
     .modal {
-      position: fixed;
-      inset: 0;
-      z-index: 60;
-      background: rgba(16, 42, 67, 0.58);
-      display: grid;
-      place-items: center;
-      padding: 18px;
+      position:fixed;
+      inset:0;
+      z-index:100;
+      background:rgba(16,42,67,.6);
+      display:grid;
+      place-items:center;
+      padding:18px;
     }
-
     .modal-card {
-      width: min(500px, 100%);
-      max-height: calc(100vh - 36px);
-      overflow: auto;
-      background: white;
-      border-radius: 22px;
-      padding: 22px;
-      box-shadow: var(--shadow);
+      width:min(500px,100%);
+      max-height:calc(100vh - 36px);
+      overflow:auto;
+      background:#fff;
+      border-radius:22px;
+      padding:22px;
+      box-shadow:var(--shadow);
     }
-
-    .modal-card.wide {
-      width: min(820px, 100%);
-    }
-
     .modal-title {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      gap: 12px;
-      margin-bottom: 12px;
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      gap:12px;
     }
 
-    .empty-state {
-      padding: 22px;
-      text-align: center;
-      border: 1px dashed var(--line);
-      border-radius: 16px;
-      color: var(--muted);
+    footer { padding:38px 0 52px; text-align:center; color:var(--muted); }
+
+    @media (max-width:940px) {
+      nav { display:none; }
+      .actions { margin-left:auto; }
+      .grid-2 { grid-template-columns:1fr; }
+      .grid-4 { grid-template-columns:1fr 1fr; }
     }
-
-    .safety-box {
-      padding: 13px;
-      border-radius: 14px;
-      background: #fff7ed;
-      color: #9a3412;
-      font-size: 0.87rem;
-      line-height: 1.5;
-      margin-top: 14px;
-    }
-
-    footer {
-      padding: 38px 0 52px;
-      text-align: center;
-      color: var(--muted);
-    }
-
-    @media (max-width: 940px) {
-      nav {
-        display: none;
-      }
-
-      .actions {
-        margin-left: auto;
-      }
-
-      .hero-grid,
-      .workspace-grid,
-      .community-grid,
-      .swap-grid,
-      .profile-grid,
-      .messages-grid {
-        grid-template-columns: 1fr;
-      }
-
-      .feature-grid {
-        grid-template-columns: 1fr 1fr;
-      }
-    }
-
-    @media (max-width: 600px) {
-      .feature-grid,
-      .inline-fields {
-        grid-template-columns: 1fr;
-      }
-
-      .actions .btn {
-        padding: 9px 10px;
-        font-size: 0.82rem;
-      }
-
-      .brand span:last-child {
-        max-width: 145px;
-      }
-
-      .hero {
-        padding-top: 35px;
-      }
-
-      h1 {
-        font-size: 3rem;
-      }
-
-      .notification-button {
-        width: 39px;
-        height: 39px;
-      }
+    @media (max-width:620px) {
+      .grid-4 { grid-template-columns:1fr; }
+      .actions .btn { padding:9px 10px; font-size:.8rem; }
+      .brand span:last-child { max-width:135px; }
+      h1 { font-size:3rem; }
+      .hero { padding-top:38px; }
     }
   </style>
 </head>
 
 <body>
-
 <header>
   <div class="wrap nav">
-
     <div class="brand">
       <span class="brand-mark">LC</span>
       <span>LifeCompass AI</span>
@@ -724,1401 +339,252 @@
       <a href="#skills">Life Skills</a>
       <a href="#skill-swap">Skill Swap</a>
       <a href="#community">Community</a>
-      <a href="#messages-section">Messages</a>
+      <a href="#documents">Documents</a>
       <a href="#assistant">AI Assistant</a>
     </nav>
 
     <div class="actions">
-
-      <button
-        class="notification-button hidden"
-        id="notificationButton"
-        aria-label="Notifications"
-      >
-        🔔
-        <span
-          class="notification-count hidden"
-          id="notificationCount"
-        >
-          0
-        </span>
-      </button>
-
-      <button
-        class="btn secondary"
-        id="profileOpen"
-      >
-        Profile
-      </button>
-
-  <a
-  class="btn secondary"
-  id="loginOpen"
-  href="#authModal"
->
-  Log in
-</a>
-
-
-      <button
-        class="btn"
-        id="joinOpen"
-      >
-        Join free
-      </button>
-
-      <a
-        class="btn hidden"
-        id="subscribeBtn"
-        href="https://buy.stripe.com/eVq00ieNo2kKaPp0I2f7i00"
-        target="_blank"
-        rel="noopener"
-      >
-        Upgrade
-      </a>
-
-      <button
-        class="btn ghost hidden"
-        id="logoutBtn"
-      >
-        Log out
-      </button>
-
+      <button class="btn secondary" id="loginOpen" type="button">Log in</button>
+      <button class="btn" id="joinOpen" type="button">Join free</button>
+      <a class="btn hidden" id="subscribeBtn"
+         href="https://buy.stripe.com/eVq00ieNo2kKaPp0I2f7i00"
+         target="_blank" rel="noopener">Upgrade</a>
+      <button class="btn ghost hidden" id="logoutBtn" type="button">Log out</button>
     </div>
   </div>
 </header>
 
 <main>
-
-<section class="hero" id="home" style="
-  padding:42px 0 34px;
-  overflow:hidden;
-  position:relative;
-">
-
-  <div style="
-    position:absolute;
-    width:320px;
-    height:320px;
-    border-radius:50%;
-    background:rgba(63,137,116,.09);
-    top:-130px;
-    right:-160px;
-    pointer-events:none;
-  "></div>
-
-  <div class="wrap">
-
-    <div style="
-      max-width:920px;
-      margin:0 auto;
-      text-align:center;
-      position:relative;
-      z-index:1;
-    ">
-
-      <div class="eyebrow" style="
-        display:inline-flex;
-        align-items:center;
-        gap:8px;
-        padding:8px 13px;
-        border:1px solid rgba(63,137,116,.25);
-        border-radius:999px;
-        background:rgba(255,255,255,.78);
-        margin-bottom:20px;
-      ">
-        <span>🧭</span>
-        Your everyday life assistant
-      </div>
-
-      <h1 style="
-        max-width:860px;
-        margin:0 auto;
-        font-size:clamp(2.65rem,9vw,5.4rem);
-        line-height:.96;
-        letter-spacing:-.065em;
-      ">
-        Life is complicated.<br>
-        <span style="color:var(--primary);">
-          Getting help shouldn’t be.
-        </span>
-      </h1>
-
-      <p class="lead" style="
-        max-width:710px;
-        margin:24px auto 0;
-        font-size:clamp(1.05rem,4vw,1.28rem);
-        line-height:1.65;
-      ">
-        Understand confusing documents, solve everyday problems,
-        learn practical skills and connect with people who can help —
-        all in one simple place.
+  <section class="hero" id="home">
+    <div class="wrap hero-inner">
+      <div class="eyebrow"><span>ð§­</span> Your everyday life assistant</div>
+      <h1>Life is complicated.<br><span style="color:var(--brand)">Getting help shouldnât be.</span></h1>
+      <p class="lead">
+        Understand confusing documents, solve everyday problems, learn practical skills
+        and connect with people who can help â all in one simple place.
       </p>
 
-      <div style="
-        min-height:55px;
-        max-width:660px;
-        margin:25px auto 0;
-        padding:14px 18px;
-        border-radius:17px;
-        background:#fff;
-        border:1px solid var(--line);
-        box-shadow:0 12px 36px rgba(21,43,67,.08);
-        display:flex;
-        align-items:center;
-        justify-content:center;
-        gap:10px;
-      ">
-        <span style="font-size:1.3rem;">💬</span>
-        <strong id="rotatingExample" style="
-          color:var(--ink);
-          font-size:1rem;
-        ">
-          “Explain this letter in plain English.”
-        </strong>
+      <div class="hero-buttons">
+        <button class="btn" id="heroStart" type="button">Start free</button>
+        <a class="btn secondary" href="#assistant">See how it works</a>
       </div>
 
-      <div style="
-        display:flex;
-        justify-content:center;
-        gap:12px;
-        flex-wrap:wrap;
-        margin-top:25px;
-      ">
-
-        <button
-          class="btn"
-          type="button"
-          onclick="document.getElementById('joinOpen')?.click()"
-          style="
-            min-width:230px;
-            padding:16px 25px;
-            font-size:1.08rem;
-            box-shadow:0 12px 26px rgba(63,137,116,.24);
-          "
-        >
-          Start free
-        </button>
-
-        <a
-          class="btn secondary"
-          href="#assistant"
-          style="
-            min-width:210px;
-            padding:16px 25px;
-            font-size:1.08rem;
-          "
-        >
-          See how it works
-        </a>
-
+      <div class="trust-row">
+        <span>â 10 free AI messages</span>
+        <span>â No card required</span>
+        <span>â Takes under 30 seconds</span>
       </div>
-
-      <div style="
-        display:flex;
-        justify-content:center;
-        gap:14px;
-        flex-wrap:wrap;
-        margin-top:16px;
-        color:var(--muted);
-        font-size:.9rem;
-        font-weight:700;
-      ">
-        <span>✓ 10 free AI messages</span>
-        <span>✓ No card required</span>
-        <span>✓ Takes under 30 seconds</span>
-      </div>
-
     </div>
+  </section>
 
-    <div style="
-      max-width:1050px;
-      margin:42px auto 0;
-      display:grid;
-      grid-template-columns:repeat(auto-fit,minmax(215px,1fr));
-      gap:15px;
-    ">
-
-      <a href="#assistant" style="
-        text-decoration:none;
-        color:inherit;
-        padding:22px;
-        border-radius:21px;
-        background:#fff;
-        border:1px solid var(--line);
-        box-shadow:0 12px 30px rgba(21,43,67,.06);
-      ">
-        <div style="font-size:2rem;">🤖</div>
-        <h3 style="margin:12px 0 7px;">AI Assistant</h3>
-        <p class="muted" style="margin:0;line-height:1.55;">
-          Ask questions and receive clear, step-by-step guidance.
-        </p>
-      </a>
-
-      <a href="#documents" style="
-        text-decoration:none;
-        color:inherit;
-        padding:22px;
-        border-radius:21px;
-        background:#fff;
-        border:1px solid var(--line);
-        box-shadow:0 12px 30px rgba(21,43,67,.06);
-      ">
-        <div style="font-size:2rem;">📄</div>
-        <h3 style="margin:12px 0 7px;">Document Helper</h3>
-        <p class="muted" style="margin:0;line-height:1.55;">
-          Upload letters and paperwork and understand what they mean.
-        </p>
-      </a>
-
-      <a href="#skills" style="
-        text-decoration:none;
-        color:inherit;
-        padding:22px;
-        border-radius:21px;
-        background:#fff;
-        border:1px solid var(--line);
-        box-shadow:0 12px 30px rgba(21,43,67,.06);
-      ">
-        <div style="font-size:2rem;">🤝</div>
-        <h3 style="margin:12px 0 7px;">Skill Swap</h3>
-        <p class="muted" style="margin:0;line-height:1.55;">
-          Share what you know and find useful help from people nearby.
-        </p>
-      </a>
-
-      <a href="#community" style="
-        text-decoration:none;
-        color:inherit;
-        padding:22px;
-        border-radius:21px;
-        background:#fff;
-        border:1px solid var(--line);
-        box-shadow:0 12px 30px rgba(21,43,67,.06);
-      ">
-        <div style="font-size:2rem;">👥</div>
-        <h3 style="margin:12px 0 7px;">Community Help</h3>
-        <p class="muted" style="margin:0;line-height:1.55;">
-          Ask real people, share experience and help each other.
-        </p>
-      </a>
-
-    </div>
-
-    <div style="
-      max-width:1000px;
-      margin:24px auto 0;
-      padding:25px;
-      border-radius:24px;
-      background:linear-gradient(135deg,#17304d,#244f68);
-      color:#fff;
-      box-shadow:0 18px 42px rgba(21,43,67,.18);
-    ">
-
-      <div style="
-        display:grid;
-        grid-template-columns:repeat(auto-fit,minmax(260px,1fr));
-        gap:24px;
-        align-items:center;
-      ">
-
-        <div>
-          <span style="
-            display:inline-block;
-            padding:7px 11px;
-            border-radius:999px;
-            background:rgba(255,255,255,.13);
-            font-size:.8rem;
-            font-weight:800;
-            margin-bottom:12px;
-          ">
-            BUILT FOR REAL LIFE
-          </span>
-
-          <h2 style="
-            color:#fff;
-            margin:0;
-            font-size:clamp(1.7rem,6vw,2.5rem);
-            line-height:1.08;
-          ">
-            One place for the things nobody taught you.
-          </h2>
-
-          <p style="
-            color:rgba(255,255,255,.78);
-            line-height:1.6;
-            margin:14px 0 0;
-          ">
-            From bills and home repairs to contracts, cars and careers,
-            LifeCompass turns confusion into clear next steps.
-          </p>
-        </div>
-
-        <div style="
-          display:grid;
-          gap:10px;
-        ">
-          <div style="
-            padding:14px 16px;
-            border-radius:14px;
-            background:rgba(255,255,255,.1);
-          ">
-            ✓ Clear, plain-English answers
-          </div>
-
-          <div style="
-            padding:14px 16px;
-            border-radius:14px;
-            background:rgba(255,255,255,.1);
-          ">
-            ✓ Practical guidance for everyday problems
-          </div>
-
-          <div style="
-            padding:14px 16px;
-            border-radius:14px;
-            background:rgba(255,255,255,.1);
-          ">
-            ✓ AI tools and community support together
-          </div>
-        </div>
-
+  <section class="section" id="features">
+    <div class="wrap">
+      <div class="grid-4">
+        <article class="card feature">
+          <div class="icon">ð¬</div>
+          <h3>Ask LifeCompass AI</h3>
+          <p class="muted">Get clear, practical help with everyday questions in plain English.</p>
+        </article>
+        <article class="card feature">
+          <div class="icon">ð</div>
+          <h3>Document Helper</h3>
+          <p class="muted">Upload readable documents and understand deadlines, costs, risks and next steps.</p>
+        </article>
+        <article class="card feature">
+          <div class="icon">ð¤</div>
+          <h3>Skill Swap</h3>
+          <p class="muted">List what you can offer and what help you need from other members.</p>
+        </article>
+        <article class="card feature">
+          <div class="icon">ð </div>
+          <h3>Practical Life Skills</h3>
+          <p class="muted">Learn the things nobody taught you, from bills and council tax to basic DIY.</p>
+        </article>
       </div>
-
     </div>
+  </section>
 
-    <div style="
-      max-width:850px;
-      margin:26px auto 0;
-      text-align:center;
-      padding:28px 20px;
-      border-radius:22px;
-      background:rgba(63,137,116,.09);
-      border:1px solid rgba(63,137,116,.18);
-    ">
-
-      <h2 style="margin:0;">
-        Ready to make life easier?
-      </h2>
-
-      <p class="muted" style="margin:10px 0 18px;">
-        Create your free account and ask your first question today.
-      </p>
-
-      <button
-        class="btn"
-        type="button"
-        onclick="document.getElementById('joinOpen')?.click()"
-        style="padding:15px 25px;font-size:1.05rem;"
-      >
-        Create my free account
-      </button>
-
-    </div>
-
-  </div>
-
-  <script>
-    (() => {
-      const examples
-    <div class="eyebrow">
-      Nobody Taught Me This
-    </div>
-
-    <h2>
-      Practical help for real life.
-    </h2>
-
-    <div class="feature-grid">
-
-      <div class="card feature">
-        <div class="icon">🏠</div>
-
-        <h3>Home & DIY</h3>
-
-        <p class="muted">
-          Heating, repairs, decorating, maintenance and practical jobs.
-        </p>
-
-        <button
-          class="btn secondary promptBtn"
-          data-prompt="Teach me a useful beginner home DIY skill safely and step by step."
-        >
-          Try a task
-        </button>
-      </div>
-
-      <div class="card feature">
-        <div class="icon">💷</div>
-
-        <h3>Money & housing</h3>
-
-        <p class="muted">
-          Bills, council tax, renting, credit and household budgeting.
-        </p>
-
-        <button
-          class="btn secondary promptBtn"
-          data-prompt="Help me understand my household bills and create a simple monthly budget in pounds."
-        >
-          Get help
-        </button>
-      </div>
-
-      <div class="card feature">
-        <div class="icon">🚗</div>
-
-        <h3>Cars & travel</h3>
-
-        <p class="muted">
-          MOTs, warning lights, tyres, oil, insurance and travel questions.
-        </p>
-
-        <button
-          class="btn secondary promptBtn"
-          data-prompt="Give me a basic car safety and maintenance checklist."
-        >
-          Open checklist
-        </button>
-      </div>
-
-      <div class="card feature">
-        <div class="icon">📄</div>
-
-        <h3>Document Helper</h3>
-
-        <p class="muted">
-          Choose a document and ask the AI to explain it clearly.
-        </p>
-
-        <input
-          id="documentFile"
-          type="file"
-          style="max-width:100%;"
-        >
-
-        <button
-          class="btn secondary"
-          id="askDocument"
-          style="margin-top:10px;"
-        >
-          Ask about document
-        </button>
-      </div>
-
-    </div>
-  </div>
-</section>
-
-<section class="section" id="skill-swap">
-  <div class="wrap">
-
-    <div
-      class="eyebrow"
-      style="color:var(--purple);"
-    >
-      Share skills, save money
-    </div>
-
-    <h2>
-      🤝 Skill Swap
-    </h2>
-
-    <p class="lead">
-      Offer a skill you know and find someone who can help with something
-      you want to learn or complete.
-    </p>
-
-    <div class="swap-grid">
-
-      <section class="card panel">
-
-        <h3>Create a Skill Swap listing</h3>
-
-        <div class="field">
-          <label for="swapName">
-            Display name
-          </label>
-
-          <input
-            id="swapName"
-            maxlength="80"
-            placeholder="For example: Paul"
-          >
-        </div>
-
-        <div class="inline-fields">
-
-          <div class="field">
-            <label for="swapLocation">
-              Approximate location
-            </label>
-
-            <input
-              id="swapLocation"
-              maxlength="120"
-              placeholder="For example: Sutton"
-            >
-          </div>
-
-          <div class="field">
-            <label for="swapType">
-              How can you help?
-            </label>
-
-            <select id="swapType">
-              <option value="local">
-                In person
-              </option>
-
-              <option value="online">
-                Online
-              </option>
-
-              <option value="both">
-                Online or in person
-              </option>
-            </select>
-          </div>
-
-        </div>
-
-        <div class="field">
-          <label for="swapOffer">
-            Skill you can offer
-          </label>
-
-          <input
-            id="swapOffer"
-            maxlength="160"
-            placeholder="For example: Bricklaying or basic DIY"
-          >
-        </div>
-
-        <div class="field">
-          <label for="swapNeed">
-            Skill or help you need
-          </label>
-
-          <input
-            id="swapNeed"
-            maxlength="160"
-            placeholder="For example: Guitar lessons"
-          >
-        </div>
-
-        <div class="field">
-          <label for="swapDescription">
-            Short description
-          </label>
-
-          <textarea
-            id="swapDescription"
-            maxlength="1000"
-            placeholder="Explain what you can offer, what you need and when you are usually available."
-          ></textarea>
-        </div>
-
-        <button
-          class="btn purple"
-          id="postSwap"
-        >
-          Post Skill Swap
-        </button>
-
-        <div
-          class="status"
-          id="swapStatus"
-          style="margin-top:10px;"
-        >
-          Log in to create a public listing.
-        </div>
-
-        <div class="safety-box">
-          <strong>Stay safe:</strong>
-          Never post your full address, passwords, bank details or private
-          identification. Arrange first meetings in a sensible public place
-          where appropriate.
-        </div>
-
-      </section>
-
-      <section class="card panel">
-
-        <div class="card-top">
+  <section class="section" id="assistant">
+    <div class="wrap">
+      <div class="card chat-shell">
+        <div class="chat-top">
           <div>
-            <h3>Available Skill Swaps</h3>
-
-            <p class="status">
-              Search listings and contact members privately.
-            </p>
-          </div>
-
-          <span class="badge">
-            Live community
-          </span>
-        </div>
-
-        <div class="field">
-          <input
-            id="swapSearch"
-            placeholder="Search skills, names or locations"
-          >
-        </div>
-
-        <div class="inline-fields">
-
-          <div class="field">
-            <select id="swapModeFilter">
-              <option value="">
-                All listings
-              </option>
-
-              <option value="local">
-                In person
-              </option>
-
-              <option value="online">
-                Online
-              </option>
-
-              <option value="both">
-                Online or in person
-              </option>
-            </select>
-          </div>
-
-          <div class="field">
-            <select id="swapDistanceFilter">
-              <option value="">
-                Any distance
-              </option>
-
-              <option value="5">
-                Within 5 miles
-              </option>
-
-              <option value="10">
-                Within 10 miles
-              </option>
-
-              <option value="25">
-                Within 25 miles
-              </option>
-
-              <option value="50">
-                Within 50 miles
-              </option>
-            </select>
-          </div>
-
-        </div>
-
-        <button
-          class="btn secondary small"
-          id="useLocationButton"
-        >
-          📍 Use my current location
-        </button>
-
-        <div
-          class="status"
-          id="locationStatus"
-          style="margin-top:8px;"
-        >
-          Location is optional and is only used to estimate distance.
-        </div>
-
-        <div
-          id="swapFeed"
-          class="list"
-        ></div>
-
-      </section>
-
-    </div>
-  </div>
-</section>
-
-<section class="section" id="profile-section">
-  <div class="wrap">
-
-    <div class="eyebrow">
-      Member profiles
-    </div>
-
-    <h2>
-      Show what you know.
-    </h2>
-
-    <div class="profile-grid">
-
-      <section class="card panel">
-
-        <div class="profile-header">
-
-          <div>
-            <h3>Your Skill Swap profile</h3>
-
-            <p class="status">
-              Add a name, short bio, location and your main skills.
-            </p>
-          </div>
-
-          <div
-            class="avatar-placeholder"
-            id="profileAvatarPreview"
-          >
-            LC
-          </div>
-
-        </div>
-
-        <div class="field">
-          <label for="profileName">
-            Display name
-          </label>
-
-          <input
-            id="profileName"
-            maxlength="80"
-            placeholder="Your public display name"
-          >
-        </div>
-
-        <div class="field">
-          <label for="profileBio">
-            Short bio
-          </label>
-
-          <textarea
-            id="profileBio"
-            maxlength="500"
-            placeholder="Tell members a little about your experience and interests."
-          ></textarea>
-        </div>
-
-        <div class="field">
-          <label for="profileSkills">
-            Your skills
-          </label>
-
-          <input
-            id="profileSkills"
-            maxlength="500"
-            placeholder="For example: Bricklaying, decorating, gardening"
-          >
-
-          <span class="status">
-            Separate each skill with a comma.
-          </span>
-        </div>
-
-        <div class="field">
-          <label for="profileLocation">
-            Approximate location
-          </label>
-
-          <input
-            id="profileLocation"
-            maxlength="120"
-            placeholder="For example: Sutton"
-          >
-        </div>
-
-        <div class="field">
-          <label for="profileAvatarUrl">
-            Profile picture link
-          </label>
-
-          <input
-            id="profileAvatarUrl"
-            type="url"
-            placeholder="Paste an image link here"
-          >
-        </div>
-
-        <button
-          class="btn"
-          id="saveProfile"
-        >
-          Save profile
-        </button>
-
-        <div
-          class="status"
-          id="profileStatus"
-          style="margin-top:10px;"
-        >
-          Log in to create or update your profile.
-        </div>
-
-      </section>
-
-      <section class="card panel">
-
-        <h3>Profile preview</h3>
-
-        <div
-          id="publicProfilePreview"
-          class="empty-state"
-        >
-          Log in and save your profile to see your public preview.
-        </div>
-
-        <div style="margin-top:18px;">
-          <h3>Your reviews</h3>
-
-          <div
-            id="myReviews"
-            class="list"
-          >
-            <div class="empty-state">
-              No reviews yet.
-            </div>
+            <h2 style="font-size:1.55rem;margin:0">LifeCompass AI Assistant</h2>
+            <div class="status" id="userStatus">You can try the assistant without logging in.</div>
           </div>
         </div>
 
-      </section>
-
-    </div>
-  </div>
-</section>
-<section class="section" id="messages-section">
-  <div class="wrap">
-
-    <div
-      class="eyebrow"
-      style="color:var(--purple);"
-    >
-      Private member contact
-    </div>
-
-    <h2>
-      💬 Messages
-    </h2>
-
-    <p class="lead">
-      Contact Skill Swap members without publishing personal phone numbers
-      or email addresses.
-    </p>
-
-    <div class="messages-grid">
-
-      <section class="card panel">
-
-        <div class="card-top">
-          <div>
-            <h3>Your conversations</h3>
-
-            <p class="status">
-              Select a conversation to open it.
-            </p>
-          </div>
-
-          <button
-            class="btn secondary small"
-            id="refreshConversations"
-          >
-            Refresh
-          </button>
+        <div class="messages" id="chatMessages">
+          <div class="message ai">Hello â what would you like help with today?</div>
         </div>
 
-        <div
-          id="conversationList"
-          class="list"
-        >
-          <div class="empty-state">
-            Log in to view your private messages.
-          </div>
-        </div>
-
-      </section>
-
-      <section class="card panel">
-
-        <div class="conversation-header">
-
-          <div>
-            <h3 id="activeConversationName">
-              Select a conversation
-            </h3>
-
-            <div
-              class="status"
-              id="activeConversationDetails"
-            >
-              Your private messages will appear here.
-            </div>
-          </div>
-
-          <button
-            class="btn secondary small hidden"
-            id="reviewMemberButton"
-          >
-            ⭐ Leave review
-          </button>
-
-        </div>
-
-        <div
-          id="privateMessageFeed"
-          class="messages"
-          style="margin-top:14px;"
-        >
-          <div class="empty-state">
-            No conversation selected.
-          </div>
-        </div>
-
-        <div class="private-compose">
-
-          <textarea
-            id="privateMessageInput"
-            maxlength="2000"
-            placeholder="Write a private message..."
-            disabled
-          ></textarea>
-
-          <button
-            class="btn purple"
-            id="sendPrivateMessage"
-            disabled
-          >
-            Send
-          </button>
-
-        </div>
-
-        <div
-          class="status"
-          id="messageStatus"
-          style="margin-top:8px;"
-        ></div>
-
-      </section>
-
-    </div>
-  </div>
-</section>
-
-<section class="section" id="community">
-  <div class="wrap">
-
-    <div class="eyebrow">
-      Community Help
-    </div>
-
-    <h2>
-      Ask people who have been there.
-    </h2>
-
-    <div class="community-grid">
-
-      <section class="card panel">
-
-        <h3>Ask the community</h3>
-
-        <div class="field">
-          <input
-            id="communityName"
-            maxlength="80"
-            placeholder="Display name"
-          >
-        </div>
-
-        <div class="field">
-          <textarea
-            id="communityQuestion"
-            maxlength="1200"
-            placeholder="What would you like help with?"
-          ></textarea>
-        </div>
-
-        <button
-          class="btn"
-          id="postCommunityQuestion"
-        >
-          Post question
-        </button>
-
-        <div
-          class="status"
-          id="communityStatus"
-          style="margin-top:10px;"
-        >
-          Log in to post a community question.
-        </div>
-
-      </section>
-
-      <section class="card panel">
-
-        <div class="card-top">
-          <div>
-            <h3>Recent questions</h3>
-
-            <p class="status">
-              Community posts are visible to other members.
-            </p>
-          </div>
-
-          <button
-            class="btn secondary small"
-            id="refreshCommunity"
-          >
-            Refresh
-          </button>
-        </div>
-
-        <div
-          id="communityFeed"
-          class="list"
-        >
-          <div class="empty-state">
-            Loading community questions...
-          </div>
-        </div>
-
-      </section>
-
-    </div>
-  </div>
-</section>
-
-<section class="section" id="assistant">
-  <div class="wrap">
-
-    <div class="eyebrow">
-      AI Assistant
-    </div>
-
-    <h2>
-      Ask LifeCompass AI.
-    </h2>
-
-    <div class="card chat-shell">
-
-      <div class="chat-top">
-
-        <div>
-          <h3>Everyday help</h3>
-
-          <div
-            class="status"
-            id="chatStatus"
-          >
-            You can try up to 10 free messages.
-          </div>
-        </div>
-
-        <span class="badge">
-          Clear, practical answers
-        </span>
-
-      </div>
-
-      <div
-        class="messages"
-        id="chatMessages"
-      >
-        <div class="message ai">
-          Hello. I’m LifeCompass AI. Ask me about household bills,
-          practical life skills, confusing letters, DIY basics,
-          travel, work or everyday problems.
+        <div class="chat-compose">
+          <textarea id="chatInput" placeholder="Ask a questionâ¦"></textarea>
+          <button class="btn" id="sendChat" type="button">Send</button>
         </div>
       </div>
+    </div>
+  </section>
 
-      <div class="chat-compose">
-
-        <textarea
-          id="chatInput"
-          maxlength="8000"
-          placeholder="Ask a question..."
-        ></textarea>
-
-        <button
-          class="btn"
-          id="sendChat"
-        >
-          Send
-        </button>
-
+  <section class="section" id="documents">
+    <div class="wrap grid-2">
+      <div class="card panel">
+        <h2>Document Helper</h2>
+        <p class="muted">Choose a text-based file and LifeCompass AI will explain it clearly.</p>
+        <div class="field">
+          <label for="documentFile">Choose document</label>
+          <input id="documentFile" type="file" accept=".txt,.csv,.md,.json,.html">
+        </div>
+        <button class="btn blue" id="askDocument" type="button">Explain this document</button>
+        <p class="status">For PDFs or scanned images, copy the readable text into the AI chat.</p>
       </div>
 
+      <div class="card panel">
+        <h2>Quick questions</h2>
+        <div class="list">
+          <button class="btn secondary promptBtn" type="button"
+            data-prompt="Explain how council tax works in the UK in simple language.">Council tax</button>
+          <button class="btn secondary promptBtn" type="button"
+            data-prompt="Explain how to read a household energy bill and spot the important figures.">Understanding bills</button>
+          <button class="btn secondary promptBtn" type="button"
+            data-prompt="Explain how to bleed a radiator safely, step by step.">Bleeding a radiator</button>
+          <button class="btn secondary promptBtn" type="button"
+            data-prompt="Help me write a clear professional email about a problem. Ask me for the details you need.">Write an email</button>
+        </div>
+      </div>
     </div>
-  </div>
-</section>
+  </section>
 
+  <section class="section" id="skills">
+    <div class="wrap">
+      <h2>Nobody Taught Me This</h2>
+      <p class="lead" style="margin:0">Simple guides for common adult-life tasks.</p>
+      <div class="grid-4" style="margin-top:18px">
+        <button class="card feature promptBtn" type="button" data-prompt="Explain council tax bands and how council tax is paid in the UK.">
+          <div class="icon">ð¡</div><h3>Council tax</h3><p class="muted">Bands, bills and payments.</p>
+        </button>
+        <button class="card feature promptBtn" type="button" data-prompt="Explain how to compare energy tariffs and understand standing charges and unit rates.">
+          <div class="icon">â¡</div><h3>Energy bills</h3><p class="muted">Standing charges and unit rates.</p>
+        </button>
+        <button class="card feature promptBtn" type="button" data-prompt="Give me a beginner-friendly guide to creating and following a monthly household budget.">
+          <div class="icon">ð·</div><h3>Budgeting</h3><p class="muted">Plan spending and avoid surprises.</p>
+        </button>
+        <button class="card feature promptBtn" type="button" data-prompt="Give me a safe beginner's checklist for basic home DIY and when to call a professional.">
+          <div class="icon">ð ï¸</div><h3>Basic DIY</h3><p class="muted">Know what you can safely do.</p>
+        </button>
+      </div>
+    </div>
+  </section>
+
+  <section class="section" id="community">
+    <div class="wrap grid-2">
+      <div class="card panel">
+        <h2>Community Help</h2>
+        <p class="muted">Ask a practical question for other LifeCompass members.</p>
+        <div class="field">
+          <label for="communityQuestion">Your question</label>
+          <textarea id="communityQuestion" placeholder="What do you need help with?"></textarea>
+        </div>
+        <button class="btn" id="postQuestion" type="button">Post question</button>
+        <div class="status" id="communityStatus" style="margin-top:10px"></div>
+      </div>
+
+      <div class="card panel">
+        <h2>Recent questions</h2>
+        <div class="list" id="communityList">
+          <div class="empty">Community questions will appear here.</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="section" id="skill-swap">
+    <div class="wrap grid-2">
+      <div class="card panel">
+        <h2>Skill Swap</h2>
+        <p class="muted">Offer a skill and tell people what help you need in return.</p>
+        <div class="field">
+          <label for="swapOffer">I can offer</label>
+          <input id="swapOffer" placeholder="Example: Basic DIY advice">
+        </div>
+        <div class="field">
+          <label for="swapNeed">I need help with</label>
+          <input id="swapNeed" placeholder="Example: Setting up social media">
+        </div>
+        <div class="field">
+          <label for="swapLocation">Area</label>
+          <input id="swapLocation" placeholder="Example: Sutton">
+        </div>
+        <button class="btn purple" id="postSwap" type="button">Post Skill Swap</button>
+        <div class="status" id="swapStatus" style="margin-top:10px"></div>
+      </div>
+
+      <div class="card panel">
+        <h2>Available swaps</h2>
+        <div class="list" id="swapList">
+          <div class="empty">Skill Swap listings will appear here.</div>
+        </div>
+      </div>
+    </div>
+  </section>
 </main>
 
 <footer>
   <div class="wrap">
-    <strong>LifeCompass AI</strong>
-
-    <div style="margin-top:7px;">
-      Practical guidance for everyday life.
-    </div>
-
-    <div
-      class="status"
-      style="margin-top:9px;"
-    >
-      AI responses may contain errors. Check important financial,
-      legal, medical and safety information with a qualified professional.
-    </div>
+    <strong>LifeCompass AI</strong><br>
+    <span>Everyday guidance, practical skills and community support.</span>
   </div>
 </footer>
 
-<div
-  class="modal hidden"
-  id="authModal"
->
-
+<div class="modal hidden" id="authModal" role="dialog" aria-modal="true" aria-labelledby="authModalTitle">
   <div class="modal-card">
-
     <div class="modal-title">
-      <h3 id="authModalTitle">
-        Log in
-      </h3>
-
-      <button
-        class="btn secondary small"
-        data-close-modal="authModal"
-      >
-        Close
-      </button>
+      <h2 id="authModalTitle" style="font-size:1.7rem;margin:0">Log in</h2>
+      <button class="btn secondary small" id="authClose" type="button">Close</button>
     </div>
 
-    <p class="status">
-      Enter your email address. We will send you a secure sign-in link.
-    </p>
+    <p class="muted">Use your email address and password.</p>
 
     <div class="field">
-      <label for="authEmail">
-        Email address
-      </label>
-
-      <input
-        id="authEmail"
-        type="email"
-        autocomplete="email"
-        placeholder="you@example.com"
-      >
-    </div>
-
-  <label for="authPassword">Password</label>
-
-<input
-  id="authPassword"
-  type="password"
-  placeholder="Enter your password"
-  autocomplete="current-password"
-/>
-
-<button class="btn" id="loginButton">
-  Log in
-</button>
-
-<p style="margin-top:10px;text-align:center;">
-  <a href="#" id="forgotPassword">Forgot password?</a>
-</p>
-
-    <div
-      class="status"
-      id="authStatus"
-      style="margin-top:12px;"
-    ></div>
-
-  </div>
-</div>
-
-<div
-  class="modal hidden"
-  id="notificationModal"
->
-
-  <div class="modal-card">
-
-    <div class="modal-title">
-      <h3>Notifications</h3>
-
-      <button
-        class="btn secondary small"
-        data-close-modal="notificationModal"
-      >
-        Close
-      </button>
-    </div>
-
-    <div
-      style="
-        display:flex;
-        justify-content:flex-end;
-        margin-bottom:10px;
-      "
-    >
-      <button
-        class="btn secondary small"
-        id="markAllNotificationsRead"
-      >
-        Mark all as read
-      </button>
-    </div>
-
-    <div
-      id="notificationFeed"
-      class="list"
-    >
-      <div class="empty-state">
-        No notifications yet.
-      </div>
-    </div>
-
-  </div>
-</div>
-
-<div
-  class="modal hidden"
-  id="publicProfileModal"
->
-
-  <div class="modal-card">
-
-    <div class="modal-title">
-      <h3>Member profile</h3>
-
-      <button
-        class="btn secondary small"
-        data-close-modal="publicProfileModal"
-      >
-        Close
-      </button>
-    </div>
-
-    <div
-      id="publicProfileModalContent"
-    >
-      <div class="empty-state">
-        Loading profile...
-      </div>
-    </div>
-
-  </div>
-</div>
-
-<div
-  class="modal hidden"
-  id="reviewModal"
->
-
-  <div class="modal-card">
-
-    <div class="modal-title">
-      <h3>Leave a review</h3>
-
-      <button
-        class="btn secondary small"
-        data-close-modal="reviewModal"
-      >
-        Close
-      </button>
-    </div>
-
-    <p
-      class="status"
-      id="reviewingMemberName"
-    >
-      Rate your experience with this member.
-    </p>
-
-    <div class="field">
-      <label for="reviewRating">
-        Rating
-      </label>
-
-      <select id="reviewRating">
-        <option value="5">
-          5 stars — Excellent
-        </option>
-
-        <option value="4">
-          4 stars — Very good
-        </option>
-
-        <option value="3">
-          3 stars — Good
-        </option>
-
-        <option value="2">
-          2 stars — Needs improvement
-        </option>
-
-        <option value="1">
-          1 star — Poor
-        </option>
-      </select>
+      <label for="authEmail">Email address</label>
+      <input id="authEmail" type="email" autocomplete="email" placeholder="you@example.com">
     </div>
 
     <div class="field">
-      <label for="reviewText">
-        Review
-      </label>
-
-      <textarea
-        id="reviewText"
-        maxlength="1000"
-        placeholder="Describe your experience fairly and honestly."
-      ></textarea>
+      <label for="authPassword">Password</label>
+      <input id="authPassword" type="password" autocomplete="current-password" minlength="6" placeholder="At least 6 characters">
     </div>
 
-    <button
-      class="btn"
-      id="submitReview"
-    >
-      Submit review
-    </button>
-
-    <div
-      class="status"
-      id="reviewStatus"
-      style="margin-top:10px;"
-    ></div>
-
+    <button class="btn" id="loginButton" type="button" style="width:100%">Log in</button>
+    <div class="status" id="authStatus" style="margin-top:12px"></div>
   </div>
 </div>
 
 <script>
-  const SUPABASE_URL =
-    "https://cutqvgjtjpnypnmtgttd.supabase.co";
+(() => {
+  "use strict";
 
-  const SUPABASE_ANON_KEY =
-    "sb_publishable_LbtwytaWW3tlJ8lvuIJOlA_oTJYtJVZ";
+  const SUPABASE_URL = "https://cutqvgjtjpnypnmtgttd.supabase.co";
+  const SUPABASE_ANON_KEY = "sb_publishable_LbtwytaWW3tlJ8lvuIJOlA_oTJYtJVZ";
 
-  const supabaseClient =
-    window.supabase.createClient(
-      SUPABASE_URL,
-      SUPABASE_ANON_KEY
-    );
-
-  const state = {
-    user: null,
-    profile: null,
-    skillSwaps: [],
-    profiles: new Map(),
-    ratings: new Map(),
-    conversations: [],
-    activeConversation: null,
-    activeConversationMember: null,
-    activeSkillSwapId: null,
-    notifications: [],
-    userLatitude: null,
-    userLongitude: null,
-    chatBusy: false
+  const $ = (id) => document.getElementById(id);
+  const on = (id, event, handler) => {
+    const node = $(id);
+    if (node) node.addEventListener(event, handler);
   };
 
-  const element = (id) =>
-    document.getElementById(id);
+  let supabaseClient = null;
+  let currentUser = null;
+  let chatBusy = false;
+
+  try {
+    if (!window.supabase) throw new Error("Supabase library did not load.");
+    supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+  } catch (error) {
+    console.error(error);
+    const status = $("userStatus");
+    if (status) status.textContent = "Login is temporarily unavailable. Please refresh the page.";
+  }
 
   const escapeHtml = (value = "") =>
     String(value)
@@ -2128,2931 +594,379 @@
       .replaceAll('"', "&quot;")
       .replaceAll("'", "&#039;");
 
-  const formatDate = (value) => {
-    if (!value) return "";
+  const openAuth = (mode = "login") => {
+    const modal = $("authModal");
+    const title = $("authModalTitle");
+    const button = $("loginButton");
+    const status = $("authStatus");
 
-    return new Intl.DateTimeFormat(
-      "en-GB",
-      {
-        dateStyle: "medium",
-        timeStyle: "short"
-      }
-    ).format(new Date(value));
+    if (!modal || !title || !button || !status) return;
+
+    const joining = mode === "join";
+    title.textContent = joining ? "Join LifeCompass AI" : "Log in";
+    button.textContent = joining ? "Create free account" : "Log in";
+    button.dataset.mode = joining ? "join" : "login";
+    status.textContent = "";
+    modal.classList.remove("hidden");
   };
 
-  const getInitials = (name = "LC") => {
-    const parts = String(name)
-      .trim()
-      .split(/\s+/)
-      .filter(Boolean)
-      .slice(0, 2);
-
-    return (
-      parts.map((part) => part[0]).join("").toUpperCase() ||
-      "LC"
-    );
+  const closeAuth = () => {
+    const modal = $("authModal");
+    if (modal) modal.classList.add("hidden");
   };
 
-  const createAvatarHtml = (
-    name,
-    avatarUrl,
-    small = false
-  ) => {
-    const size = small ? 48 : 76;
+  const setLoggedInUI = (user) => {
+    currentUser = user || null;
 
-    if (avatarUrl) {
-      return `
-        <img
-          src="${escapeHtml(avatarUrl)}"
-          alt="${escapeHtml(name || "Member")}"
-          style="
-            width:${size}px;
-            height:${size}px;
-            border-radius:50%;
-            object-fit:cover;
-          "
-          onerror="this.style.display='none'"
-        >
-      `;
+    $("loginOpen")?.classList.toggle("hidden", !!user);
+    $("joinOpen")?.classList.toggle("hidden", !!user);
+    $("heroStart")?.classList.toggle("hidden", !!user);
+    $("logoutBtn")?.classList.toggle("hidden", !user);
+    $("subscribeBtn")?.classList.toggle("hidden", !user);
+
+    const userStatus = $("userStatus");
+    if (userStatus) {
+      userStatus.textContent = user
+        ? `Logged in as ${user.email}`
+        : "You can try the assistant without logging in.";
     }
-
-    return `
-      <div
-        class="avatar-placeholder"
-        style="
-          width:${size}px;
-          height:${size}px;
-          font-size:${small ? "1rem" : "1.45rem"};
-        "
-      >
-        ${escapeHtml(getInitials(name))}
-      </div>
-    `;
   };
 
-  const openModal = (id) => {
-    element(id)?.classList.remove("hidden");
-  };
-
-  const closeModal = (id) => {
-    element(id)?.classList.add("hidden");
-  };
-
-  document
-    .querySelectorAll("[data-close-modal]")
-    .forEach((button) => {
-      button.addEventListener("click", () => {
-        closeModal(button.dataset.closeModal);
-      });
-    });
-
-  document
-    .querySelectorAll(".modal")
-    .forEach((modal) => {
-      modal.addEventListener("click", (event) => {
-        if (event.target === modal) {
-          modal.classList.add("hidden");
-        }
-      });
-    });
-
-  const requireLogin = (
-    message = "Please log in first."
-  ) => {
-    if (state.user) return true;
-
-    element("authModalTitle").textContent =
-      "Log in to continue";
-
-    element("authStatus").textContent = message;
-
-    openModal("authModal");
-
+  const requireLogin = (message) => {
+    if (currentUser) return true;
+    openAuth("login");
+    const status = $("authStatus");
+    if (status) status.textContent = message || "Please log in to continue.";
     return false;
   };
 
-  const milesBetween = (
-    lat1,
-    lon1,
-    lat2,
-    lon2
-  ) => {
-    const toRadians = (degrees) =>
-      degrees * Math.PI / 180;
+  on("loginOpen", "click", () => openAuth("login"));
+  on("joinOpen", "click", () => openAuth("join"));
+  on("heroStart", "click", () => openAuth("join"));
+  on("authClose", "click", closeAuth);
 
-    const earthRadiusMiles = 3958.8;
-
-    const latitudeDifference =
-      toRadians(lat2 - lat1);
-
-    const longitudeDifference =
-      toRadians(lon2 - lon1);
-
-    const a =
-      Math.sin(latitudeDifference / 2) ** 2 +
-      Math.cos(toRadians(lat1)) *
-      Math.cos(toRadians(lat2)) *
-      Math.sin(longitudeDifference / 2) ** 2;
-
-    const c =
-      2 * Math.atan2(
-        Math.sqrt(a),
-        Math.sqrt(1 - a)
-      );
-
-    return earthRadiusMiles * c;
-  };
-
-  const setButtonBusy = (
-    button,
-    busy,
-    busyText,
-    normalText
-  ) => {
-    if (!button) return;
-
-    button.disabled = busy;
-    button.textContent =
-      busy ? busyText : normalText;
-  };
-    const updateAuthInterface = () => {
-    const loggedIn = Boolean(state.user);
-
-    element("loginOpen").classList.toggle(
-      "hidden",
-      loggedIn
-    );
-
-    element("joinOpen").classList.toggle(
-      "hidden",
-      loggedIn
-    );
-
-    element("logoutBtn").classList.toggle(
-      "hidden",
-      !loggedIn
-    );
-
-    element("notificationButton").classList.toggle(
-      "hidden",
-      !loggedIn
-    );
-
-    element("profileOpen").textContent =
-      loggedIn ? "My profile" : "Profile";
-
-    element("swapStatus").textContent =
-      loggedIn
-        ? "Your listing will be visible to other members."
-        : "Log in to create a public listing.";
-
-    element("profileStatus").textContent =
-      loggedIn
-        ? "Update your public Skill Swap profile."
-        : "Log in to create or update your profile.";
-
-    element("communityStatus").textContent =
-      loggedIn
-        ? "Your question will be shared with the community."
-        : "Log in to post a community question.";
-  };
-
-  const loadSession = async () => {
-    const {
-      data: { session }
-    } =
-      await supabaseClient.auth.getSession();
-
-    state.user = session?.user || null;
-
-    updateAuthInterface();
-
-    if (state.user) {
-      await loadEverything();
-    } else {
-      await loadPublicData();
-    }
-  };
-
-  const loadPublicData = async () => {
-    await Promise.all([
-      loadSkillSwaps(),
-      loadCommunityQuestions()
-    ]);
-  };
-
-  const loadEverything = async () => {
-    await Promise.all([
-      loadProfile(),
-      loadSkillSwaps(),
-      loadCommunityQuestions(),
-      loadNotifications()
-    ]);
-
-    await loadConversations();
-  };
-
-  const loadProfile = async () => {
-    if (!state.user) return;
-
-    const {
-      data,
-      error
-    } = await supabaseClient
-      .from("profiles")
-      .select("*")
-      .eq("id", state.user.id)
-      .maybeSingle();
-
-    if (error) {
-      element("profileStatus").textContent =
-        `Profile error: ${error.message}`;
-
-      return;
-    }
-
-    state.profile = data || null;
-
-    if (!data) return;
-
-    element("profileName").value =
-      data.display_name || "";
-
-    element("profileBio").value =
-      data.bio || "";
-
-    element("profileSkills").value =
-      Array.isArray(data.skills)
-        ? data.skills.join(", ")
-        : "";
-
-    element("profileLocation").value =
-      data.location || "";
-
-    element("profileAvatarUrl").value =
-      data.avatar_url || "";
-
-    element("swapName").value =
-      data.display_name || "";
-
-    element("swapLocation").value =
-      data.location || "";
-
-    element("communityName").value =
-      data.display_name || "";
-
-    updateProfilePreview();
-    await loadMyReviews();
-  };
-
-  const updateProfilePreview = () => {
-    const name =
-      element("profileName").value.trim() ||
-      state.profile?.display_name ||
-      "Member";
-
-    const bio =
-      element("profileBio").value.trim() ||
-      "No bio added yet.";
-
-    const location =
-      element("profileLocation").value.trim() ||
-      "Location not added";
-
-    const avatarUrl =
-      element("profileAvatarUrl").value.trim();
-
-    const skills =
-      element("profileSkills")
-        .value
-        .split(",")
-        .map((skill) => skill.trim())
-        .filter(Boolean);
-
-    element("profileAvatarPreview").innerHTML =
-      avatarUrl
-        ? `
-          <img
-            src="${escapeHtml(avatarUrl)}"
-            alt="${escapeHtml(name)}"
-            style="
-              width:76px;
-              height:76px;
-              border-radius:50%;
-              object-fit:cover;
-            "
-          >
-        `
-        : escapeHtml(getInitials(name));
-
-    element("publicProfilePreview").className = "";
-
-    element("publicProfilePreview").innerHTML = `
-      <div class="profile-header">
-        <div>
-          ${createAvatarHtml(name, avatarUrl)}
-        </div>
-
-        <div style="flex:1;">
-          <h3>${escapeHtml(name)}</h3>
-
-          <div class="status">
-            📍 ${escapeHtml(location)}
-          </div>
-
-          <p style="line-height:1.55;">
-            ${escapeHtml(bio)}
-          </p>
-
-          <div class="profile-skills">
-            ${
-              skills.length
-                ? skills
-                    .map(
-                      (skill) =>
-                        `<span class="tag green">${escapeHtml(skill)}</span>`
-                    )
-                    .join("")
-                : `<span class="status">No skills added yet.</span>`
-            }
-          </div>
-        </div>
-      </div>
-    `;
-  };
-
-  [
-    "profileName",
-    "profileBio",
-    "profileSkills",
-    "profileLocation",
-    "profileAvatarUrl"
-  ].forEach((id) => {
-    element(id).addEventListener(
-      "input",
-      updateProfilePreview
-    );
+  on("authModal", "click", (event) => {
+    if (event.target === $("authModal")) closeAuth();
   });
 
-  element("saveProfile").addEventListener(
-    "click",
-    async () => {
-      if (!requireLogin()) return;
-
-      const button = element("saveProfile");
-
-      const displayName =
-        element("profileName").value.trim();
-
-      if (!displayName) {
-        element("profileStatus").textContent =
-          "Please enter a display name.";
-
-        return;
-      }
-
-      const skills =
-        element("profileSkills")
-          .value
-          .split(",")
-          .map((skill) => skill.trim())
-          .filter(Boolean);
-
-      const profileData = {
-        id: state.user.id,
-        display_name: displayName,
-        bio:
-          element("profileBio").value.trim() ||
-          null,
-        skills,
-        location:
-          element("profileLocation").value.trim() ||
-          null,
-        avatar_url:
-          element("profileAvatarUrl").value.trim() ||
-          null,
-        latitude: state.userLatitude,
-        longitude: state.userLongitude,
-        updated_at: new Date().toISOString()
-      };
-
-      setButtonBusy(
-        button,
-        true,
-        "Saving...",
-        "Save profile"
-      );
-
-      const {
-        data,
-        error
-      } = await supabaseClient
-        .from("profiles")
-        .upsert(profileData)
-        .select()
-        .single();
-
-      setButtonBusy(
-        button,
-        false,
-        "Saving...",
-        "Save profile"
-      );
-
-      if (error) {
-        element("profileStatus").textContent =
-          `Could not save profile: ${error.message}`;
-
-        return;
-      }
-
-      state.profile = data;
-
-      element("swapName").value =
-        data.display_name || "";
-
-      element("swapLocation").value =
-        data.location || "";
-
-      element("communityName").value =
-        data.display_name || "";
-
-      element("profileStatus").textContent =
-        "Profile saved successfully.";
-
-      updateProfilePreview();
-    }
-  );
-
-  const loadSkillSwaps = async () => {
-    const {
-      data,
-      error
-    } = await supabaseClient
-      .from("skill_swaps")
-      .select("*")
-      .eq("is_active", true)
-      .order("created_at", {
-        ascending: false
-      });
-
-    if (error) {
-      element("swapFeed").innerHTML = `
-        <div class="empty-state">
-          Could not load Skill Swap listings:
-          ${escapeHtml(error.message)}
-        </div>
-      `;
-
+  on("loginButton", "click", async () => {
+    if (!supabaseClient) {
+      $("authStatus").textContent = "Login is unavailable because the connection did not load.";
       return;
     }
 
-    state.skillSwaps = data || [];
+    const email = $("authEmail")?.value.trim();
+    const password = $("authPassword")?.value || "";
+    const status = $("authStatus");
+    const button = $("loginButton");
+    const joining = button?.dataset.mode === "join";
 
-    const userIds = [
-      ...new Set(
-        state.skillSwaps
-          .map((swap) => swap.user_id)
-          .filter(Boolean)
-      )
-    ];
-
-    if (userIds.length) {
-      const {
-        data: profileRows
-      } = await supabaseClient
-        .from("profiles")
-        .select("*")
-        .in("id", userIds);
-
-      state.profiles = new Map(
-        (profileRows || []).map(
-          (profile) => [
-            profile.id,
-            profile
-          ]
-        )
-      );
-
-      const {
-        data: ratingRows
-      } = await supabaseClient
-        .from("profile_rating_summary")
-        .select("*")
-        .in("user_id", userIds);
-
-      state.ratings = new Map(
-        (ratingRows || []).map(
-          (rating) => [
-            rating.user_id,
-            rating
-          ]
-        )
-      );
-    }
-
-    renderSkillSwaps();
-  };
-
-  const renderSkillSwaps = () => {
-    const searchTerm =
-      element("swapSearch")
-        .value
-        .trim()
-        .toLowerCase();
-
-    const mode =
-      element("swapModeFilter").value;
-
-    const maximumDistance =
-      Number(
-        element("swapDistanceFilter").value
-      ) || null;
-
-    const filtered = state.skillSwaps.filter(
-      (swap) => {
-        const profile =
-          state.profiles.get(swap.user_id);
-
-        const searchableText = [
-          swap.author_name,
-          swap.location,
-          swap.offer_skill,
-          swap.need_skill,
-          swap.description,
-          profile?.display_name,
-          ...(profile?.skills || [])
-        ]
-          .filter(Boolean)
-          .join(" ")
-          .toLowerCase();
-
-        if (
-          searchTerm &&
-          !searchableText.includes(searchTerm)
-        ) {
-          return false;
-        }
-
-        const listingMode =
-          swap.is_online
-            ? "online"
-            : "local";
-
-        if (
-          mode &&
-          mode !== "both" &&
-          listingMode !== mode
-        ) {
-          return false;
-        }
-
-        if (
-          maximumDistance &&
-          state.userLatitude !== null &&
-          state.userLongitude !== null &&
-          swap.latitude !== null &&
-          swap.longitude !== null
-        ) {
-          const distance = milesBetween(
-            state.userLatitude,
-            state.userLongitude,
-            swap.latitude,
-            swap.longitude
-          );
-
-          if (distance > maximumDistance) {
-            return false;
-          }
-        }
-
-        return true;
-      }
-    );
-
-    if (!filtered.length) {
-      element("swapFeed").innerHTML = `
-        <div class="empty-state">
-          No matching Skill Swap listings yet.
-        </div>
-      `;
-
+    if (!email || !password) {
+      status.textContent = "Please enter your email address and password.";
       return;
     }
 
-    element("swapFeed").innerHTML =
-      filtered
-        .map((swap) => {
-          const profile =
-            state.profiles.get(swap.user_id);
-
-          const rating =
-            state.ratings.get(swap.user_id);
-
-          const displayName =
-            profile?.display_name ||
-            swap.author_name ||
-            "Member";
-
-          let distanceText = "";
-
-          if (
-            state.userLatitude !== null &&
-            state.userLongitude !== null &&
-            swap.latitude !== null &&
-            swap.longitude !== null
-          ) {
-            const distance = milesBetween(
-              state.userLatitude,
-              state.userLongitude,
-              swap.latitude,
-              swap.longitude
-            );
-
-            distanceText =
-              ` • ${distance.toFixed(1)} miles away`;
-          }
-
-          const isOwnListing =
-            state.user?.id === swap.user_id;
-
-          return `
-            <article class="swap-card">
-
-              <div class="swap-top">
-
-                <div style="display:flex;gap:11px;">
-                  ${createAvatarHtml(
-                    displayName,
-                    profile?.avatar_url,
-                    true
-                  )}
-
-                  <div>
-                    <h3>
-                      ${escapeHtml(displayName)}
-                    </h3>
-
-                    <div class="status">
-                      📍
-                      ${escapeHtml(
-                        swap.location ||
-                        profile?.location ||
-                        "Location not provided"
-                      )}
-                      ${escapeHtml(distanceText)}
-                    </div>
-
-                    <div
-                      class="rating"
-                      style="margin-top:4px;"
-                    >
-                      ${
-                        rating
-                          ? `★ ${escapeHtml(rating.average_rating)} (${escapeHtml(rating.review_count)})`
-                          : "New member"
-                      }
-                    </div>
-                  </div>
-                </div>
-
-                <span class="badge">
-                  ${
-                    swap.is_online
-                      ? "Online"
-                      : "In person"
-                  }
-                </span>
-
-              </div>
-
-              <div style="margin-top:13px;">
-                <span class="tag green">
-                  Offers:
-                  ${escapeHtml(swap.offer_skill)}
-                </span>
-
-                <span class="tag">
-                  Needs:
-                  ${escapeHtml(swap.need_skill)}
-                </span>
-              </div>
-
-              ${
-                swap.description
-                  ? `
-                    <p style="line-height:1.55;">
-                      ${escapeHtml(swap.description)}
-                    </p>
-                  `
-                  : ""
-              }
-
-              <div
-                class="status"
-                style="margin-bottom:11px;"
-              >
-                Posted ${escapeHtml(
-                  formatDate(swap.created_at)
-                )}
-              </div>
-
-              <div
-                style="
-                  display:flex;
-                  gap:8px;
-                  flex-wrap:wrap;
-                "
-              >
-                <button
-                  class="btn secondary small"
-                  data-view-profile="${escapeHtml(
-                    swap.user_id
-                  )}"
-                >
-                  View profile
-                </button>
-
-                ${
-                  isOwnListing
-                    ? `
-                      <button
-                        class="btn danger small"
-                        data-close-listing="${escapeHtml(
-                          swap.id
-                        )}"
-                      >
-                        Close listing
-                      </button>
-                    `
-                    : `
-                      <button
-                        class="btn purple small"
-                        data-message-user="${escapeHtml(
-                          swap.user_id
-                        )}"
-                        data-swap-id="${escapeHtml(
-                          swap.id
-                        )}"
-                      >
-                        Message member
-                      </button>
-                    `
-                }
-              </div>
-
-            </article>
-          `;
-        })
-        .join("");
-
-    document
-      .querySelectorAll("[data-view-profile]")
-      .forEach((button) => {
-        button.addEventListener(
-          "click",
-          () =>
-            showPublicProfile(
-              button.dataset.viewProfile
-            )
-        );
-      });
-
-    document
-      .querySelectorAll("[data-message-user]")
-      .forEach((button) => {
-        button.addEventListener(
-          "click",
-          () =>
-            startConversation(
-              button.dataset.messageUser,
-              Number(button.dataset.swapId)
-            )
-        );
-      });
-
-    document
-      .querySelectorAll("[data-close-listing]")
-      .forEach((button) => {
-        button.addEventListener(
-          "click",
-          () =>
-            closeSkillSwapListing(
-              Number(button.dataset.closeListing)
-            )
-        );
-      });
-  };
-
-  element("swapSearch").addEventListener(
-    "input",
-    renderSkillSwaps
-  );
-
-  element("swapModeFilter").addEventListener(
-    "change",
-    renderSkillSwaps
-  );
-
-  element("swapDistanceFilter").addEventListener(
-    "change",
-    renderSkillSwaps
-  );
-
-  element("postSwap").addEventListener(
-    "click",
-    async () => {
-      if (!requireLogin()) return;
-
-      const name =
-        element("swapName").value.trim();
-
-      const location =
-        element("swapLocation").value.trim();
-
-      const offer =
-        element("swapOffer").value.trim();
-
-      const need =
-        element("swapNeed").value.trim();
-
-      const description =
-        element("swapDescription").value.trim();
-
-      const type =
-        element("swapType").value;
-
-      if (!name || !offer || !need) {
-        element("swapStatus").textContent =
-          "Please add your display name, offered skill and the help you need.";
-
-        return;
-      }
-
-      const button = element("postSwap");
-
-      setButtonBusy(
-        button,
-        true,
-        "Posting...",
-        "Post Skill Swap"
-      );
-
-      const {
-        error
-      } = await supabaseClient
-        .from("skill_swaps")
-        .insert({
-          user_id: state.user.id,
-          author_name: name,
-          location: location || null,
-          offer_skill: offer,
-          need_skill: need,
-          description: description || null,
-          latitude: state.userLatitude,
-          longitude: state.userLongitude,
-          is_online:
-            type === "online" ||
-            type === "both",
-          is_active: true
-        });
-
-      setButtonBusy(
-        button,
-        false,
-        "Posting...",
-        "Post Skill Swap"
-      );
-
-      if (error) {
-        element("swapStatus").textContent =
-          `Could not post listing: ${error.message}`;
-
-        return;
-      }
-
-      element("swapOffer").value = "";
-      element("swapNeed").value = "";
-      element("swapDescription").value = "";
-
-      element("swapStatus").textContent =
-        "Skill Swap listing posted successfully.";
-
-      await loadSkillSwaps();
-    }
-  );
-
-  const closeSkillSwapListing = async (
-    listingId
-  ) => {
-    if (!requireLogin()) return;
-
-    const confirmed = window.confirm(
-      "Close this Skill Swap listing?"
-    );
-
-    if (!confirmed) return;
-
-    const {
-      error
-    } = await supabaseClient
-      .from("skill_swaps")
-      .update({
-        is_active: false
-      })
-      .eq("id", listingId)
-      .eq("user_id", state.user.id);
-
-    if (error) {
-      window.alert(
-        `Could not close listing: ${error.message}`
-      );
-
+    if (password.length < 6) {
+      status.textContent = "Your password must contain at least 6 characters.";
       return;
     }
 
-    await loadSkillSwaps();
-  };
-
-  element("useLocationButton").addEventListener(
-    "click",
-    () => {
-      if (!navigator.geolocation) {
-        element("locationStatus").textContent =
-          "Location is not supported on this device.";
-
-        return;
-      }
-
-      element("locationStatus").textContent =
-        "Requesting your location...";
-
-      navigator.geolocation.getCurrentPosition(
-        async (position) => {
-          state.userLatitude =
-            position.coords.latitude;
-
-          state.userLongitude =
-            position.coords.longitude;
-
-          element("locationStatus").textContent =
-            "Location enabled. Distances can now be estimated.";
-
-          renderSkillSwaps();
-
-          if (state.user && state.profile) {
-            await supabaseClient
-              .from("profiles")
-              .update({
-                latitude: state.userLatitude,
-                longitude: state.userLongitude,
-                updated_at:
-                  new Date().toISOString()
-              })
-              .eq("id", state.user.id);
-          }
-        },
-        () => {
-          element("locationStatus").textContent =
-            "Location permission was not granted.";
-        },
-        {
-          enableHighAccuracy: false,
-          timeout: 10000,
-          maximumAge: 300000
-        }
-      );
-    }
-  );
-
-  const showPublicProfile = async (
-    userId
-  ) => {
-    openModal("publicProfileModal");
-
-    element(
-      "publicProfileModalContent"
-    ).innerHTML = `
-      <div class="empty-state">
-        Loading profile...
-      </div>
-    `;
-
-    const [
-      profileResponse,
-      reviewsResponse,
-      ratingResponse
-    ] = await Promise.all([
-      supabaseClient
-        .from("profiles")
-        .select("*")
-        .eq("id", userId)
-        .maybeSingle(),
-
-      supabaseClient
-        .from("skill_swap_reviews")
-        .select("*")
-        .eq("reviewed_user_id", userId)
-        .order("created_at", {
-          ascending: false
-        }),
-
-      supabaseClient
-        .from("profile_rating_summary")
-        .select("*")
-        .eq("user_id", userId)
-        .maybeSingle()
-    ]);
-
-    const profile =
-      profileResponse.data;
-
-    const reviews =
-      reviewsResponse.data || [];
-
-    const rating =
-      ratingResponse.data;
-
-    if (!profile) {
-      element(
-        "publicProfileModalContent"
-      ).innerHTML = `
-        <div class="empty-state">
-          This member has not completed their profile yet.
-        </div>
-      `;
-
-      return;
-    }
-
-    element(
-      "publicProfileModalContent"
-    ).innerHTML = `
-      <div class="profile-header">
-        ${createAvatarHtml(
-          profile.display_name,
-          profile.avatar_url
-        )}
-
-        <div style="flex:1;">
-          <h2 style="font-size:1.8rem;">
-            ${escapeHtml(profile.display_name)}
-          </h2>
-
-          <div class="status">
-            📍
-            ${escapeHtml(
-              profile.location ||
-              "Location not provided"
-            )}
-          </div>
-
-          <div
-            class="rating"
-            style="margin-top:7px;"
-          >
-            ${
-              rating
-                ? `★ ${escapeHtml(rating.average_rating)} from ${escapeHtml(rating.review_count)} review(s)`
-                : "No reviews yet"
-            }
-          </div>
-        </div>
-      </div>
-
-      <p style="line-height:1.6;">
-        ${escapeHtml(
-          profile.bio ||
-          "No bio added yet."
-        )}
-      </p>
-
-      <div class="profile-skills">
-        ${
-          (profile.skills || []).length
-            ? profile.skills
-                .map(
-                  (skill) =>
-                    `<span class="tag green">${escapeHtml(skill)}</span>`
-                )
-                .join("")
-            : `<span class="status">No skills listed.</span>`
-        }
-      </div>
-
-      <h3 style="margin-top:22px;">
-        Reviews
-      </h3>
-
-      <div class="list">
-        ${
-          reviews.length
-            ? reviews
-                .map(
-                  (review) => `
-                    <div class="review-card">
-                      <div class="rating">
-                        ${"★".repeat(review.rating)}
-                      </div>
-
-                      <p>
-                        ${escapeHtml(
-                          review.review ||
-                          "No written comment."
-                        )}
-                      </p>
-
-                      <div class="status">
-                        ${escapeHtml(
-                          formatDate(
-                            review.created_at
-                          )
-                        )}
-                      </div>
-                    </div>
-                  `
-                )
-                .join("")
-            : `
-              <div class="empty-state">
-                No reviews yet.
-              </div>
-            `
-        }
-      </div>
-    `;
-  };
-
-  const loadMyReviews = async () => {
-    if (!state.user) return;
-
-    const {
-      data,
-      error
-    } = await supabaseClient
-      .from("skill_swap_reviews")
-      .select("*")
-      .eq(
-        "reviewed_user_id",
-        state.user.id
-      )
-      .order("created_at", {
-        ascending: false
-      });
-
-    if (error || !data?.length) {
-      element("myReviews").innerHTML = `
-        <div class="empty-state">
-          No reviews yet.
-        </div>
-      `;
-
-      return;
-    }
-
-    element("myReviews").innerHTML =
-      data
-        .map(
-          (review) => `
-            <div class="review-card">
-              <div class="rating">
-                ${"★".repeat(review.rating)}
-              </div>
-
-              <p>
-                ${escapeHtml(
-                  review.review ||
-                  "No written comment."
-                )}
-              </p>
-
-              <div class="status">
-                ${escapeHtml(
-                  formatDate(review.created_at)
-                )}
-              </div>
-            </div>
-          `
-        )
-        .join("");
-  };
-    const getOtherConversationMemberId = (
-    conversation
-  ) => {
-    if (!state.user || !conversation) {
-      return null;
-    }
-
-    return conversation.member_one === state.user.id
-      ? conversation.member_two
-      : conversation.member_one;
-  };
-
-  const startConversation = async (
-    otherUserId,
-    skillSwapId
-  ) => {
-    if (!requireLogin(
-      "Log in to send a private message."
-    )) {
-      return;
-    }
-
-    if (otherUserId === state.user.id) {
-      window.alert(
-        "You cannot message yourself."
-      );
-
-      return;
-    }
-
-    const memberIds = [
-      state.user.id,
-      otherUserId
-    ].sort();
-
-    let conversation = null;
-
-    const {
-      data: existingRows,
-      error: searchError
-    } = await supabaseClient
-      .from("conversations")
-      .select("*")
-      .eq("skill_swap_id", skillSwapId)
-      .or(
-        `and(member_one.eq.${memberIds[0]},member_two.eq.${memberIds[1]}),and(member_one.eq.${memberIds[1]},member_two.eq.${memberIds[0]})`
-      )
-      .limit(1);
-
-    if (searchError) {
-      window.alert(
-        `Could not open messages: ${searchError.message}`
-      );
-
-      return;
-    }
-
-    if (existingRows?.length) {
-      conversation = existingRows[0];
-    } else {
-      const {
-        data,
-        error
-      } = await supabaseClient
-        .from("conversations")
-        .insert({
-          skill_swap_id: skillSwapId,
-          member_one: memberIds[0],
-          member_two: memberIds[1]
-        })
-        .select()
-        .single();
-
-      if (error) {
-        window.alert(
-          `Could not start conversation: ${error.message}`
-        );
-
-        return;
-      }
-
-      conversation = data;
-
-      await createNotification(
-        otherUserId,
-        "message",
-        "New Skill Swap conversation",
-        `${
-          state.profile?.display_name ||
-          state.user.email?.split("@")[0] ||
-          "A member"
-        } would like to discuss a Skill Swap.`,
-        conversation.id
-      );
-    }
-
-    await loadConversations();
-    await openConversation(conversation.id);
-
-    element("messages-section").scrollIntoView({
-      behavior: "smooth"
-    });
-  };
-
-  const loadConversations = async () => {
-    if (!state.user) {
-      element("conversationList").innerHTML = `
-        <div class="empty-state">
-          Log in to view your private messages.
-        </div>
-      `;
-
-      return;
-    }
-
-    const {
-      data,
-      error
-    } = await supabaseClient
-      .from("conversations")
-      .select("*")
-      .or(
-        `member_one.eq.${state.user.id},member_two.eq.${state.user.id}`
-      )
-      .order("created_at", {
-        ascending: false
-      });
-
-    if (error) {
-      element("conversationList").innerHTML = `
-        <div class="empty-state">
-          Could not load conversations:
-          ${escapeHtml(error.message)}
-        </div>
-      `;
-
-      return;
-    }
-
-    state.conversations = data || [];
-
-    if (!state.conversations.length) {
-      element("conversationList").innerHTML = `
-        <div class="empty-state">
-          You do not have any conversations yet.
-          Open a Skill Swap listing and tap
-          <strong>Message member</strong>.
-        </div>
-      `;
-
-      return;
-    }
-
-    const otherMemberIds = [
-      ...new Set(
-        state.conversations
-          .map(getOtherConversationMemberId)
-          .filter(Boolean)
-      )
-    ];
-
-    const {
-      data: profileRows
-    } = await supabaseClient
-      .from("profiles")
-      .select("*")
-      .in("id", otherMemberIds);
-
-    const profileMap = new Map(
-      (profileRows || []).map(
-        (profile) => [
-          profile.id,
-          profile
-        ]
-      )
-    );
-
-    const conversationIds =
-      state.conversations.map(
-        (conversation) => conversation.id
-      );
-
-    const {
-      data: messageRows
-    } = await supabaseClient
-      .from("messages")
-      .select("*")
-      .in("conversation_id", conversationIds)
-      .order("created_at", {
-        ascending: false
-      });
-
-    const latestMessageMap = new Map();
-    const unreadMap = new Map();
-
-    (messageRows || []).forEach((message) => {
-      if (
-        !latestMessageMap.has(
-          message.conversation_id
-        )
-      ) {
-        latestMessageMap.set(
-          message.conversation_id,
-          message
-        );
-      }
-
-      if (
-        message.sender_id !== state.user.id &&
-        !message.is_read
-      ) {
-        unreadMap.set(
-          message.conversation_id,
-          (
-            unreadMap.get(
-              message.conversation_id
-            ) || 0
-          ) + 1
-        );
-      }
-    });
-
-    element("conversationList").innerHTML =
-      state.conversations
-        .map((conversation) => {
-          const otherUserId =
-            getOtherConversationMemberId(
-              conversation
-            );
-
-          const profile =
-            profileMap.get(otherUserId);
-
-          const name =
-            profile?.display_name ||
-            "Skill Swap member";
-
-          const latestMessage =
-            latestMessageMap.get(
-              conversation.id
-            );
-
-          const unread =
-            unreadMap.get(
-              conversation.id
-            ) || 0;
-
-          return `
-            <article
-              class="conversation-card ${
-                state.activeConversation?.id ===
-                conversation.id
-                  ? "active"
-                  : ""
-              }"
-              data-conversation-id="${escapeHtml(
-                conversation.id
-              )}"
-            >
-              <div
-                style="
-                  display:flex;
-                  align-items:center;
-                  gap:11px;
-                "
-              >
-                ${createAvatarHtml(
-                  name,
-                  profile?.avatar_url,
-                  true
-                )}
-
-                <div style="flex:1;min-width:0;">
-                  <div
-                    style="
-                      display:flex;
-                      justify-content:space-between;
-                      gap:8px;
-                    "
-                  >
-                    <strong>
-                      ${escapeHtml(name)}
-                    </strong>
-
-                    ${
-                      unread
-                        ? `
-                          <span
-                            class="badge"
-                            style="
-                              background:#fee4e2;
-                              color:var(--red);
-                            "
-                          >
-                            ${unread}
-                          </span>
-                        `
-                        : ""
-                    }
-                  </div>
-
-                  <div
-                    class="status"
-                    style="
-                      overflow:hidden;
-                      text-overflow:ellipsis;
-                      white-space:nowrap;
-                      margin-top:5px;
-                    "
-                  >
-                    ${
-                      latestMessage
-                        ? escapeHtml(
-                            latestMessage.message
-                          )
-                        : "Conversation started"
-                    }
-                  </div>
-                </div>
-              </div>
-            </article>
-          `;
-        })
-        .join("");
-
-    document
-      .querySelectorAll(
-        "[data-conversation-id]"
-      )
-      .forEach((card) => {
-        card.addEventListener(
-          "click",
-          () =>
-            openConversation(
-              card.dataset.conversationId
-            )
-        );
-      });
-  };
-
-  const openConversation = async (
-    conversationId
-  ) => {
-    const conversation =
-      state.conversations.find(
-        (item) =>
-          item.id === conversationId
-      );
-
-    if (!conversation) return;
-
-    state.activeConversation = conversation;
-    state.activeSkillSwapId =
-      conversation.skill_swap_id;
-
-    const otherUserId =
-      getOtherConversationMemberId(
-        conversation
-      );
-
-    const {
-      data: profile
-    } = await supabaseClient
-      .from("profiles")
-      .select("*")
-      .eq("id", otherUserId)
-      .maybeSingle();
-
-    state.activeConversationMember =
-      profile || {
-        id: otherUserId,
-        display_name:
-          "Skill Swap member"
-      };
-
-    element(
-      "activeConversationName"
-    ).textContent =
-      state.activeConversationMember
-        .display_name ||
-      "Skill Swap member";
-
-    element(
-      "activeConversationDetails"
-    ).textContent =
-      state.activeConversationMember
-        .location
-        ? `📍 ${state.activeConversationMember.location}`
-        : "Private Skill Swap conversation";
-
-    element(
-      "privateMessageInput"
-    ).disabled = false;
-
-    element(
-      "sendPrivateMessage"
-    ).disabled = false;
-
-    element(
-      "reviewMemberButton"
-    ).classList.remove("hidden");
-
-    await loadPrivateMessages();
-    await markConversationMessagesRead();
-    await loadConversations();
-  };
-
-  const loadPrivateMessages = async () => {
-    if (!state.activeConversation) {
-      return;
-    }
-
-    const {
-      data,
-      error
-    } = await supabaseClient
-      .from("messages")
-      .select("*")
-      .eq(
-        "conversation_id",
-        state.activeConversation.id
-      )
-      .order("created_at", {
-        ascending: true
-      });
-
-    if (error) {
-      element(
-        "privateMessageFeed"
-      ).innerHTML = `
-        <div class="empty-state">
-          Could not load messages:
-          ${escapeHtml(error.message)}
-        </div>
-      `;
-
-      return;
-    }
-
-    if (!data?.length) {
-      element(
-        "privateMessageFeed"
-      ).innerHTML = `
-        <div class="empty-state">
-          No messages yet. Send a friendly
-          introduction and explain the Skill Swap
-          you are interested in.
-        </div>
-      `;
-
-      return;
-    }
-
-    element(
-      "privateMessageFeed"
-    ).innerHTML =
-      data
-        .map((message) => {
-          const mine =
-            message.sender_id ===
-            state.user.id;
-
-          return `
-            <div
-              class="private-message ${
-                mine
-                  ? "mine"
-                  : "theirs"
-              }"
-            >
-              ${escapeHtml(
-                message.message
-              )}
-
-              <span class="message-time">
-                ${escapeHtml(
-                  formatDate(
-                    message.created_at
-                  )
-                )}
-              </span>
-            </div>
-          `;
-        })
-        .join("");
-
-    element(
-      "privateMessageFeed"
-    ).scrollTop =
-      element(
-        "privateMessageFeed"
-      ).scrollHeight;
-  };
-
-  const markConversationMessagesRead =
-    async () => {
-      if (
-        !state.user ||
-        !state.activeConversation
-      ) {
-        return;
-      }
-
-      await supabaseClient
-        .from("messages")
-        .update({
-          is_read: true
-        })
-        .eq(
-          "conversation_id",
-          state.activeConversation.id
-        )
-        .neq(
-          "sender_id",
-          state.user.id
-        )
-        .eq("is_read", false);
-    };
-
-  element(
-    "sendPrivateMessage"
-  ).addEventListener(
-    "click",
-    async () => {
-      if (
-        !state.activeConversation ||
-        !state.user
-      ) {
-        return;
-      }
-
-      const input =
-        element(
-          "privateMessageInput"
-        );
-
-      const message =
-        input.value.trim();
-
-      if (!message) return;
-
-      const button =
-        element(
-          "sendPrivateMessage"
-        );
-
-      setButtonBusy(
-        button,
-        true,
-        "Sending...",
-        "Send"
-      );
-
-      const {
-        error
-      } = await supabaseClient
-        .from("messages")
-        .insert({
-          conversation_id:
-            state.activeConversation.id,
-          sender_id: state.user.id,
-          message
-        });
-
-      setButtonBusy(
-        button,
-        false,
-        "Sending...",
-        "Send"
-      );
-
-      if (error) {
-        element(
-          "messageStatus"
-        ).textContent =
-          `Could not send message: ${error.message}`;
-
-        return;
-      }
-
-      input.value = "";
-
-      element(
-        "messageStatus"
-      ).textContent = "";
-
-      const otherUserId =
-        getOtherConversationMemberId(
-          state.activeConversation
-        );
-
-      await createNotification(
-        otherUserId,
-        "message",
-        "New private message",
-        `${
-          state.profile?.display_name ||
-          "A Skill Swap member"
-        } sent you a message.`,
-        state.activeConversation.id
-      );
-
-      await loadPrivateMessages();
-      await loadConversations();
-    }
-  );
-
-  element(
-    "privateMessageInput"
-  ).addEventListener(
-    "keydown",
-    (event) => {
-      if (
-        event.key === "Enter" &&
-        !event.shiftKey
-      ) {
-        event.preventDefault();
-
-        element(
-          "sendPrivateMessage"
-        ).click();
-      }
-    }
-  );
-
-  element(
-    "refreshConversations"
-  ).addEventListener(
-    "click",
-    loadConversations
-  );
-
-  element(
-    "reviewMemberButton"
-  ).addEventListener(
-    "click",
-    () => {
-      if (
-        !state.activeConversationMember
-      ) {
-        return;
-      }
-
-      element(
-        "reviewingMemberName"
-      ).textContent =
-        `Rate your experience with ${
-          state.activeConversationMember
-            .display_name ||
-          "this member"
-        }.`;
-
-      element(
-        "reviewStatus"
-      ).textContent = "";
-
-      element(
-        "reviewText"
-      ).value = "";
-
-      openModal("reviewModal");
-    }
-  );
-
-  element(
-    "submitReview"
-  ).addEventListener(
-    "click",
-    async () => {
-      if (
-        !requireLogin() ||
-        !state.activeConversationMember
-      ) {
-        return;
-      }
-
-      const rating =
-        Number(
-          element(
-            "reviewRating"
-          ).value
-        );
-
-      const review =
-        element(
-          "reviewText"
-        ).value.trim();
-
-      const button =
-        element(
-          "submitReview"
-        );
-
-      setButtonBusy(
-        button,
-        true,
-        "Submitting...",
-        "Submit review"
-      );
-
-      const {
-        error
-      } = await supabaseClient
-        .from("skill_swap_reviews")
-        .upsert(
-          {
-            skill_swap_id:
-              state.activeSkillSwapId,
-            reviewer_id:
-              state.user.id,
-            reviewed_user_id:
-              state.activeConversationMember.id,
-            rating,
-            review:
-              review || null
-          },
-          {
-            onConflict:
-              "skill_swap_id,reviewer_id,reviewed_user_id"
-          }
-        );
-
-      setButtonBusy(
-        button,
-        false,
-        "Submitting...",
-        "Submit review"
-      );
-
-      if (error) {
-        element(
-          "reviewStatus"
-        ).textContent =
-          `Could not save review: ${error.message}`;
-
-        return;
-      }
-
-      element(
-        "reviewStatus"
-      ).textContent =
-        "Review submitted successfully.";
-
-      await createNotification(
-        state.activeConversationMember.id,
-        "review",
-        "You received a new review",
-        `${
-          state.profile?.display_name ||
-          "A member"
-        } left you a ${rating}-star review.`,
-        String(
-          state.activeSkillSwapId || ""
-        )
-      );
-
-      await loadSkillSwaps();
-      await loadMyReviews();
-
-      setTimeout(() => {
-        closeModal("reviewModal");
-      }, 900);
-    }
-  );
-
-  const createNotification = async (
-    userId,
-    type,
-    title,
-    body,
-    relatedId
-  ) => {
-    if (!state.user || !userId) {
-      return;
-    }
-
-    await supabaseClient
-      .from("notifications")
-      .insert({
-        user_id: userId,
-        type,
-        title,
-        body,
-        related_id:
-          relatedId
-            ? String(relatedId)
-            : null
-      });
-  };
-
-  const loadNotifications = async () => {
-    if (!state.user) return;
-
-    const {
-      data,
-      error
-    } = await supabaseClient
-      .from("notifications")
-      .select("*")
-      .eq("user_id", state.user.id)
-      .order("created_at", {
-        ascending: false
-      })
-      .limit(50);
-
-    if (error) return;
-
-    state.notifications =
-      data || [];
-
-    const unread =
-      state.notifications.filter(
-        (notification) =>
-          !notification.is_read
-      ).length;
-
-    element(
-      "notificationCount"
-    ).textContent = unread;
-
-    element(
-      "notificationCount"
-    ).classList.toggle(
-      "hidden",
-      unread === 0
-    );
-
-    renderNotifications();
-  };
-
-  const renderNotifications = () => {
-    if (!state.notifications.length) {
-      element(
-        "notificationFeed"
-      ).innerHTML = `
-        <div class="empty-state">
-          No notifications yet.
-        </div>
-      `;
-
-      return;
-    }
-
-    element(
-      "notificationFeed"
-    ).innerHTML =
-      state.notifications
-        .map(
-          (notification) => `
-            <article
-              class="notification-card"
-              style="${
-                notification.is_read
-                  ? ""
-                  : "border-left:5px solid var(--brand);"
-              }"
-            >
-              <div class="card-top">
-                <div>
-                  <strong>
-                    ${escapeHtml(
-                      notification.title
-                    )}
-                  </strong>
-
-                  ${
-                    notification.body
-                      ? `
-                        <p
-                          style="
-                            margin:7px 0;
-                            line-height:1.5;
-                          "
-                        >
-                          ${escapeHtml(
-                            notification.body
-                          )}
-                        </p>
-                      `
-                      : ""
-                  }
-
-                  <div class="status">
-                    ${escapeHtml(
-                      formatDate(
-                        notification.created_at
-                      )
-                    )}
-                  </div>
-                </div>
-
-                ${
-                  notification.is_read
-                    ? ""
-                    : `<span class="unread-dot"></span>`
-                }
-              </div>
-            </article>
-          `
-        )
-        .join("");
-  };
-
-  element(
-    "notificationButton"
-  ).addEventListener(
-    "click",
-    async () => {
-      await loadNotifications();
-      openModal(
-        "notificationModal"
-      );
-    }
-  );
-
-  element(
-    "markAllNotificationsRead"
-  ).addEventListener(
-    "click",
-    async () => {
-      if (!state.user) return;
-
-      await supabaseClient
-        .from("notifications")
-        .update({
-          is_read: true
-        })
-        .eq(
-          "user_id",
-          state.user.id
-        )
-        .eq(
-          "is_read",
-          false
-        );
-
-      await loadNotifications();
-    }
-  );
-
-  const communityTables = [
-    "community_posts",
-    "community_questions"
-  ];
-
-  const findCommunityTable =
-    async () => {
-      for (
-        const tableName
-        of communityTables
-      ) {
-        const {
-          error
-        } = await supabaseClient
-          .from(tableName)
-          .select("*")
-          .limit(1);
-
-        if (!error) {
-          return tableName;
-        }
-      }
-
-      return null;
-    };
-
-  const loadCommunityQuestions =
-    async () => {
-      const tableName =
-        await findCommunityTable();
-
-      if (!tableName) {
-        element(
-          "communityFeed"
-        ).innerHTML = `
-          <div class="empty-state">
-            Community Help is not connected yet.
-          </div>
-        `;
-
-        return;
-      }
-
-      const {
-        data,
-        error
-      } = await supabaseClient
-        .from(tableName)
-        .select("*")
-        .order("created_at", {
-          ascending: false
-        })
-        .limit(30);
-
-      if (error) {
-        element(
-          "communityFeed"
-        ).innerHTML = `
-          <div class="empty-state">
-            Could not load Community Help.
-          </div>
-        `;
-
-        return;
-      }
-
-      if (!data?.length) {
-        element(
-          "communityFeed"
-        ).innerHTML = `
-          <div class="empty-state">
-            No community questions yet.
-          </div>
-        `;
-
-        return;
-      }
-
-      element(
-        "communityFeed"
-      ).innerHTML =
-        data
-          .map((post) => {
-            const name =
-              post.author_name ||
-              post.display_name ||
-              post.name ||
-              "Member";
-
-            const question =
-              post.question ||
-              post.content ||
-              post.body ||
-              "";
-
-            return `
-              <article class="question-card">
-                <strong>
-                  ${escapeHtml(name)}
-                </strong>
-
-                <p style="line-height:1.55;">
-                  ${escapeHtml(question)}
-                </p>
-
-                <div class="status">
-                  ${escapeHtml(
-                    formatDate(
-                      post.created_at
-                    )
-                  )}
-                </div>
-              </article>
-            `;
-          })
-          .join("");
-    };
-
-  element(
-    "postCommunityQuestion"
-  ).addEventListener(
-    "click",
-    async () => {
-      if (!requireLogin()) return;
-
-      const name =
-        element(
-          "communityName"
-        ).value.trim();
-
-      const question =
-        element(
-          "communityQuestion"
-        ).value.trim();
-
-      if (!name || !question) {
-        element(
-          "communityStatus"
-        ).textContent =
-          "Please add your display name and question.";
-
-        return;
-      }
-
-      const tableName =
-        await findCommunityTable();
-
-      if (!tableName) {
-        element(
-          "communityStatus"
-        ).textContent =
-          "The Community Help database table was not found.";
-
-        return;
-      }
-
-      let payload;
-
-      if (
-        tableName ===
-        "community_questions"
-      ) {
-        payload = {
-          user_id: state.user.id,
-          author_name: name,
-          question
-        };
-      } else {
-        payload = {
-          user_id: state.user.id,
-          author_name: name,
-          question
-        };
-      }
-
-      const {
-        error
-      } = await supabaseClient
-        .from(tableName)
-        .insert(payload);
-
-      if (error) {
-        element(
-          "communityStatus"
-        ).textContent =
-          `Could not post question: ${error.message}`;
-
-        return;
-      }
-
-      element(
-        "communityQuestion"
-      ).value = "";
-
-      element(
-        "communityStatus"
-      ).textContent =
-        "Question posted successfully.";
-
-      await loadCommunityQuestions();
-    }
-  );
-
-  element(
-    "refreshCommunity"
-  ).addEventListener(
-    "click",
-    loadCommunityQuestions
-  );
-
-  const addChatMessage = (
-    role,
-    text
-  ) => {
-    const message =
-      document.createElement("div");
-
-    message.className =
-      `message ${
-        role === "user"
-          ? "user"
-          : "ai"
-      }`;
-
-    message.textContent = text;
-
-    element(
-      "chatMessages"
-    ).appendChild(message);
-
-    element(
-      "chatMessages"
-    ).scrollTop =
-      element(
-        "chatMessages"
-      ).scrollHeight;
-
-    return message;
-  };
-
-  const sendChatMessage = async (
-    suppliedPrompt = null
-  ) => {
-    if (state.chatBusy) return;
-
-    const input =
-      element("chatInput");
-
-    const prompt =
-      suppliedPrompt ||
-      input.value.trim();
-
-    if (!prompt) return;
-
-    state.chatBusy = true;
+    button.disabled = true;
+    button.textContent = joining ? "Creating accountâ¦" : "Logging inâ¦";
+    status.textContent = "";
 
     try {
-      const {
-        data: {
-          session
-        }
-      } =
-        await supabaseClient
-          .auth
-          .getSession();
+      const result = joining
+        ? await supabaseClient.auth.signUp({ email, password })
+        : await supabaseClient.auth.signInWithPassword({ email, password });
 
-      const response =
-        await fetch(
-          "/api/chat",
-          {
-            method: "POST",
-            headers: {
-              "Content-Type":
-                "application/json",
-              ...(session?.access_token
-                ? {
-                    Authorization:
-                      `Bearer ${session.access_token}`
-                  }
-                : {})
-            },
-            body: JSON.stringify({
-              message: prompt,
-              input: prompt,
-              messages: [
-                {
-                  role: "user",
-                  content: prompt
-                }
-              ]
-            })
-          }
-        );
+      if (result.error) throw result.error;
 
-      const result =
-        await response.json();
-
-      if (!response.ok) {
-        throw new Error(
-          result.error ||
-          result.message ||
-          "The AI request failed."
-        );
+      if (joining && !result.data.session) {
+        status.textContent = "Account created. Check your email to confirm your account, then log in.";
+        button.dataset.mode = "login";
+        button.textContent = "Log in";
+        return;
       }
 
-      const answer =
+      setLoggedInUI(result.data.user);
+      closeAuth();
+      await loadCommunity();
+      await loadSwaps();
+    } catch (error) {
+      console.error(error);
+      status.textContent = error.message || "Login failed. Please check your details and try again.";
+    } finally {
+      button.disabled = false;
+      button.textContent = button.dataset.mode === "join" ? "Create free account" : "Log in";
+    }
+  });
+
+  on("logoutBtn", "click", async () => {
+    if (!supabaseClient) return;
+    await supabaseClient.auth.signOut();
+    setLoggedInUI(null);
+  });
+
+  const addMessage = (role, text) => {
+    const shell = $("chatMessages");
+    if (!shell) return null;
+    const node = document.createElement("div");
+    node.className = `message ${role === "user" ? "user" : "ai"}`;
+    node.textContent = text;
+    shell.appendChild(node);
+    shell.scrollTop = shell.scrollHeight;
+    return node;
+  };
+
+  const sendChatMessage = async (suppliedPrompt = null) => {
+    if (chatBusy) return;
+
+    const input = $("chatInput");
+    const prompt = suppliedPrompt || input?.value.trim();
+    if (!prompt) return;
+
+    if (!suppliedPrompt && input) input.value = "";
+    addMessage("user", prompt);
+    const waiting = addMessage("ai", "Thinkingâ¦");
+
+    chatBusy = true;
+    $("sendChat").disabled = true;
+
+    try {
+      let session = null;
+      if (supabaseClient) {
+        const sessionResult = await supabaseClient.auth.getSession();
+        session = sessionResult.data.session;
+      }
+
+      const response = await fetch("/api/chat", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          ...(session?.access_token ? { Authorization: `Bearer ${session.access_token}` } : {})
+        },
+        body: JSON.stringify({
+          message: prompt,
+          input: prompt,
+          messages: [{ role: "user", content: prompt }]
+        })
+      });
+
+      const text = await response.text();
+      let result = {};
+      try { result = JSON.parse(text); } catch { result = { message: text }; }
+
+      if (!response.ok) {
+        throw new Error(result.error || result.message || "The AI request failed.");
+      }
+
+      waiting.textContent =
         result.answer ||
         result.reply ||
         result.output_text ||
         result.message ||
         result.output?.[0]?.content?.[0]?.text ||
         "I could not create a response.";
-
-      waitingMessage.textContent =
-        answer;
     } catch (error) {
-      waitingMessage.textContent =
-        `Sorry, I could not create a response. ${error.message}`;
+      waiting.textContent = `Sorry, I could not create a response. ${error.message}`;
     } finally {
-      state.chatBusy = false;
-
-      element(
-        "sendChat"
-      ).disabled = false;
+      chatBusy = false;
+      $("sendChat").disabled = false;
     }
   };
 
-  element(
-    "sendChat"
-  ).addEventListener(
-    "click",
-    () =>
-      sendChatMessage()
-  );
-
-  element(
-    "chatInput"
-  ).addEventListener(
-    "keydown",
-    (event) => {
-      if (
-        event.key === "Enter" &&
-        !event.shiftKey
-      ) {
-        event.preventDefault();
-        sendChatMessage();
-      }
+  on("sendChat", "click", () => sendChatMessage());
+  on("chatInput", "keydown", (event) => {
+    if (event.key === "Enter" && !event.shiftKey) {
+      event.preventDefault();
+      sendChatMessage();
     }
-  );
+  });
 
-  document
-    .querySelectorAll(
-      ".promptBtn"
-    )
-    .forEach((button) => {
-      button.addEventListener(
-        "click",
-        () => {
-          element(
-            "assistant"
-          ).scrollIntoView({
-            behavior: "smooth"
-          });
-
-          sendChatMessage(
-            button.dataset.prompt
-          );
-        }
-      );
+  document.querySelectorAll(".promptBtn").forEach((button) => {
+    button.addEventListener("click", () => {
+      $("assistant")?.scrollIntoView({ behavior: "smooth" });
+      sendChatMessage(button.dataset.prompt || button.textContent.trim());
     });
+  });
 
-  element(
-    "askDocument"
-  ).addEventListener(
-    "click",
-    async () => {
-      const file =
-        element(
-          "documentFile"
-        ).files?.[0];
+  on("askDocument", "click", async () => {
+    const file = $("documentFile")?.files?.[0];
 
-      if (!file) {
-        window.alert(
-          "Choose a document first."
-        );
-
-        return;
-      }
-
-      const maximumSize =
-        3 * 1024 * 1024;
-
-      if (
-        file.size >
-        maximumSize
-      ) {
-        window.alert(
-          "Please choose a document smaller than 3 MB."
-        );
-
-        return;
-      }
-
-      let text;
-
-      try {
-        text =
-          await file.text();
-      } catch {
-        window.alert(
-          "This file could not be read. Try a plain text, CSV or similar text-based document."
-        );
-
-        return;
-      }
-
-      if (!text.trim()) {
-        window.alert(
-          "No readable text was found in this document."
-        );
-
-        return;
-      }
-
-      const shortenedText =
-        text.slice(0, 14000);
-
-      element(
-        "assistant"
-      ).scrollIntoView({
-        behavior: "smooth"
-      });
-
-      await sendChatMessage(
-        `Please explain this document clearly in everyday language. Summarise the important points, deadlines, costs, risks and actions I may need to take. Do not invent missing information.
-
-Document name: ${file.name}
-
-Document text:
-${shortenedText}`
-      );
+    if (!file) {
+      alert("Choose a document first.");
+      return;
     }
-  );
+    if (file.size > 3 * 1024 * 1024) {
+      alert("Please choose a document smaller than 3 MB.");
+      return;
+    }
 
-  const openAuth = (
-    title
-  ) => {
-    element(
-      "authModalTitle"
-    ).textContent = title;
+    try {
+      const text = await file.text();
+      if (!text.trim()) throw new Error("No readable text was found.");
 
-    element(
-      "authStatus"
-    ).textContent = "";
+      $("assistant")?.scrollIntoView({ behavior: "smooth" });
+      await sendChatMessage(
+        `Please explain this document clearly in everyday language. Summarise the important points, deadlines, costs, risks and actions I may need to take. Do not invent missing information.\n\nDocument name: ${file.name}\n\nDocument text:\n${text.slice(0, 14000)}`
+      );
+    } catch (error) {
+      alert(`${error.message} Try a plain text, CSV or similar text-based document.`);
+    }
+  });
 
-    openModal("authModal");
+  const loadCommunity = async () => {
+    const list = $("communityList");
+    if (!list || !supabaseClient) return;
+
+    try {
+      const { data, error } = await supabaseClient
+        .from("community_questions")
+        .select("*")
+        .order("created_at", { ascending: false })
+        .limit(20);
+
+      if (error) throw error;
+
+      if (!data?.length) {
+        list.innerHTML = '<div class="empty">No community questions yet.</div>';
+        return;
+      }
+
+      list.innerHTML = data.map((item) => `
+        <article class="item">
+          <div class="item-top">
+            <strong>${escapeHtml(item.question || item.title || "Community question")}</strong>
+            <span class="tag">Community</span>
+          </div>
+          <p class="status">${new Date(item.created_at).toLocaleString("en-GB")}</p>
+        </article>
+      `).join("");
+    } catch (error) {
+      console.warn("Community table unavailable:", error.message);
+      list.innerHTML = '<div class="empty">Community will appear here once its database table is available.</div>';
+    }
   };
 
-  element(
-    "loginOpen"
-  ).addEventListener(
-    "click",
-    () =>
-      openAuth("Log in")
-  );
+  on("postQuestion", "click", async () => {
+    if (!requireLogin("Log in to post a community question.")) return;
 
-  element(
-    "joinOpen"
-  ).addEventListener(
-    "click",
-    () =>
-      openAuth(
-        "Join LifeCompass AI"
-      )
-  );
+    const question = $("communityQuestion")?.value.trim();
+    const status = $("communityStatus");
 
+    if (!question) {
+      status.textContent = "Please enter your question.";
+      return;
+    }
 
+    try {
+      const { error } = await supabaseClient
+        .from("community_questions")
+        .insert({ question, user_id: currentUser.id });
 
-  element(
-    "profileOpen"
-  ).addEventListener(
-    "click",
-    () => {
-      if (
-        !requireLogin(
-          "Log in to create your Skill Swap profile."
-        )
-      ) {
+      if (error) throw error;
+
+      $("communityQuestion").value = "";
+      status.textContent = "Your question has been posted.";
+      await loadCommunity();
+    } catch (error) {
+      status.textContent = `Could not post: ${error.message}`;
+    }
+  });
+
+  const loadSwaps = async () => {
+    const list = $("swapList");
+    if (!list || !supabaseClient) return;
+
+    try {
+      const { data, error } = await supabaseClient
+        .from("skill_swaps")
+        .select("*")
+        .order("created_at", { ascending: false })
+        .limit(30);
+
+      if (error) throw error;
+
+      if (!data?.length) {
+        list.innerHTML = '<div class="empty">No Skill Swap listings yet.</div>';
         return;
       }
 
-      element(
-        "profile-section"
-      ).scrollIntoView({
-        behavior: "smooth"
-      });
+      list.innerHTML = data.map((item) => `
+        <article class="item">
+          <div class="item-top">
+            <div>
+              <strong>Offers: ${escapeHtml(item.offer || item.offering || "")}</strong>
+              <p style="margin:7px 0">Needs: ${escapeHtml(item.need || item.looking_for || "")}</p>
+              <span class="status">${escapeHtml(item.location || item.area || "Location not stated")}</span>
+            </div>
+            <span class="tag">Skill Swap</span>
+          </div>
+        </article>
+      `).join("");
+    } catch (error) {
+      console.warn("Skill Swap table unavailable:", error.message);
+      list.innerHTML = '<div class="empty">Skill Swap listings will appear once the database table is available.</div>';
     }
-  );
+  };
 
-element(
-  "loginButton"
-).addEventListener(
-  "click",
-  async () => {
-    const email = element(
-      "authEmail"
-    ).value.trim();
+  on("postSwap", "click", async () => {
+    if (!requireLogin("Log in to create a Skill Swap listing.")) return;
 
-    const password = element(
-      "authPassword"
-    ).value;
+    const offer = $("swapOffer")?.value.trim();
+    const need = $("swapNeed")?.value.trim();
+    const location = $("swapLocation")?.value.trim();
+    const status = $("swapStatus");
 
-    if (!email || !password) {
-      element(
-        "authStatus"
-      ).textContent =
-        "Please enter your email address and password.";
-
+    if (!offer || !need) {
+      status.textContent = "Please enter what you can offer and what help you need.";
       return;
     }
 
-    if (password.length < 6) {
-      element(
-        "authStatus"
-      ).textContent =
-        "Your password must contain at least 6 characters.";
+    try {
+      const { error } = await supabaseClient
+        .from("skill_swaps")
+        .insert({ user_id: currentUser.id, offer, need, location });
 
-      return;
+      if (error) throw error;
+
+      $("swapOffer").value = "";
+      $("swapNeed").value = "";
+      $("swapLocation").value = "";
+      status.textContent = "Your Skill Swap listing has been posted.";
+      await loadSwaps();
+    } catch (error) {
+      status.textContent = `Could not post: ${error.message}`;
     }
-
-    const button = element(
-      "loginButton"
-    );
-
-    const joining =
-      element(
-        "authModalTitle"
-      ).textContent.includes(
-        "Join"
-      );
-
-    setButtonBusy(
-      button,
-      true,
-      joining
-        ? "Creating account..."
-        : "Logging in...",
-      joining
-        ? "Create free account"
-        : "Log in"
-    );
-
-    let result;
-
-    if (joining) {
-      result =
-        await supabaseClient
-          .auth
-          .signUp({
-            email,
-            password
-          });
-    } else {
-      result =
-        await supabaseClient
-          .auth
-          .signInWithPassword({
-            email,
-            password
-          });
-    }
-
-    setButtonBusy(
-      button,
-      false,
-      "",
-      joining
-        ? "Create free account"
-        : "Log in"
-    );
-
-    if (result.error) {
-      element(
-        "authStatus"
-      ).textContent =
-        result.error.message;
-
-      return;
-    }
-
-    if (
-      joining &&
-      !result.data.session
-    ) {
-      element(
-        "authStatus"
-      ).textContent =
-        "Account created. Check your email to confirm your account, then log in.";
-
-      return;
-    }
-
-    element(
-      "authStatus"
-    ).textContent =
-      joining
-        ? "Your account has been created."
-        : "You are now logged in.";
-
-    closeModal(
-      "authModal"
-    );
-
-    await loadEverything();
-  }
-);
-
-element(
-  "forgotPassword"
-).addEventListener(
-  "click",
-  async event => {
-    event.preventDefault();
-
-    const email = element(
-      "authEmail"
-    ).value.trim();
-
-    if (!email) {
-      element(
-        "authStatus"
-      ).textContent =
-        "Enter your email address first.";
-
-      return;
-    }
-
-    const {
-      error
-    } =
-      await supabaseClient
-        .auth
-        .resetPasswordForEmail(
-          email,
-          {
-            redirectTo:
-              window.location.origin
-          }
-        );
-
-    element(
-      "authStatus"
-    ).textContent =
-      error
-        ? `Could not send reset email: ${error.message}`
-        : "Password reset email sent. Check your inbox.";
-  }
-);
-
-  element(
-    "logoutBtn"
-  ).addEventListener(
-    "click",
-    async () => {
-      await supabaseClient
-        .auth
-        .signOut();
-
-      state.user = null;
-      state.profile = null;
-      state.activeConversation =
-        null;
-      state.notifications = [];
-
-      updateAuthInterface();
-
-      element(
-        "conversationList"
-      ).innerHTML = `
-        <div class="empty-state">
-          Log in to view your private messages.
-        </div>
-      `;
-
-      window.location.reload();
-    }
-  );
-
-  supabaseClient
-    .auth
-    .onAuthStateChange(
-      async (
-        event,
-        session
-      ) => {
-        state.user =
-          session?.user || null;
-
-        updateAuthInterface();
-
-        if (
-          event === "SIGNED_IN"
-        ) {
-          closeModal(
-            "authModal"
-          );
-
-          await loadEverything();
-        }
-      }
-    );
-
-  const subscribeToLiveUpdates =
-    () => {
-      supabaseClient
-        .channel(
-          "lifecompass-live-updates"
-        )
-        .on(
-          "postgres_changes",
-          {
-            event: "*",
-            schema: "public",
-            table: "messages"
-          },
-          async () => {
-            if (
-              state.activeConversation
-            ) {
-              await loadPrivateMessages();
-              await markConversationMessagesRead();
-            }
-
-            await loadConversations();
-          }
-        )
-        .on(
-          "postgres_changes",
-          {
-            event: "*",
-            schema: "public",
-            table: "notifications"
-          },
-          async () => {
-            if (state.user) {
-              await loadNotifications();
-            }
-          }
-        )
-        .on(
-          "postgres_changes",
-          {
-            event: "*",
-            schema: "public",
-            table: "skill_swaps"
-          },
-          loadSkillSwaps
-        )
-        .subscribe();
-    };
+  });
 
   const initialise = async () => {
-    updateAuthInterface();
-    await loadSession();
-    subscribeToLiveUpdates();
+    if (!supabaseClient) return;
+
+    try {
+      const { data } = await supabaseClient.auth.getSession();
+      setLoggedInUI(data.session?.user || null);
+
+      supabaseClient.auth.onAuthStateChange((_event, session) => {
+        setLoggedInUI(session?.user || null);
+      });
+
+      await Promise.allSettled([loadCommunity(), loadSwaps()]);
+    } catch (error) {
+      console.error("Initialisation error:", error);
+      setLoggedInUI(null);
+    }
   };
 
   initialise();
-</script>
-<script>
-if ("serviceWorker" in navigator) {
-  window.addEventListener("load", () => {
-    navigator.serviceWorker.register("/service-worker.js")
-      .then(() => console.log("LifeCompass AI app ready"))
-      .catch(err => console.error(err));
-  });
-}
+
+  if ("serviceWorker" in navigator) {
+    window.addEventListener("load", () => {
+      navigator.serviceWorker.register("/service-worker.js").catch(() => {});
+    });
+  }
+})();
 </script>
 </body>
 </html>
