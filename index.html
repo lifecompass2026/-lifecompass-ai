@@ -1,4 +1,4 @@
-l<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
@@ -6,8 +6,9 @@ l<!DOCTYPE html>
   <meta name="theme-color" content="#102a43">
   <meta name="mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-capable" content="yes">
-  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
   <meta name="apple-mobile-web-app-title" content="LifeCompass AI">
+
   <title>LifeCompass AI</title>
 
   <link rel="manifest" href="/manifest.webmanifest">
@@ -16,292 +17,546 @@ l<!DOCTYPE html>
   <link rel="icon" type="image/png" sizes="512x512" href="/icons/icon-512.png">
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+  <script src="https://unpkg.com/lucide@0.468.0/dist/umd/lucide.min.js"></script>
 
   <style>
     :root {
-      --ink:#102a43;
-      --muted:#61758a;
-      --paper:#f5f8fb;
-      --card:#fff;
-      --line:#dbe5ee;
-      --brand:#1f7a67;
-      --brand-dark:#155f50;
-      --brand-light:#e8f5f1;
-      --purple:#7c3aed;
-      --purple-light:#f1eafe;
+      --navy:#102a43;
+      --navy-2:#173f5f;
+      --green:#3f866f;
+      --green-dark:#2f6b58;
+      --green-soft:#eaf5f1;
       --blue:#2563eb;
-      --red:#b42318;
-      --gold:#f59e0b;
-      --shadow:0 12px 35px rgba(16,42,67,.09);
+      --purple:#7c3aed;
+      --paper:#f4f7fa;
+      --white:#ffffff;
+      --text:#102a43;
+      --muted:#687b91;
+      --line:#d7e1ea;
+      --danger:#b42318;
+      --shadow:0 14px 36px rgba(16,42,67,.10);
       --radius:22px;
     }
 
-    * { box-sizing:border-box; }
-    html { scroll-behavior:smooth; }
+    * {
+      box-sizing:border-box;
+    }
+
+    html {
+      scroll-behavior:smooth;
+    }
+
     body {
       margin:0;
       background:var(--paper);
-      color:var(--ink);
-      font-family:Inter,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+      color:var(--text);
+      font-family:Inter,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",Arial,sans-serif;
+      -webkit-font-smoothing:antialiased;
+      text-rendering:optimizeLegibility;
     }
 
-    button,input,textarea,select { font:inherit; }
-    button { cursor:pointer; }
-    .hidden { display:none !important; }
-    .wrap { width:min(1120px,calc(100% - 28px)); margin:auto; }
-    .muted,.status { color:var(--muted); }
-    .status { font-size:.9rem; line-height:1.45; }
-    .section { padding:40px 0; }
+    button,
+    input,
+    textarea,
+    select {
+      font:inherit;
+    }
+
+    button {
+      cursor:pointer;
+    }
+
+    a {
+      color:inherit;
+    }
+
+    .hidden {
+      display:none !important;
+    }
+
+    .wrap {
+      width:min(1120px,calc(100% - 28px));
+      margin:0 auto;
+    }
+
+    .section {
+      padding:42px 0;
+    }
+
     .card {
-      background:var(--card);
+      background:var(--white);
       border:1px solid var(--line);
       border-radius:var(--radius);
       box-shadow:var(--shadow);
     }
-    .panel { padding:22px; }
-    .grid-2 { display:grid; grid-template-columns:1fr 1fr; gap:18px; }
-    .grid-4 { display:grid; grid-template-columns:repeat(4,1fr); gap:16px; }
-    .list { display:grid; gap:12px; margin-top:15px; }
+
+    .panel {
+      padding:22px;
+    }
+
+    .grid-2 {
+      display:grid;
+      grid-template-columns:1fr 1fr;
+      gap:18px;
+    }
+
+    .grid-4 {
+      display:grid;
+      grid-template-columns:repeat(4,1fr);
+      gap:16px;
+    }
+
+    .muted,
+    .status {
+      color:var(--muted);
+    }
+
+    .status {
+      font-size:.92rem;
+      line-height:1.5;
+    }
+
+    .list {
+      display:grid;
+      gap:12px;
+      margin-top:16px;
+    }
+
     .empty {
       padding:20px;
-      text-align:center;
       border:1px dashed var(--line);
-      border-radius:15px;
+      border-radius:16px;
+      text-align:center;
       color:var(--muted);
     }
 
     header {
       position:sticky;
       top:0;
-      z-index:40;
-      background:rgba(245,248,251,.96);
-      backdrop-filter:blur(14px);
+      z-index:50;
+      background:rgba(244,247,250,.96);
       border-bottom:1px solid var(--line);
+      backdrop-filter:blur(14px);
     }
+
     .nav {
       min-height:72px;
       display:flex;
       align-items:center;
       gap:14px;
     }
+
     .brand {
       display:flex;
       align-items:center;
       gap:10px;
-      font-weight:900;
       font-size:1.18rem;
+      font-weight:900;
+      text-decoration:none;
     }
+
     .brand-mark {
-      width:42px;
-      height:42px;
+      width:44px;
+      height:44px;
       display:grid;
       place-items:center;
-      border-radius:14px;
-      background:var(--brand);
-      color:#fff;
+      border-radius:15px;
+      background:var(--green);
+      color:var(--white);
       font-weight:900;
+      letter-spacing:-.03em;
     }
-    nav { display:flex; gap:15px; margin-left:auto; }
+
+    nav {
+      display:flex;
+      gap:16px;
+      margin-left:auto;
+    }
+
     nav a {
       color:var(--muted);
       text-decoration:none;
-      font-size:.92rem;
+      font-size:.91rem;
       font-weight:800;
     }
-    nav a:hover { color:var(--brand); }
-    .actions { display:flex; align-items:center; gap:8px; margin-left:8px; }
+
+    nav a:hover {
+      color:var(--green);
+    }
+
+    .actions {
+      display:flex;
+      align-items:center;
+      gap:8px;
+      margin-left:8px;
+    }
 
     .btn {
-      border:0;
-      border-radius:13px;
-      padding:11px 15px;
-      background:var(--brand);
-      color:#fff;
-      font-weight:850;
-      text-decoration:none;
+      min-height:44px;
       display:inline-flex;
       align-items:center;
       justify-content:center;
-      gap:7px;
+      gap:8px;
+      padding:11px 16px;
+      border:0;
+      border-radius:13px;
+      background:var(--green);
+      color:var(--white);
+      font-weight:850;
+      text-decoration:none;
     }
-    .btn.secondary { background:#fff; color:var(--ink); border:1px solid var(--line); }
-    .btn.purple { background:var(--purple); }
-    .btn.blue { background:var(--blue); }
-    .btn.ghost { background:transparent; color:var(--ink); }
-    .btn.small { padding:8px 11px; border-radius:10px; font-size:.84rem; }
-    .btn:disabled { opacity:.55; cursor:not-allowed; }
+
+    .btn:hover {
+      background:var(--green-dark);
+    }
+
+    .btn.secondary {
+      background:var(--white);
+      color:var(--navy);
+      border:1px solid var(--line);
+    }
+
+    .btn.secondary:hover {
+      background:#f8fafc;
+    }
+
+    .btn.purple {
+      background:var(--purple);
+    }
+
+    .btn.blue {
+      background:var(--blue);
+    }
+
+    .btn.ghost {
+      background:transparent;
+      color:var(--navy);
+    }
+
+    .btn.small {
+      min-height:38px;
+      padding:8px 11px;
+      border-radius:10px;
+      font-size:.84rem;
+    }
+
+    .btn:disabled {
+      opacity:.55;
+      cursor:not-allowed;
+    }
+
+    .btn svg {
+      width:18px;
+      height:18px;
+      stroke-width:2.3;
+      flex:0 0 auto;
+    }
 
     .hero {
-      padding:54px 0 38px;
       position:relative;
       overflow:hidden;
+      padding:58px 0 42px;
     }
-    .hero::after {
+
+    .hero:before,
+    .hero:after {
       content:"";
       position:absolute;
-      width:340px;
-      height:340px;
       border-radius:50%;
-      background:rgba(31,122,103,.09);
-      right:-170px;
-      top:-150px;
       pointer-events:none;
     }
-    .hero-inner { position:relative; z-index:1; text-align:center; max-width:920px; margin:auto; }
+
+    .hero:before {
+      width:360px;
+      height:360px;
+      left:-240px;
+      bottom:-250px;
+      background:rgba(37,99,235,.07);
+    }
+
+    .hero:after {
+      width:380px;
+      height:380px;
+      right:-190px;
+      top:-230px;
+      background:rgba(63,134,111,.10);
+    }
+
+    .hero-inner {
+      position:relative;
+      z-index:1;
+      max-width:940px;
+      margin:auto;
+      text-align:center;
+    }
+
     .eyebrow {
       display:inline-flex;
       align-items:center;
       gap:8px;
       padding:8px 13px;
-      border:1px solid rgba(31,122,103,.25);
+      border:1px solid rgba(63,134,111,.25);
       border-radius:999px;
-      background:rgba(255,255,255,.8);
-      color:var(--brand);
+      background:rgba(255,255,255,.82);
+      color:var(--green);
       font-size:.8rem;
-      text-transform:uppercase;
-      letter-spacing:.08em;
       font-weight:900;
+      letter-spacing:.08em;
+      text-transform:uppercase;
     }
+
+    .eyebrow svg {
+      width:17px;
+      height:17px;
+    }
+
     h1 {
       max-width:900px;
       margin:20px auto 18px;
-      font-size:clamp(2.65rem,9vw,5.4rem);
-      line-height:.96;
+      font-size:clamp(2.7rem,8vw,5.2rem);
+      line-height:.98;
       letter-spacing:-.06em;
     }
-    h2 { margin:0 0 10px; font-size:clamp(1.8rem,4vw,2.7rem); letter-spacing:-.04em; }
-    h3 { margin:0 0 8px; }
+
+    h1 span {
+      color:var(--green);
+    }
+
+    h2 {
+      margin:0 0 10px;
+      font-size:clamp(1.8rem,4vw,2.6rem);
+      letter-spacing:-.04em;
+    }
+
+    h3 {
+      margin:0 0 8px;
+    }
+
     .lead {
-      max-width:740px;
+      max-width:760px;
       margin:0 auto;
       color:var(--muted);
-      font-size:clamp(1.04rem,3vw,1.22rem);
+      font-size:clamp(1.03rem,3vw,1.2rem);
       line-height:1.65;
     }
+
     .hero-buttons {
       display:flex;
       justify-content:center;
       gap:12px;
       flex-wrap:wrap;
-      margin-top:26px;
+      margin-top:27px;
     }
-    .hero-buttons .btn { min-width:210px; padding:16px 24px; font-size:1.05rem; }
+
+    .hero-buttons .btn {
+      min-width:210px;
+      padding:16px 24px;
+      font-size:1.05rem;
+    }
+
     .trust-row {
       display:flex;
       justify-content:center;
-      gap:14px;
+      gap:16px;
       flex-wrap:wrap;
-      margin-top:16px;
+      margin-top:18px;
       color:var(--muted);
-      font-size:.9rem;
-      font-weight:750;
+      font-size:.92rem;
+      font-weight:800;
     }
 
-    .feature { padding:20px; min-height:190px; }
-    .icon {
-      width:50px;
-      height:50px;
-      border-radius:15px;
+    .trust-item {
+      display:inline-flex;
+      align-items:center;
+      gap:6px;
+    }
+
+    .trust-item svg {
+      width:17px;
+      height:17px;
+      color:var(--green);
+      stroke-width:3;
+    }
+
+    .feature {
+      min-height:195px;
+      padding:21px;
+    }
+
+    .feature-icon {
+      width:52px;
+      height:52px;
       display:grid;
       place-items:center;
-      background:var(--brand-light);
-      font-size:1.5rem;
       margin-bottom:14px;
+      border-radius:16px;
+      background:var(--green-soft);
+      color:var(--green-dark);
     }
 
-    .field { display:grid; gap:7px; margin:12px 0; }
-    .field label { font-weight:800; font-size:.91rem; }
-    .field input,.field textarea,.field select {
+    .feature-icon svg {
+      width:27px;
+      height:27px;
+      stroke-width:2.1;
+    }
+
+    .field {
+      display:grid;
+      gap:7px;
+      margin:13px 0;
+    }
+
+    .field label {
+      font-size:.92rem;
+      font-weight:850;
+    }
+
+    .field input,
+    .field textarea,
+    .field select {
       width:100%;
       border:1px solid var(--line);
       border-radius:13px;
       padding:12px;
-      background:#fff;
-      color:var(--ink);
+      background:var(--white);
+      color:var(--text);
       outline:none;
     }
-    .field input:focus,.field textarea:focus,.field select:focus {
-      border-color:var(--brand);
-      box-shadow:0 0 0 3px rgba(31,122,103,.11);
-    }
-    .field textarea { min-height:105px; resize:vertical; }
 
-    .item {
-      padding:15px;
-      border:1px solid var(--line);
-      border-radius:16px;
-      background:#fff;
-    }
-    .item-top {
-      display:flex;
-      justify-content:space-between;
-      align-items:flex-start;
-      gap:12px;
-    }
-    .tag {
-      display:inline-flex;
-      padding:6px 10px;
-      border-radius:999px;
-      background:var(--purple-light);
-      color:#6d28d9;
-      font-size:.76rem;
-      font-weight:900;
-      margin:3px 4px 3px 0;
+    .field input:focus,
+    .field textarea:focus,
+    .field select:focus {
+      border-color:var(--green);
+      box-shadow:0 0 0 3px rgba(63,134,111,.12);
     }
 
-    .chat-shell { overflow:hidden; }
+    .field textarea {
+      min-height:105px;
+      resize:vertical;
+    }
+
+    .chat-shell {
+      overflow:hidden;
+    }
+
     .chat-top {
       display:flex;
       align-items:center;
       justify-content:space-between;
+      gap:14px;
       padding:18px 20px;
       border-bottom:1px solid var(--line);
     }
+
+    .chat-heading {
+      display:flex;
+      align-items:center;
+      gap:12px;
+    }
+
+    .chat-heading .feature-icon {
+      width:44px;
+      height:44px;
+      margin:0;
+      border-radius:14px;
+    }
+
     .messages {
       height:360px;
       overflow:auto;
       padding:18px;
       background:#fbfdff;
     }
+
     .message {
       max-width:86%;
+      margin:8px 0;
       padding:11px 13px;
       border-radius:15px;
-      margin:8px 0;
       white-space:pre-wrap;
-      line-height:1.48;
+      line-height:1.5;
     }
-    .message.ai { background:#fff; border:1px solid var(--line); }
-    .message.user { margin-left:auto; background:var(--brand); color:#fff; }
-    .chat-compose { display:flex; gap:8px; padding:14px; border-top:1px solid var(--line); }
+
+    .message.ai {
+      background:var(--white);
+      border:1px solid var(--line);
+    }
+
+    .message.user {
+      margin-left:auto;
+      background:var(--green);
+      color:var(--white);
+    }
+
+    .chat-compose {
+      display:flex;
+      gap:8px;
+      padding:14px;
+      border-top:1px solid var(--line);
+    }
+
     .chat-compose textarea {
       flex:1;
-      min-height:50px;
+      min-height:52px;
       max-height:130px;
       padding:11px;
       border:1px solid var(--line);
       border-radius:13px;
       resize:vertical;
+      outline:none;
+    }
+
+    .chat-compose textarea:focus {
+      border-color:var(--green);
+      box-shadow:0 0 0 3px rgba(63,134,111,.12);
+    }
+
+    .item {
+      padding:15px;
+      border:1px solid var(--line);
+      border-radius:16px;
+      background:var(--white);
+    }
+
+    .item-top {
+      display:flex;
+      justify-content:space-between;
+      align-items:flex-start;
+      gap:12px;
+    }
+
+    .tag {
+      display:inline-flex;
+      align-items:center;
+      padding:6px 10px;
+      border-radius:999px;
+      background:#f1eafe;
+      color:#6d28d9;
+      font-size:.76rem;
+      font-weight:900;
+      white-space:nowrap;
     }
 
     .modal {
       position:fixed;
       inset:0;
       z-index:100;
-      background:rgba(16,42,67,.6);
       display:grid;
       place-items:center;
       padding:18px;
+      background:rgba(16,42,67,.62);
     }
+
     .modal-card {
       width:min(500px,100%);
       max-height:calc(100vh - 36px);
       overflow:auto;
-      background:#fff;
-      border-radius:22px;
       padding:22px;
+      border-radius:22px;
+      background:var(--white);
       box-shadow:var(--shadow);
     }
+
     .modal-title {
       display:flex;
       justify-content:space-between;
@@ -309,664 +564,1280 @@ l<!DOCTYPE html>
       gap:12px;
     }
 
-    footer { padding:38px 0 52px; text-align:center; color:var(--muted); }
+    footer {
+      padding:38px 0 52px;
+      color:var(--muted);
+      text-align:center;
+    }
 
     @media (max-width:940px) {
-      nav { display:none; }
-      .actions { margin-left:auto; }
-      .grid-2 { grid-template-columns:1fr; }
-      .grid-4 { grid-template-columns:1fr 1fr; }
+      nav {
+        display:none;
+      }
+
+      .actions {
+        margin-left:auto;
+      }
+
+      .grid-2 {
+        grid-template-columns:1fr;
+      }
+
+      .grid-4 {
+        grid-template-columns:1fr 1fr;
+      }
     }
+
     @media (max-width:620px) {
-      .grid-4 { grid-template-columns:1fr; }
-      .actions .btn { padding:9px 10px; font-size:.8rem; }
-      .brand span:last-child { max-width:135px; }
-      h1 { font-size:3rem; }
-      .hero { padding-top:38px; }
+      .wrap {
+        width:min(100% - 22px,1120px);
+      }
+
+      .grid-4 {
+        grid-template-columns:1fr;
+      }
+
+      .brand {
+        font-size:1.04rem;
+      }
+
+      .brand span:last-child {
+        max-width:145px;
+      }
+
+      .actions .btn {
+        min-height:42px;
+        padding:9px 11px;
+        font-size:.82rem;
+      }
+
+      .hero {
+        padding-top:42px;
+      }
+
+      h1 {
+        font-size:3rem;
+      }
+
+      .hero-buttons {
+        display:grid;
+      }
+
+      .hero-buttons .btn {
+        width:100%;
+      }
+
+      .trust-row {
+        display:grid;
+        gap:10px;
+      }
+
+      .chat-compose {
+        align-items:stretch;
+      }
+
+      .chat-compose .btn {
+        min-width:82px;
+      }
     }
   </style>
 </head>
 
 <body>
-<header>
-  <div class="wrap nav">
-    <div class="brand">
-      <span class="brand-mark">LC</span>
-      <span>LifeCompass AI</span>
-    </div>
+  <header>
+    <div class="wrap nav">
+      <a class="brand" href="#home" aria-label="LifeCompass AI home">
+        <span class="brand-mark">LC</span>
+        <span>LifeCompass AI</span>
+      </a>
 
-    <nav>
-      <a href="#skills">Life Skills</a>
-      <a href="#skill-swap">Skill Swap</a>
-      <a href="#community">Community</a>
-      <a href="#documents">Documents</a>
-      <a href="#assistant">AI Assistant</a>
-    </nav>
+      <nav aria-label="Main navigation">
+        <a href="#skills">Life Skills</a>
+        <a href="#skill-swap">Skill Swap</a>
+        <a href="#community">Community</a>
+        <a href="#documents">Documents</a>
+        <a href="#assistant">AI Assistant</a>
+      </nav>
 
-    <div class="actions">
-      <button class="btn secondary" id="loginOpen" type="button">Log in</button>
-      <button class="btn" id="joinOpen" type="button">Join free</button>
-      <a class="btn hidden" id="subscribeBtn"
-         href="https://buy.stripe.com/eVq00ieNo2kKaPp0I2f7i00"
-         target="_blank" rel="noopener">Upgrade</a>
-      <button class="btn ghost hidden" id="logoutBtn" type="button">Log out</button>
-    </div>
-  </div>
-</header>
-
-<main>
-  <section class="hero" id="home">
-    <div class="wrap hero-inner">
-      <div class="eyebrow"><span>ð§­</span> Your everyday life assistant</div>
-      <h1>Life is complicated.<br><span style="color:var(--brand)">Getting help shouldnât be.</span></h1>
-      <p class="lead">
-        Understand confusing documents, solve everyday problems, learn practical skills
-        and connect with people who can help â all in one simple place.
-      </p>
-
-      <div class="hero-buttons">
-        <button class="btn" id="heroStart" type="button">Start free</button>
-        <a class="btn secondary" href="#assistant">See how it works</a>
-      </div>
-
-      <div class="trust-row">
-        <span>â 10 free AI messages</span>
-        <span>â No card required</span>
-        <span>â Takes under 30 seconds</span>
+      <div class="actions">
+        <button class="btn secondary" id="loginOpen" type="button">Log in</button>
+        <button class="btn" id="joinOpen" type="button">Join free</button>
+        <a
+          class="btn hidden"
+          id="subscribeBtn"
+          href="https://buy.stripe.com/eVq00ieNo2kKaPp0I2f7i00"
+          target="_blank"
+          rel="noopener"
+        >Upgrade</a>
+        <button class="btn ghost hidden" id="logoutBtn" type="button">Log out</button>
       </div>
     </div>
-  </section>
+  </header>
 
-  <section class="section" id="features">
-    <div class="wrap">
-      <div class="grid-4">
-        <article class="card feature">
-          <div class="icon">ð¬</div>
-          <h3>Ask LifeCompass AI</h3>
-          <p class="muted">Get clear, practical help with everyday questions in plain English.</p>
-        </article>
-        <article class="card feature">
-          <div class="icon">ð</div>
-          <h3>Document Helper</h3>
-          <p class="muted">Upload readable documents and understand deadlines, costs, risks and next steps.</p>
-        </article>
-        <article class="card feature">
-          <div class="icon">ð¤</div>
-          <h3>Skill Swap</h3>
-          <p class="muted">List what you can offer and what help you need from other members.</p>
-        </article>
-        <article class="card feature">
-          <div class="icon">ð </div>
-          <h3>Practical Life Skills</h3>
-          <p class="muted">Learn the things nobody taught you, from bills and council tax to basic DIY.</p>
-        </article>
-      </div>
-    </div>
-  </section>
-
-  <section class="section" id="assistant">
-    <div class="wrap">
-      <div class="card chat-shell">
-        <div class="chat-top">
-          <div>
-            <h2 style="font-size:1.55rem;margin:0">LifeCompass AI Assistant</h2>
-            <div class="status" id="userStatus">You can try the assistant without logging in.</div>
-          </div>
+  <main>
+    <section class="hero" id="home">
+      <div class="wrap hero-inner">
+        <div class="eyebrow">
+          <i data-lucide="compass"></i>
+          <span>Your everyday life assistant</span>
         </div>
 
-        <div class="messages" id="chatMessages">
-          <div class="message ai">Hello â what would you like help with today?</div>
+        <h1>
+          Life is complicated.<br>
+          <span>Getting help should not be.</span>
+        </h1>
+
+        <p class="lead">
+          Understand confusing documents, solve everyday problems, learn practical
+          skills and connect with people who can help - all in one simple place.
+        </p>
+
+        <div class="hero-buttons">
+          <button class="btn" id="heroStart" type="button">
+            <i data-lucide="user-plus"></i>
+            <span>Start free</span>
+          </button>
+
+          <a class="btn secondary" href="#assistant">
+            <i data-lucide="play-circle"></i>
+            <span>See how it works</span>
+          </a>
         </div>
 
-        <div class="chat-compose">
-          <textarea id="chatInput" placeholder="Ask a questionâ¦"></textarea>
-          <button class="btn" id="sendChat" type="button">Send</button>
-        </div>
-      </div>
-    </div>
-  </section>
+        <div class="trust-row">
+          <span class="trust-item">
+            <i data-lucide="check"></i>
+            <span>10 free AI messages</span>
+          </span>
 
-  <section class="section" id="documents">
-    <div class="wrap grid-2">
-      <div class="card panel">
-        <h2>Document Helper</h2>
-        <p class="muted">Choose a text-based file and LifeCompass AI will explain it clearly.</p>
-        <div class="field">
-          <label for="documentFile">Choose document</label>
-          <input id="documentFile" type="file" accept=".txt,.csv,.md,.json,.html">
-        </div>
-        <button class="btn blue" id="askDocument" type="button">Explain this document</button>
-        <p class="status">For PDFs or scanned images, copy the readable text into the AI chat.</p>
-      </div>
+          <span class="trust-item">
+            <i data-lucide="check"></i>
+            <span>No card required</span>
+          </span>
 
-      <div class="card panel">
-        <h2>Quick questions</h2>
-        <div class="list">
-          <button class="btn secondary promptBtn" type="button"
-            data-prompt="Explain how council tax works in the UK in simple language.">Council tax</button>
-          <button class="btn secondary promptBtn" type="button"
-            data-prompt="Explain how to read a household energy bill and spot the important figures.">Understanding bills</button>
-          <button class="btn secondary promptBtn" type="button"
-            data-prompt="Explain how to bleed a radiator safely, step by step.">Bleeding a radiator</button>
-          <button class="btn secondary promptBtn" type="button"
-            data-prompt="Help me write a clear professional email about a problem. Ask me for the details you need.">Write an email</button>
+          <span class="trust-item">
+            <i data-lucide="check"></i>
+            <span>Takes under 30 seconds</span>
+          </span>
         </div>
       </div>
-    </div>
-  </section>
-
-  <section class="section" id="skills">
-    <div class="wrap">
-      <h2>Nobody Taught Me This</h2>
-      <p class="lead" style="margin:0">Simple guides for common adult-life tasks.</p>
-      <div class="grid-4" style="margin-top:18px">
-        <button class="card feature promptBtn" type="button" data-prompt="Explain council tax bands and how council tax is paid in the UK.">
-          <div class="icon">ð¡</div><h3>Council tax</h3><p class="muted">Bands, bills and payments.</p>
-        </button>
-        <button class="card feature promptBtn" type="button" data-prompt="Explain how to compare energy tariffs and understand standing charges and unit rates.">
-          <div class="icon">â¡</div><h3>Energy bills</h3><p class="muted">Standing charges and unit rates.</p>
-        </button>
-        <button class="card feature promptBtn" type="button" data-prompt="Give me a beginner-friendly guide to creating and following a monthly household budget.">
-          <div class="icon">ð·</div><h3>Budgeting</h3><p class="muted">Plan spending and avoid surprises.</p>
-        </button>
-        <button class="card feature promptBtn" type="button" data-prompt="Give me a safe beginner's checklist for basic home DIY and when to call a professional.">
-          <div class="icon">ð ï¸</div><h3>Basic DIY</h3><p class="muted">Know what you can safely do.</p>
-        </button>
-      </div>
-    </div>
-  </section>
-
-  <section class="section" id="community">
-    <div class="wrap grid-2">
-      <div class="card panel">
-        <h2>Community Help</h2>
-        <p class="muted">Ask a practical question for other LifeCompass members.</p>
-        <div class="field">
-          <label for="communityQuestion">Your question</label>
-          <textarea id="communityQuestion" placeholder="What do you need help with?"></textarea>
-        </div>
-        <button class="btn" id="postQuestion" type="button">Post question</button>
-        <div class="status" id="communityStatus" style="margin-top:10px"></div>
-      </div>
-
-      <div class="card panel">
-        <h2>Recent questions</h2>
-        <div class="list" id="communityList">
-          <div class="empty">Community questions will appear here.</div>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <section class="section" id="skill-swap">
-    <div class="wrap grid-2">
-      <div class="card panel">
-        <h2>Skill Swap</h2>
-        <p class="muted">Offer a skill and tell people what help you need in return.</p>
-        <div class="field">
-          <label for="swapOffer">I can offer</label>
-          <input id="swapOffer" placeholder="Example: Basic DIY advice">
-        </div>
-        <div class="field">
-          <label for="swapNeed">I need help with</label>
-          <input id="swapNeed" placeholder="Example: Setting up social media">
-        </div>
-        <div class="field">
-          <label for="swapLocation">Area</label>
-          <input id="swapLocation" placeholder="Example: Sutton">
-        </div>
-        <button class="btn purple" id="postSwap" type="button">Post Skill Swap</button>
-        <div class="status" id="swapStatus" style="margin-top:10px"></div>
-      </div>
-
-      <div class="card panel">
-        <h2>Available swaps</h2>
-        <div class="list" id="swapList">
-          <div class="empty">Skill Swap listings will appear here.</div>
-        </div>
-      </div>
-    </div>
-  </section>
-</main>
-
-<footer>
-  <div class="wrap">
-    <strong>LifeCompass AI</strong><br>
-    <span>Everyday guidance, practical skills and community support.</span>
-  </div>
-</footer>
-
-<div class="modal hidden" id="authModal" role="dialog" aria-modal="true" aria-labelledby="authModalTitle">
-  <div class="modal-card">
-    <div class="modal-title">
-      <h2 id="authModalTitle" style="font-size:1.7rem;margin:0">Log in</h2>
-      <button class="btn secondary small" id="authClose" type="button">Close</button>
-    </div>
-
-    <p class="muted">Use your email address and password.</p>
-
-    <div class="field">
-      <label for="authEmail">Email address</label>
-      <input id="authEmail" type="email" autocomplete="email" placeholder="you@example.com">
-    </div>
-
-    <div class="field">
-      <label for="authPassword">Password</label>
-      <input id="authPassword" type="password" autocomplete="current-password" minlength="6" placeholder="At least 6 characters">
-    </div>
-
-    <button class="btn" id="loginButton" type="button" style="width:100%">Log in</button>
-    <div class="status" id="authStatus" style="margin-top:12px"></div>
-  </div>
-</div>
-
-<script>
-(() => {
-  "use strict";
-
-  const SUPABASE_URL = "https://cutqvgjtjpnypnmtgttd.supabase.co";
-  const SUPABASE_ANON_KEY = "sb_publishable_LbtwytaWW3tlJ8lvuIJOlA_oTJYtJVZ";
-
-  const $ = (id) => document.getElementById(id);
-  const on = (id, event, handler) => {
-    const node = $(id);
-    if (node) node.addEventListener(event, handler);
-  };
-
-  let supabaseClient = null;
-  let currentUser = null;
-  let chatBusy = false;
-
-  try {
-    if (!window.supabase) throw new Error("Supabase library did not load.");
-    supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-  } catch (error) {
-    console.error(error);
-    const status = $("userStatus");
-    if (status) status.textContent = "Login is temporarily unavailable. Please refresh the page.";
-  }
-
-  const escapeHtml = (value = "") =>
-    String(value)
-      .replaceAll("&", "&amp;")
-      .replaceAll("<", "&lt;")
-      .replaceAll(">", "&gt;")
-      .replaceAll('"', "&quot;")
-      .replaceAll("'", "&#039;");
-
-  const openAuth = (mode = "login") => {
-    const modal = $("authModal");
-    const title = $("authModalTitle");
-    const button = $("loginButton");
-    const status = $("authStatus");
-
-    if (!modal || !title || !button || !status) return;
-
-    const joining = mode === "join";
-    title.textContent = joining ? "Join LifeCompass AI" : "Log in";
-    button.textContent = joining ? "Create free account" : "Log in";
-    button.dataset.mode = joining ? "join" : "login";
-    status.textContent = "";
-    modal.classList.remove("hidden");
-  };
-
-  const closeAuth = () => {
-    const modal = $("authModal");
-    if (modal) modal.classList.add("hidden");
-  };
-
-  const setLoggedInUI = (user) => {
-    currentUser = user || null;
-
-    $("loginOpen")?.classList.toggle("hidden", !!user);
-    $("joinOpen")?.classList.toggle("hidden", !!user);
-    $("heroStart")?.classList.toggle("hidden", !!user);
-    $("logoutBtn")?.classList.toggle("hidden", !user);
-    $("subscribeBtn")?.classList.toggle("hidden", !user);
-
-    const userStatus = $("userStatus");
-    if (userStatus) {
-      userStatus.textContent = user
-        ? `Logged in as ${user.email}`
-        : "You can try the assistant without logging in.";
-    }
-  };
-
-  const requireLogin = (message) => {
-    if (currentUser) return true;
-    openAuth("login");
-    const status = $("authStatus");
-    if (status) status.textContent = message || "Please log in to continue.";
-    return false;
-  };
-
-  on("loginOpen", "click", () => openAuth("login"));
-  on("joinOpen", "click", () => openAuth("join"));
-  on("heroStart", "click", () => openAuth("join"));
-  on("authClose", "click", closeAuth);
-
-  on("authModal", "click", (event) => {
-    if (event.target === $("authModal")) closeAuth();
-  });
-
-  on("loginButton", "click", async () => {
-    if (!supabaseClient) {
-      $("authStatus").textContent = "Login is unavailable because the connection did not load.";
-      return;
-    }
-
-    const email = $("authEmail")?.value.trim();
-    const password = $("authPassword")?.value || "";
-    const status = $("authStatus");
-    const button = $("loginButton");
-    const joining = button?.dataset.mode === "join";
-
-    if (!email || !password) {
-      status.textContent = "Please enter your email address and password.";
-      return;
-    }
-
-    if (password.length < 6) {
-      status.textContent = "Your password must contain at least 6 characters.";
-      return;
-    }
-
-    button.disabled = true;
-    button.textContent = joining ? "Creating accountâ¦" : "Logging inâ¦";
-    status.textContent = "";
-
-    try {
-      const result = joining
-        ? await supabaseClient.auth.signUp({ email, password })
-        : await supabaseClient.auth.signInWithPassword({ email, password });
-
-      if (result.error) throw result.error;
-
-      if (joining && !result.data.session) {
-        status.textContent = "Account created. Check your email to confirm your account, then log in.";
-        button.dataset.mode = "login";
-        button.textContent = "Log in";
-        return;
-      }
-
-      setLoggedInUI(result.data.user);
-      closeAuth();
-      await loadCommunity();
-      await loadSwaps();
-    } catch (error) {
-      console.error(error);
-      status.textContent = error.message || "Login failed. Please check your details and try again.";
-    } finally {
-      button.disabled = false;
-      button.textContent = button.dataset.mode === "join" ? "Create free account" : "Log in";
-    }
-  });
-
-  on("logoutBtn", "click", async () => {
-    if (!supabaseClient) return;
-    await supabaseClient.auth.signOut();
-    setLoggedInUI(null);
-  });
-
-  const addMessage = (role, text) => {
-    const shell = $("chatMessages");
-    if (!shell) return null;
-    const node = document.createElement("div");
-    node.className = `message ${role === "user" ? "user" : "ai"}`;
-    node.textContent = text;
-    shell.appendChild(node);
-    shell.scrollTop = shell.scrollHeight;
-    return node;
-  };
-
-  const sendChatMessage = async (suppliedPrompt = null) => {
-    if (chatBusy) return;
-
-    const input = $("chatInput");
-    const prompt = suppliedPrompt || input?.value.trim();
-    if (!prompt) return;
-
-    if (!suppliedPrompt && input) input.value = "";
-    addMessage("user", prompt);
-    const waiting = addMessage("ai", "Thinkingâ¦");
-
-    chatBusy = true;
-    $("sendChat").disabled = true;
-
-    try {
-      let session = null;
-      if (supabaseClient) {
-        const sessionResult = await supabaseClient.auth.getSession();
-        session = sessionResult.data.session;
-      }
-
-      const response = await fetch("/api/chat", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          ...(session?.access_token ? { Authorization: `Bearer ${session.access_token}` } : {})
-        },
-        body: JSON.stringify({
-          message: prompt,
-          input: prompt,
-          messages: [{ role: "user", content: prompt }]
-        })
-      });
-
-      const text = await response.text();
-      let result = {};
-      try { result = JSON.parse(text); } catch { result = { message: text }; }
-
-      if (!response.ok) {
-        throw new Error(result.error || result.message || "The AI request failed.");
-      }
-
-      waiting.textContent =
-        result.answer ||
-        result.reply ||
-        result.output_text ||
-        result.message ||
-        result.output?.[0]?.content?.[0]?.text ||
-        "I could not create a response.";
-    } catch (error) {
-      waiting.textContent = `Sorry, I could not create a response. ${error.message}`;
-    } finally {
-      chatBusy = false;
-      $("sendChat").disabled = false;
-    }
-  };
-
-  on("sendChat", "click", () => sendChatMessage());
-  on("chatInput", "keydown", (event) => {
-    if (event.key === "Enter" && !event.shiftKey) {
-      event.preventDefault();
-      sendChatMessage();
-    }
-  });
-
-  document.querySelectorAll(".promptBtn").forEach((button) => {
-    button.addEventListener("click", () => {
-      $("assistant")?.scrollIntoView({ behavior: "smooth" });
-      sendChatMessage(button.dataset.prompt || button.textContent.trim());
-    });
-  });
-
-  on("askDocument", "click", async () => {
-    const file = $("documentFile")?.files?.[0];
-
-    if (!file) {
-      alert("Choose a document first.");
-      return;
-    }
-    if (file.size > 3 * 1024 * 1024) {
-      alert("Please choose a document smaller than 3 MB.");
-      return;
-    }
-
-    try {
-      const text = await file.text();
-      if (!text.trim()) throw new Error("No readable text was found.");
-
-      $("assistant")?.scrollIntoView({ behavior: "smooth" });
-      await sendChatMessage(
-        `Please explain this document clearly in everyday language. Summarise the important points, deadlines, costs, risks and actions I may need to take. Do not invent missing information.\n\nDocument name: ${file.name}\n\nDocument text:\n${text.slice(0, 14000)}`
-      );
-    } catch (error) {
-      alert(`${error.message} Try a plain text, CSV or similar text-based document.`);
-    }
-  });
-
-  const loadCommunity = async () => {
-    const list = $("communityList");
-    if (!list || !supabaseClient) return;
-
-    try {
-      const { data, error } = await supabaseClient
-        .from("community_questions")
-        .select("*")
-        .order("created_at", { ascending: false })
-        .limit(20);
-
-      if (error) throw error;
-
-      if (!data?.length) {
-        list.innerHTML = '<div class="empty">No community questions yet.</div>';
-        return;
-      }
-
-      list.innerHTML = data.map((item) => `
-        <article class="item">
-          <div class="item-top">
-            <strong>${escapeHtml(item.question || item.title || "Community question")}</strong>
-            <span class="tag">Community</span>
-          </div>
-          <p class="status">${new Date(item.created_at).toLocaleString("en-GB")}</p>
-        </article>
-      `).join("");
-    } catch (error) {
-      console.warn("Community table unavailable:", error.message);
-      list.innerHTML = '<div class="empty">Community will appear here once its database table is available.</div>';
-    }
-  };
-
-  on("postQuestion", "click", async () => {
-    if (!requireLogin("Log in to post a community question.")) return;
-
-    const question = $("communityQuestion")?.value.trim();
-    const status = $("communityStatus");
-
-    if (!question) {
-      status.textContent = "Please enter your question.";
-      return;
-    }
-
-    try {
-      const { error } = await supabaseClient
-        .from("community_questions")
-        .insert({ question, user_id: currentUser.id });
-
-      if (error) throw error;
-
-      $("communityQuestion").value = "";
-      status.textContent = "Your question has been posted.";
-      await loadCommunity();
-    } catch (error) {
-      status.textContent = `Could not post: ${error.message}`;
-    }
-  });
-
-  const loadSwaps = async () => {
-    const list = $("swapList");
-    if (!list || !supabaseClient) return;
-
-    try {
-      const { data, error } = await supabaseClient
-        .from("skill_swaps")
-        .select("*")
-        .order("created_at", { ascending: false })
-        .limit(30);
-
-      if (error) throw error;
-
-      if (!data?.length) {
-        list.innerHTML = '<div class="empty">No Skill Swap listings yet.</div>';
-        return;
-      }
-
-      list.innerHTML = data.map((item) => `
-        <article class="item">
-          <div class="item-top">
-            <div>
-              <strong>Offers: ${escapeHtml(item.offer || item.offering || "")}</strong>
-              <p style="margin:7px 0">Needs: ${escapeHtml(item.need || item.looking_for || "")}</p>
-              <span class="status">${escapeHtml(item.location || item.area || "Location not stated")}</span>
+    </section>
+
+    <section class="section" id="features">
+      <div class="wrap">
+        <div class="grid-4">
+          <article class="card feature">
+            <div class="feature-icon">
+              <i data-lucide="message-circle"></i>
             </div>
-            <span class="tag">Skill Swap</span>
+            <h3>Ask LifeCompass AI</h3>
+            <p class="muted">
+              Get clear, practical help with everyday questions in plain English.
+            </p>
+          </article>
+
+          <article class="card feature">
+            <div class="feature-icon">
+              <i data-lucide="file-text"></i>
+            </div>
+            <h3>Document Helper</h3>
+            <p class="muted">
+              Understand deadlines, costs, risks and important next steps.
+            </p>
+          </article>
+
+          <article class="card feature">
+            <div class="feature-icon">
+              <i data-lucide="handshake"></i>
+            </div>
+            <h3>Skill Swap</h3>
+            <p class="muted">
+              List what you can offer and what help you need from other members.
+            </p>
+          </article>
+
+          <article class="card feature">
+            <div class="feature-icon">
+              <i data-lucide="house"></i>
+            </div>
+            <h3>Practical Life Skills</h3>
+            <p class="muted">
+              Learn the things nobody taught you, from bills to basic DIY.
+            </p>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <section class="section" id="assistant">
+      <div class="wrap">
+        <div class="card chat-shell">
+          <div class="chat-top">
+            <div class="chat-heading">
+              <div class="feature-icon">
+                <i data-lucide="bot"></i>
+              </div>
+
+              <div>
+                <h2 style="font-size:1.55rem;margin:0">LifeCompass AI Assistant</h2>
+                <div class="status" id="userStatus">
+                  You can try the assistant without logging in.
+                </div>
+              </div>
+            </div>
           </div>
-        </article>
-      `).join("");
-    } catch (error) {
-      console.warn("Skill Swap table unavailable:", error.message);
-      list.innerHTML = '<div class="empty">Skill Swap listings will appear once the database table is available.</div>';
-    }
-  };
 
-  on("postSwap", "click", async () => {
-    if (!requireLogin("Log in to create a Skill Swap listing.")) return;
+          <div class="messages" id="chatMessages">
+            <div class="message ai">
+              Hello. What would you like help with today?
+            </div>
+          </div>
 
-    const offer = $("swapOffer")?.value.trim();
-    const need = $("swapNeed")?.value.trim();
-    const location = $("swapLocation")?.value.trim();
-    const status = $("swapStatus");
+          <div class="chat-compose">
+            <textarea id="chatInput" placeholder="Ask a question..."></textarea>
 
-    if (!offer || !need) {
-      status.textContent = "Please enter what you can offer and what help you need.";
-      return;
-    }
+            <button class="btn" id="sendChat" type="button">
+              <i data-lucide="send"></i>
+              <span>Send</span>
+            </button>
+          </div>
+        </div>
+      </div>
+    </section>
 
-    try {
-      const { error } = await supabaseClient
-        .from("skill_swaps")
-        .insert({ user_id: currentUser.id, offer, need, location });
+    <section class="section" id="documents">
+      <div class="wrap grid-2">
+        <div class="card panel">
+          <div class="feature-icon">
+            <i data-lucide="file-search"></i>
+          </div>
 
-      if (error) throw error;
+          <h2>Document Helper</h2>
 
-      $("swapOffer").value = "";
-      $("swapNeed").value = "";
-      $("swapLocation").value = "";
-      status.textContent = "Your Skill Swap listing has been posted.";
-      await loadSwaps();
-    } catch (error) {
-      status.textContent = `Could not post: ${error.message}`;
-    }
-  });
+          <p class="muted">
+            Choose a text-based file and LifeCompass AI will explain it clearly.
+          </p>
 
-  const initialise = async () => {
-    if (!supabaseClient) return;
+          <div class="field">
+            <label for="documentFile">Choose document</label>
+            <input
+              id="documentFile"
+              type="file"
+              accept=".txt,.csv,.md,.json,.html"
+            >
+          </div>
 
-    try {
-      const { data } = await supabaseClient.auth.getSession();
-      setLoggedInUI(data.session?.user || null);
+          <button class="btn blue" id="askDocument" type="button">
+            <i data-lucide="scan-text"></i>
+            <span>Explain this document</span>
+          </button>
 
-      supabaseClient.auth.onAuthStateChange((_event, session) => {
-        setLoggedInUI(session?.user || null);
+          <p class="status">
+            For PDFs or scanned images, copy the readable text into the AI chat.
+          </p>
+        </div>
+
+        <div class="card panel">
+          <div class="feature-icon">
+            <i data-lucide="sparkles"></i>
+          </div>
+
+          <h2>Quick questions</h2>
+
+          <div class="list">
+            <button
+              class="btn secondary promptBtn"
+              type="button"
+              data-prompt="Explain how council tax works in the UK in simple language."
+            >Council tax</button>
+
+            <button
+              class="btn secondary promptBtn"
+              type="button"
+              data-prompt="Explain how to read a household energy bill and identify the important figures."
+            >Understanding bills</button>
+
+            <button
+              class="btn secondary promptBtn"
+              type="button"
+              data-prompt="Explain how to bleed a radiator safely, step by step."
+            >Bleeding a radiator</button>
+
+            <button
+              class="btn secondary promptBtn"
+              type="button"
+              data-prompt="Help me write a clear professional email about a problem. Ask me for the details you need."
+            >Write an email</button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section" id="skills">
+      <div class="wrap">
+        <h2>Nobody Taught Me This</h2>
+
+        <p class="lead" style="margin:0">
+          Simple guides for common adult-life tasks.
+        </p>
+
+        <div class="grid-4" style="margin-top:18px">
+          <button
+            class="card feature promptBtn"
+            type="button"
+            data-prompt="Explain council tax bands and how council tax is paid in the UK."
+          >
+            <div class="feature-icon">
+              <i data-lucide="landmark"></i>
+            </div>
+            <h3>Council tax</h3>
+            <p class="muted">Bands, bills and payments.</p>
+          </button>
+
+          <button
+            class="card feature promptBtn"
+            type="button"
+            data-prompt="Explain how to compare energy tariffs and understand standing charges and unit rates."
+          >
+            <div class="feature-icon">
+              <i data-lucide="zap"></i>
+            </div>
+            <h3>Energy bills</h3>
+            <p class="muted">Standing charges and unit rates.</p>
+          </button>
+
+          <button
+            class="card feature promptBtn"
+            type="button"
+            data-prompt="Give me a beginner-friendly guide to creating and following a monthly household budget."
+          >
+            <div class="feature-icon">
+              <i data-lucide="wallet-cards"></i>
+            </div>
+            <h3>Budgeting</h3>
+            <p class="muted">Plan spending and avoid surprises.</p>
+          </button>
+
+          <button
+            class="card feature promptBtn"
+            type="button"
+            data-prompt="Give me a safe beginner checklist for basic home DIY and explain when to call a professional."
+          >
+            <div class="feature-icon">
+              <i data-lucide="hammer"></i>
+            </div>
+            <h3>Basic DIY</h3>
+            <p class="muted">Know what you can safely do.</p>
+          </button>
+        </div>
+      </div>
+    </section>
+
+    <section class="section" id="community">
+      <div class="wrap grid-2">
+        <div class="card panel">
+          <div class="feature-icon">
+            <i data-lucide="users"></i>
+          </div>
+
+          <h2>Community Help</h2>
+
+          <p class="muted">
+            Ask a practical question for other LifeCompass members.
+          </p>
+
+          <div class="field">
+            <label for="communityQuestion">Your question</label>
+            <textarea
+              id="communityQuestion"
+              placeholder="What do you need help with?"
+            ></textarea>
+          </div>
+
+          <button class="btn" id="postQuestion" type="button">
+            <i data-lucide="message-square-plus"></i>
+            <span>Post question</span>
+          </button>
+
+          <div class="status" id="communityStatus" style="margin-top:10px"></div>
+        </div>
+
+        <div class="card panel">
+          <div class="feature-icon">
+            <i data-lucide="messages-square"></i>
+          </div>
+
+          <h2>Recent questions</h2>
+
+          <div class="list" id="communityList">
+            <div class="empty">Community questions will appear here.</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section" id="skill-swap">
+      <div class="wrap grid-2">
+        <div class="card panel">
+          <div class="feature-icon">
+            <i data-lucide="repeat-2"></i>
+          </div>
+
+          <h2>Skill Swap</h2>
+
+          <p class="muted">
+            Offer a skill and tell people what help you need in return.
+          </p>
+
+          <div class="field">
+            <label for="swapOffer">I can offer</label>
+            <input
+              id="swapOffer"
+              placeholder="Example: Basic DIY advice"
+            >
+          </div>
+
+          <div class="field">
+            <label for="swapNeed">I need help with</label>
+            <input
+              id="swapNeed"
+              placeholder="Example: Setting up social media"
+            >
+          </div>
+
+          <div class="field">
+            <label for="swapLocation">Area</label>
+            <input
+              id="swapLocation"
+              placeholder="Example: Sutton"
+            >
+          </div>
+
+          <button class="btn purple" id="postSwap" type="button">
+            <i data-lucide="plus-circle"></i>
+            <span>Post Skill Swap</span>
+          </button>
+
+          <div class="status" id="swapStatus" style="margin-top:10px"></div>
+        </div>
+
+        <div class="card panel">
+          <div class="feature-icon">
+            <i data-lucide="list-filter"></i>
+          </div>
+
+          <h2>Available swaps</h2>
+
+          <div class="list" id="swapList">
+            <div class="empty">Skill Swap listings will appear here.</div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <div class="wrap">
+      <strong>LifeCompass AI</strong><br>
+      <span>Everyday guidance, practical skills and community support.</span>
+    </div>
+  </footer>
+
+  <div
+    class="modal hidden"
+    id="authModal"
+    role="dialog"
+    aria-modal="true"
+    aria-labelledby="authModalTitle"
+  >
+    <div class="modal-card">
+      <div class="modal-title">
+        <h2 id="authModalTitle" style="font-size:1.7rem;margin:0">
+          Log in
+        </h2>
+
+        <button class="btn secondary small" id="authClose" type="button">
+          <i data-lucide="x"></i>
+          <span>Close</span>
+        </button>
+      </div>
+
+      <p class="muted">Use your email address and password.</p>
+
+      <div class="field">
+        <label for="authEmail">Email address</label>
+        <input
+          id="authEmail"
+          type="email"
+          autocomplete="email"
+          placeholder="you@example.com"
+        >
+      </div>
+
+      <div class="field">
+        <label for="authPassword">Password</label>
+        <input
+          id="authPassword"
+          type="password"
+          autocomplete="current-password"
+          minlength="6"
+          placeholder="At least 6 characters"
+        >
+      </div>
+
+      <button class="btn" id="loginButton" type="button" style="width:100%">
+        Log in
+      </button>
+
+      <div class="status" id="authStatus" style="margin-top:12px"></div>
+    </div>
+  </div>
+
+  <script>
+    (() => {
+      "use strict";
+
+      const SUPABASE_URL =
+        "https://cutqvgjtjpnypnmtgttd.supabase.co";
+
+      const SUPABASE_ANON_KEY =
+        "sb_publishable_LbtwytaWW3tlJ8lvuIJOlA_oTJYtJVZ";
+
+      const byId = (id) => document.getElementById(id);
+
+      const on = (id, eventName, handler) => {
+        const element = byId(id);
+
+        if (element) {
+          element.addEventListener(eventName, handler);
+        }
+      };
+
+      let supabaseClient = null;
+      let currentUser = null;
+      let chatBusy = false;
+
+      const refreshIcons = () => {
+        if (window.lucide) {
+          window.lucide.createIcons();
+        }
+      };
+
+      try {
+        if (!window.supabase) {
+          throw new Error("Supabase library did not load.");
+        }
+
+        supabaseClient = window.supabase.createClient(
+          SUPABASE_URL,
+          SUPABASE_ANON_KEY
+        );
+      } catch (error) {
+        console.error(error);
+
+        const status = byId("userStatus");
+
+        if (status) {
+          status.textContent =
+            "Login is temporarily unavailable. Please refresh the page.";
+        }
+      }
+
+      const escapeHtml = (value = "") => {
+        return String(value)
+          .replaceAll("&", "&amp;")
+          .replaceAll("<", "&lt;")
+          .replaceAll(">", "&gt;")
+          .replaceAll('"', "&quot;")
+          .replaceAll("'", "&#039;");
+      };
+
+      const openAuth = (mode = "login") => {
+        const modal = byId("authModal");
+        const title = byId("authModalTitle");
+        const button = byId("loginButton");
+        const status = byId("authStatus");
+
+        if (!modal || !title || !button || !status) {
+          return;
+        }
+
+        const joining = mode === "join";
+
+        title.textContent = joining
+          ? "Join LifeCompass AI"
+          : "Log in";
+
+        button.textContent = joining
+          ? "Create free account"
+          : "Log in";
+
+        button.dataset.mode = joining
+          ? "join"
+          : "login";
+
+        status.textContent = "";
+        modal.classList.remove("hidden");
+        refreshIcons();
+      };
+
+      const closeAuth = () => {
+        const modal = byId("authModal");
+
+        if (modal) {
+          modal.classList.add("hidden");
+        }
+      };
+
+      const setLoggedInUI = (user) => {
+        currentUser = user || null;
+
+        byId("loginOpen")?.classList.toggle("hidden", Boolean(user));
+        byId("joinOpen")?.classList.toggle("hidden", Boolean(user));
+        byId("heroStart")?.classList.toggle("hidden", Boolean(user));
+        byId("logoutBtn")?.classList.toggle("hidden", !user);
+        byId("subscribeBtn")?.classList.toggle("hidden", !user);
+
+        const userStatus = byId("userStatus");
+
+        if (userStatus) {
+          userStatus.textContent = user
+            ? "Logged in as " + user.email
+            : "You can try the assistant without logging in.";
+        }
+      };
+
+      const requireLogin = (message) => {
+        if (currentUser) {
+          return true;
+        }
+
+        openAuth("login");
+
+        const status = byId("authStatus");
+
+        if (status) {
+          status.textContent =
+            message || "Please log in to continue.";
+        }
+
+        return false;
+      };
+
+      on("loginOpen", "click", () => openAuth("login"));
+      on("joinOpen", "click", () => openAuth("join"));
+      on("heroStart", "click", () => openAuth("join"));
+      on("authClose", "click", closeAuth);
+
+      on("authModal", "click", (event) => {
+        if (event.target === byId("authModal")) {
+          closeAuth();
+        }
       });
 
-      await Promise.allSettled([loadCommunity(), loadSwaps()]);
-    } catch (error) {
-      console.error("Initialisation error:", error);
-      setLoggedInUI(null);
-    }
-  };
+      on("loginButton", "click", async () => {
+        const status = byId("authStatus");
+        const button = byId("loginButton");
 
-  initialise();
+        if (!supabaseClient) {
+          if (status) {
+            status.textContent =
+              "Login is unavailable because the connection did not load.";
+          }
 
-  if ("serviceWorker" in navigator) {
-    window.addEventListener("load", () => {
-      navigator.serviceWorker.register("/service-worker.js").catch(() => {});
-    });
-  }
-})();
-</script>
+          return;
+        }
+
+        const email =
+          byId("authEmail")?.value.trim() || "";
+
+        const password =
+          byId("authPassword")?.value || "";
+
+        const joining =
+          button?.dataset.mode === "join";
+
+        if (!email || !password) {
+          status.textContent =
+            "Please enter your email address and password.";
+
+          return;
+        }
+
+        if (password.length < 6) {
+          status.textContent =
+            "Your password must contain at least 6 characters.";
+
+          return;
+        }
+
+        button.disabled = true;
+        button.textContent = joining
+          ? "Creating account..."
+          : "Logging in...";
+
+        status.textContent = "";
+
+        try {
+          const result = joining
+            ? await supabaseClient.auth.signUp({
+                email,
+                password
+              })
+            : await supabaseClient.auth.signInWithPassword({
+                email,
+                password
+              });
+
+          if (result.error) {
+            throw result.error;
+          }
+
+          if (joining && !result.data.session) {
+            status.textContent =
+              "Account created. Check your email to confirm your account, then log in.";
+
+            button.dataset.mode = "login";
+            button.textContent = "Log in";
+
+            return;
+          }
+
+          setLoggedInUI(result.data.user);
+          closeAuth();
+
+          await Promise.allSettled([
+            loadCommunity(),
+            loadSwaps()
+          ]);
+        } catch (error) {
+          console.error(error);
+
+          status.textContent =
+            error.message ||
+            "Login failed. Please check your details and try again.";
+        } finally {
+          button.disabled = false;
+
+          button.textContent =
+            button.dataset.mode === "join"
+              ? "Create free account"
+              : "Log in";
+        }
+      });
+
+      on("logoutBtn", "click", async () => {
+        if (!supabaseClient) {
+          return;
+        }
+
+        await supabaseClient.auth.signOut();
+        setLoggedInUI(null);
+      });
+
+      const addMessage = (role, text) => {
+        const shell = byId("chatMessages");
+
+        if (!shell) {
+          return null;
+        }
+
+        const message = document.createElement("div");
+
+        message.className =
+          "message " + (role === "user" ? "user" : "ai");
+
+        message.textContent = text;
+
+        shell.appendChild(message);
+        shell.scrollTop = shell.scrollHeight;
+
+        return message;
+      };
+
+      const sendChatMessage = async (suppliedPrompt = null) => {
+        if (chatBusy) {
+          return;
+        }
+
+        const input = byId("chatInput");
+
+        const prompt =
+          suppliedPrompt || input?.value.trim();
+
+        if (!prompt) {
+          return;
+        }
+
+        if (!suppliedPrompt && input) {
+          input.value = "";
+        }
+
+        addMessage("user", prompt);
+
+        const waiting = addMessage(
+          "ai",
+          "Thinking..."
+        );
+
+        chatBusy = true;
+
+        const sendButton = byId("sendChat");
+
+        if (sendButton) {
+          sendButton.disabled = true;
+        }
+
+        try {
+          let session = null;
+
+          if (supabaseClient) {
+            const sessionResult =
+              await supabaseClient.auth.getSession();
+
+            session =
+              sessionResult.data.session;
+          }
+
+          const response = await fetch("/api/chat", {
+            method:"POST",
+            headers:{
+              "Content-Type":"application/json",
+              ...(session?.access_token
+                ? {
+                    Authorization:
+                      "Bearer " + session.access_token
+                  }
+                : {})
+            },
+            body:JSON.stringify({
+              message:prompt,
+              input:prompt,
+              messages:[
+                {
+                  role:"user",
+                  content:prompt
+                }
+              ]
+            })
+          });
+
+          const responseText =
+            await response.text();
+
+          let result = {};
+
+          try {
+            result = JSON.parse(responseText);
+          } catch {
+            result = {
+              message:responseText
+            };
+          }
+
+          if (!response.ok) {
+            throw new Error(
+              result.error ||
+              result.message ||
+              "The AI request failed."
+            );
+          }
+
+          waiting.textContent =
+            result.answer ||
+            result.reply ||
+            result.output_text ||
+            result.message ||
+            result.output?.[0]?.content?.[0]?.text ||
+            "I could not create a response.";
+        } catch (error) {
+          waiting.textContent =
+            "Sorry, I could not create a response. " +
+            error.message;
+        } finally {
+          chatBusy = false;
+
+          if (sendButton) {
+            sendButton.disabled = false;
+          }
+        }
+      };
+
+      on("sendChat", "click", () => {
+        sendChatMessage();
+      });
+
+      on("chatInput", "keydown", (event) => {
+        if (
+          event.key === "Enter" &&
+          !event.shiftKey
+        ) {
+          event.preventDefault();
+          sendChatMessage();
+        }
+      });
+
+      document
+        .querySelectorAll(".promptBtn")
+        .forEach((button) => {
+          button.addEventListener("click", () => {
+            byId("assistant")?.scrollIntoView({
+              behavior:"smooth"
+            });
+
+            sendChatMessage(
+              button.dataset.prompt ||
+              button.textContent.trim()
+            );
+          });
+        });
+
+      on("askDocument", "click", async () => {
+        const file =
+          byId("documentFile")?.files?.[0];
+
+        if (!file) {
+          alert("Choose a document first.");
+          return;
+        }
+
+        if (file.size > 3 * 1024 * 1024) {
+          alert(
+            "Please choose a document smaller than 3 MB."
+          );
+
+          return;
+        }
+
+        try {
+          const text = await file.text();
+
+          if (!text.trim()) {
+            throw new Error(
+              "No readable text was found."
+            );
+          }
+
+          byId("assistant")?.scrollIntoView({
+            behavior:"smooth"
+          });
+
+          await sendChatMessage(
+            "Please explain this document clearly in everyday language. " +
+            "Summarise the important points, deadlines, costs, risks and actions I may need to take. " +
+            "Do not invent missing information.\n\n" +
+            "Document name: " +
+            file.name +
+            "\n\nDocument text:\n" +
+            text.slice(0,14000)
+          );
+        } catch (error) {
+          alert(
+            error.message +
+            " Try a plain text, CSV or similar text-based document."
+          );
+        }
+      });
+
+      const loadCommunity = async () => {
+        const list = byId("communityList");
+
+        if (!list || !supabaseClient) {
+          return;
+        }
+
+        try {
+          const result = await supabaseClient
+            .from("community_questions")
+            .select("*")
+            .order("created_at", {
+              ascending:false
+            })
+            .limit(20);
+
+          if (result.error) {
+            throw result.error;
+          }
+
+          const data = result.data;
+
+          if (!data?.length) {
+            list.innerHTML =
+              '<div class="empty">No community questions yet.</div>';
+
+            return;
+          }
+
+          list.innerHTML = data
+            .map((item) => {
+              const question = escapeHtml(
+                item.question ||
+                item.title ||
+                "Community question"
+              );
+
+              const date = item.created_at
+                ? new Date(
+                    item.created_at
+                  ).toLocaleString("en-GB")
+                : "";
+
+              return (
+                '<article class="item">' +
+                  '<div class="item-top">' +
+                    "<strong>" +
+                      question +
+                    "</strong>" +
+                    '<span class="tag">Community</span>' +
+                  "</div>" +
+                  '<p class="status">' +
+                    escapeHtml(date) +
+                  "</p>" +
+                "</article>"
+              );
+            })
+            .join("");
+        } catch (error) {
+          console.warn(
+            "Community table unavailable:",
+            error.message
+          );
+
+          list.innerHTML =
+            '<div class="empty">Community questions will appear here once the database table is available.</div>';
+        }
+      };
+
+      on("postQuestion", "click", async () => {
+        if (
+          !requireLogin(
+            "Log in to post a community question."
+          )
+        ) {
+          return;
+        }
+
+        const question =
+          byId("communityQuestion")?.value.trim();
+
+        const status =
+          byId("communityStatus");
+
+        if (!question) {
+          status.textContent =
+            "Please enter your question.";
+
+          return;
+        }
+
+        try {
+          const result = await supabaseClient
+            .from("community_questions")
+            .insert({
+              question,
+              user_id:currentUser.id
+            });
+
+          if (result.error) {
+            throw result.error;
+          }
+
+          byId("communityQuestion").value = "";
+
+          status.textContent =
+            "Your question has been posted.";
+
+          await loadCommunity();
+        } catch (error) {
+          status.textContent =
+            "Could not post: " + error.message;
+        }
+      });
+
+      const loadSwaps = async () => {
+        const list = byId("swapList");
+
+        if (!list || !supabaseClient) {
+          return;
+        }
+
+        try {
+          const result = await supabaseClient
+            .from("skill_swaps")
+            .select("*")
+            .order("created_at", {
+              ascending:false
+            })
+            .limit(30);
+
+          if (result.error) {
+            throw result.error;
+          }
+
+          const data = result.data;
+
+          if (!data?.length) {
+            list.innerHTML =
+              '<div class="empty">No Skill Swap listings yet.</div>';
+
+            return;
+          }
+
+          list.innerHTML = data
+            .map((item) => {
+              const offer = escapeHtml(
+                item.offer ||
+                item.offering ||
+                ""
+              );
+
+              const need = escapeHtml(
+                item.need ||
+                item.looking_for ||
+                ""
+              );
+
+              const location = escapeHtml(
+                item.location ||
+                item.area ||
+                "Location not stated"
+              );
+
+              return (
+                '<article class="item">' +
+                  '<div class="item-top">' +
+                    "<div>" +
+                      "<strong>Offers: " +
+                        offer +
+                      "</strong>" +
+                      '<p style="margin:7px 0">Needs: ' +
+                        need +
+                      "</p>" +
+                      '<span class="status">' +
+                        location +
+                      "</span>" +
+                    "</div>" +
+                    '<span class="tag">Skill Swap</span>' +
+                  "</div>" +
+                "</article>"
+              );
+            })
+            .join("");
+        } catch (error) {
+          console.warn(
+            "Skill Swap table unavailable:",
+            error.message
+          );
+
+          list.innerHTML =
+            '<div class="empty">Skill Swap listings will appear once the database table is available.</div>';
+        }
+      };
+
+      on("postSwap", "click", async () => {
+        if (
+          !requireLogin(
+            "Log in to create a Skill Swap listing."
+          )
+        ) {
+          return;
+        }
+
+        const offer =
+          byId("swapOffer")?.value.trim();
+
+        const need =
+          byId("swapNeed")?.value.trim();
+
+        const location =
+          byId("swapLocation")?.value.trim();
+
+        const status =
+          byId("swapStatus");
+
+        if (!offer || !need) {
+          status.textContent =
+            "Please enter what you can offer and what help you need.";
+
+          return;
+        }
+
+        try {
+          const result = await supabaseClient
+            .from("skill_swaps")
+            .insert({
+              user_id:currentUser.id,
+              offer,
+              need,
+              location
+            });
+
+          if (result.error) {
+            throw result.error;
+          }
+
+          byId("swapOffer").value = "";
+          byId("swapNeed").value = "";
+          byId("swapLocation").value = "";
+
+          status.textContent =
+            "Your Skill Swap listing has been posted.";
+
+          await loadSwaps();
+        } catch (error) {
+          status.textContent =
+            "Could not post: " + error.message;
+        }
+      });
+
+      const initialise = async () => {
+        refreshIcons();
+
+        if (!supabaseClient) {
+          return;
+        }
+
+        try {
+          const sessionResult =
+            await supabaseClient.auth.getSession();
+
+          setLoggedInUI(
+            sessionResult.data.session?.user ||
+            null
+          );
+
+          supabaseClient.auth.onAuthStateChange(
+            (_event, session) => {
+              setLoggedInUI(
+                session?.user || null
+              );
+            }
+          );
+
+          await Promise.allSettled([
+            loadCommunity(),
+            loadSwaps()
+          ]);
+        } catch (error) {
+          console.error(
+            "Initialisation error:",
+            error
+          );
+
+          setLoggedInUI(null);
+        }
+      };
+
+      initialise();
+
+      if ("serviceWorker" in navigator) {
+        window.addEventListener("load", () => {
+          navigator.serviceWorker
+            .register("/service-worker.js")
+            .catch(() => {});
+        });
+      }
+    })();
+  </script>
 </body>
 </html>
