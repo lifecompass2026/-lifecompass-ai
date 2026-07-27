@@ -4532,23 +4532,6 @@
 
     state.chatBusy = true;
 
-    element(
-      "sendChat"
-    ).disabled = true;
-
-    input.value = "";
-
-    addChatMessage(
-      "user",
-      prompt
-    );
-
-    const waitingMessage =
-      addChatMessage(
-        "ai",
-        "Thinking..."
-      );
-
     try {
       const {
         data: {
