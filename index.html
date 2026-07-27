@@ -1196,7 +1196,7 @@
         byId("joinOpen")?.classList.toggle("hidden", Boolean(user));
         byId("heroStart")?.classList.toggle("hidden", Boolean(user));
         byId("logoutBtn")?.classList.toggle("hidden", !user);
-      byId("subscribeBtn")?.classList.add("hidden");
+    byId("subscribeBtn")?.classList.toggle("hidden", !currentUser);
 
         const userStatus = byId("userStatus");
 
