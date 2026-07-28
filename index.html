@@ -1204,18 +1204,150 @@
       width: 100%;
     }
   }
-@media (max-width: 390px) {
+/* FINAL MOBILE HOMEPAGE FIX */
+@media (max-width: 700px) {
+  header .nav {
+    min-height: 64px;
+    gap: 8px;
+  }
+
+  .brand {
+    gap: 8px;
+    font-size: 0.98rem;
+  }
+
+  .brand-mark {
+    width: 40px;
+    height: 40px;
+    border-radius: 13px;
+    font-size: 0.88rem;
+  }
+
   .brand span:last-child {
-    max-width: 125px;
+    max-width: 145px;
+    line-height: 1.05;
+  }
+
+  .actions {
+    gap: 6px;
+    margin-left: auto;
   }
 
   .actions .btn {
-    padding-left: 9px;
-    padding-right: 9px;
+    min-height: 40px;
+    padding: 8px 11px;
+    border-radius: 12px;
+    font-size: 0.78rem;
+    white-space: nowrap;
+  }
+
+  .lc-home {
+    padding: 25px 0 34px;
+  }
+
+  .lc-home-grid {
+    gap: 27px;
+  }
+
+  .lc-home-copy-column {
+    text-align: center;
+  }
+
+  .lc-badge {
+    padding: 8px 11px;
+    font-size: 0.67rem;
+    letter-spacing: 0.05em;
   }
 
   .lc-home h1 {
-    font-size: 2.35rem;
+    max-width: 355px;
+    margin: 17px auto 15px;
+    font-size: clamp(2.25rem, 10.5vw, 2.75rem);
+    line-height: 1;
+    letter-spacing: -0.052em;
+  }
+
+  .lc-home-copy {
+    max-width: 355px;
+    margin: 0 auto;
+    font-size: 0.98rem;
+    line-height: 1.52;
+  }
+
+  .lc-home-actions {
+    display: grid;
+    gap: 10px;
+    margin-top: 21px;
+  }
+
+  .lc-home-actions .btn {
+    width: 100%;
+    min-height: 51px;
+    padding: 13px 16px;
+    border-radius: 15px;
+    font-size: 0.95rem;
+  }
+
+  .lc-home-trust {
+    display: flex;
+    justify-content: center;
+    gap: 9px 15px;
+    max-width: 355px;
+    margin: 17px auto 0;
+    font-size: 0.75rem;
+  }
+
+  .lc-demo {
+    width: min(100%, 380px);
+    margin: 0 auto;
+  }
+
+  .lc-demo-card {
+    padding: 15px;
+    border-radius: 22px;
+    box-shadow: 0 18px 42px rgba(16, 42, 67, 0.13);
+  }
+
+  .lc-demo-chat {
+    padding: 15px 2px 12px;
+  }
+
+  .lc-bubble {
+    font-size: 0.82rem;
+  }
+
+  .lc-demo-option {
+    min-height: 47px;
+    padding: 9px;
+    font-size: 0.7rem;
+  }
+
+  .lc-proof-inner {
+    grid-template-columns: 1fr;
+  }
+
+  .lc-proof-item {
+    min-height: 72px;
+    padding: 14px 16px;
+  }
+
+  .lc-proof-item + .lc-proof-item {
+    border-left: 0;
+    border-top: 1px solid var(--line);
+  }
+
+  .lc-benefit-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .lc-bottom-cta-inner {
+    display: grid;
+    padding: 25px 20px;
+    text-align: center;
+  }
+
+  .lc-bottom-cta .btn {
+    width: 100%;
   }
 }
   </style>
