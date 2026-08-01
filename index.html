@@ -136,7 +136,49 @@
     .security-box{display:flex;gap:11px;align-items:center;padding:14px;border:1px solid rgba(255,255,255,.14);border-radius:13px;background:rgba(255,255,255,.05);font-size:.8rem}
     .copyright{text-align:center;border-top:1px solid rgba(255,255,255,.12);margin-top:32px;padding-top:20px;font-size:.8rem}
     @media(max-width:980px){nav{display:none}.hero-grid{grid-template-columns:1fr}.hero-copy{text-align:center}.hero-copy .lead{margin:auto}.hero-actions,.trust{justify-content:center}.device-stage{min-height:440px;max-width:650px;margin:auto;width:100%}.feature-grid,.steps{grid-template-columns:1fr 1fr}.step:nth-child(2):after{display:none}.workspace-grid{grid-template-columns:1fr}.footer-grid{grid-template-columns:1fr 1fr}}
-    @media(max-width:620px){.wrap{width:min(100% - 20px,1180px)}.nav{height:auto;min-height:68px;padding:8px 0;gap:7px}.brand{font-size:1rem}.brand-mark{width:30px;height:30px}.actions{margin-left:auto;gap:5px}.actions .btn{padding:8px 10px;min-height:39px;font-size:.8rem}.hero{padding:50px 0}.hero-copy{padding:0}.device-stage{min-height:350px}.laptop{width:470px;right:-170px;top:20px}.laptop-screen{height:265px;padding:20px}.phone{width:165px;left:2px}.phone-screen{min-height:305px}.feature-grid,.steps,.reviews,.footer-grid{grid-template-columns:1fr}.step:after{display:none!important}.section{padding:52px 0}.messages{height:360px}.chat-compose{align-items:stretch}.footer-grid{gap:24px}}
+    @media(max-width:620px){
+      body{overflow-x:hidden}
+      .wrap{width:min(100% - 22px,1180px)}
+      .nav{height:62px;min-height:62px;padding:6px 0;gap:5px}
+      .brand{font-size:.96rem;gap:7px}
+      .brand-mark{width:28px;height:28px;border-width:1.7px}
+      .brand-mark:before{width:15px}
+      .brand-mark:after{height:15px}
+      .actions{margin-left:auto;gap:3px}
+      .actions .btn{padding:7px 9px;min-height:36px;border-radius:9px;font-size:.76rem}
+      .hero{padding:36px 0 46px}
+      .hero-grid{gap:28px}
+      .hero-copy{padding:0;text-align:center}
+      .hero-copy .eyebrow{margin-bottom:15px}
+      .hero-copy h1{font-size:clamp(2.55rem,12vw,3.65rem);line-height:1.02;margin-bottom:20px}
+      .hero-copy .lead{font-size:1rem;line-height:1.58;padding:0 5px}
+      .hero-actions{display:grid;grid-template-columns:1fr;gap:10px;width:min(330px,100%);margin:24px auto 0}
+      .hero-actions .btn{width:100%;min-height:49px}
+      .trust{justify-content:center;margin-top:15px;font-size:.78rem}
+      .device-stage{min-height:365px;width:100%;margin-top:4px}
+      .laptop{width:395px;right:-96px;top:56px;transform:none;border-radius:14px 14px 7px 7px;padding:9px 9px 15px}
+      .laptop-screen{height:235px;padding:17px;border-radius:7px}
+      .dash-title{font-size:1rem}
+      .dash-sub{font-size:.66rem;margin-bottom:12px}
+      .stats{gap:8px}
+      .stat{padding:10px;min-height:78px}
+      .stat strong{font-size:1.15rem;margin-top:6px}
+      .stat small{font-size:.62rem}
+      .phone{width:145px;left:-5px;bottom:-3px;border-width:7px;border-radius:28px;transform:rotate(-4deg)}
+      .phone:before{width:58px;height:14px;top:7px}
+      .phone-screen{min-height:282px;border-radius:20px;padding:31px 10px 12px}
+      .phone-logo{font-size:.66rem;margin-bottom:15px}
+      .phone-greet{font-size:.7rem}
+      .ask-box{font-size:.6rem;padding:8px}
+      .phone-row{font-size:.56rem;padding:7px;gap:6px}
+      .phone-row i{width:16px}
+      .feature-grid,.steps,.reviews,.footer-grid{grid-template-columns:1fr}
+      .step:after{display:none!important}
+      .section{padding:52px 0}
+      .messages{height:360px}
+      .chat-compose{align-items:stretch}
+      .footer-grid{gap:24px}
+    }
   </style>
 </head>
 <body>
@@ -171,7 +213,7 @@
     <div class="device-stage" aria-label="LifeCompass dashboard preview">
       <div class="laptop">
         <div class="laptop-screen">
-          <div class="dash-title">Welcome back, Alex &#128075;</div>
+          <div class="dash-title">Welcome back, Alex</div>
           <div class="dash-sub">Here&rsquo;s what&rsquo;s happening in your world today.</div>
           <div class="stats">
             <div class="stat"><small>Documents</small><strong>12</strong><small>Total stored</small></div>
@@ -306,9 +348,9 @@ try{supabaseClient=window.supabase.createClient(SUPABASE_URL,SUPABASE_ANON_KEY)}
 const escapeHtml=(v="")=>String(v).replaceAll("&","&amp;").replaceAll("<","&lt;").replaceAll(">","&gt;").replaceAll('"',"&quot;").replaceAll("'","&#039;");
 const openAuth=(mode="login")=>{const joining=mode==="join";byId("authModalTitle").textContent=joining?"Join LifeCompass AI":"Log in";byId("loginButton").textContent=joining?"Create free account":"Log in";byId("loginButton").dataset.mode=joining?"join":"login";byId("authStatus").textContent="";byId("authModal").classList.remove("hidden")};
 const closeAuth=()=>byId("authModal").classList.add("hidden");
-const setLoggedInUI=user=>{currentUser=user||null;byId("loginOpen").classList.toggle("hidden",!!user);byId("joinOpen").classList.toggle("hidden",!!user);byId("heroStart").classList.toggle("hidden",!!user);byId("logoutBtn").classList.toggle("hidden",!user);byId("subscribeBtn").classList.toggle("hidden",!user);byId("userStatus").textContent=user?"Logged in as "+user.email:"You can try the assistant without logging in."};
+const setLoggedInUI=user=>{currentUser=user||null;byId("loginOpen").classList.toggle("hidden",!!user);byId("joinOpen").classList.toggle("hidden",!!user);byId("logoutBtn").classList.toggle("hidden",!user);byId("subscribeBtn").classList.toggle("hidden",!user);byId("heroStart").innerHTML=user?'Open dashboard <i data-lucide="arrow-right"></i>':'Start free <i data-lucide="arrow-right"></i>';byId("userStatus").textContent=user?"Logged in as "+user.email:"You can try the assistant without logging in.";refreshIcons()};
 const requireLogin=msg=>{if(currentUser)return true;openAuth("login");byId("authStatus").textContent=msg||"Please log in to continue.";return false};
-on("loginOpen","click",()=>openAuth("login"));on("joinOpen","click",()=>openAuth("join"));on("heroStart","click",()=>openAuth("join"));on("authClose","click",closeAuth);on("authModal","click",e=>{if(e.target===byId("authModal"))closeAuth()});
+on("loginOpen","click",()=>openAuth("login"));on("joinOpen","click",()=>openAuth("join"));on("heroStart","click",()=>{if(currentUser){byId("dashboard").scrollIntoView({behavior:"smooth"})}else{openAuth("join")}});on("authClose","click",closeAuth);on("authModal","click",e=>{if(e.target===byId("authModal"))closeAuth()});
 on("loginButton","click",async()=>{const status=byId("authStatus"),button=byId("loginButton"),email=byId("authEmail").value.trim(),password=byId("authPassword").value,joining=button.dataset.mode==="join";if(!email||!password){status.textContent="Please enter your email address and password.";return}if(password.length<6){status.textContent="Your password must contain at least 6 characters.";return}button.disabled=true;try{const result=joining?await supabaseClient.auth.signUp({email,password}):await supabaseClient.auth.signInWithPassword({email,password});if(result.error)throw result.error;if(joining&&!result.data.session){status.textContent="Account created. Check your email to confirm, then log in.";button.dataset.mode="login";return}setLoggedInUI(result.data.user);closeAuth();await Promise.allSettled([loadCommunity(),loadSwaps()])}catch(e){status.textContent=e.message||"Login failed."}finally{button.disabled=false;button.textContent=button.dataset.mode==="join"?"Create free account":"Log in"}});
 on("logoutBtn","click",async()=>{await supabaseClient?.auth.signOut();setLoggedInUI(null)});
 const addMessage=(role,text)=>{const el=document.createElement("div");el.className="message "+(role==="user"?"user":"ai");el.textContent=text;byId("chatMessages").appendChild(el);byId("chatMessages").scrollTop=byId("chatMessages").scrollHeight;return el};
